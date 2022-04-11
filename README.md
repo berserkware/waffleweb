@@ -1,2 +1,2 @@
 # Waffle-Web
-Django + Flask with the stuff you don't need
+Django + Flask but without the stuff you don't need
