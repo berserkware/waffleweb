@@ -17,7 +17,7 @@ class waffleApp():
         You can add varibles to your url by puting <argumentName:valueType>
         you then add the argumentName to your views arguments, example:
 
-        @app.route('profile/<username:str>')
+        @app.route('profile/<username:str>', 'profile')
         def profileView(request, username):
             #your view logic goes here
 
