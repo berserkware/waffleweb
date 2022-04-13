@@ -1,5 +1,5 @@
 import unittest
-from waffleweb.app import waffleApp
+from waffleweb import waffleApp
 
 class basicRouteTest(unittest.TestCase):
     def test_pathInvalidRelitiveURL(self):
@@ -7,7 +7,7 @@ class basicRouteTest(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             @app.route('www.google.com', 'index')
-            def index():
+            def index(request=None):
                 pass    
 
             index()
@@ -16,13 +16,25 @@ class basicRouteTest(unittest.TestCase):
         app = waffleApp('test')
         try:
             @app.route('/home/index', 'index')
-            def index():
+            def index(request=None):
                 pass    
 
             index()
         except ValueError:
             self.fail('index() raised ValueError unexpectably')
 
+    def test_getAllViews(self):
+        app = waffleApp('test')
+
+        @app.route('/index', 'index')
+        def index(request=None):
+            pass
+
+        @app.route('/article', 'article')
+        def article(request=None):
+            pass
+
+        self.assertEqual(app.views, [{'path': '/index', 'name': 'index'}, {'path': '/article', 'name': 'article'}])
     
 
 
