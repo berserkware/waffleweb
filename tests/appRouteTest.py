@@ -35,8 +35,26 @@ class basicRouteTest(unittest.TestCase):
             pass
 
         self.assertEqual(app.views, [{'path': '/index', 'name': 'index'}, {'path': '/article', 'name': 'article'}])
-    
 
+
+    def test_getCheckIfArgumentsCorrect(self):
+        app = waffleApp('test')
+
+        @app.route('/index/<arg1:str>/<arg2:int>', 'index')
+        def index(request, arg1, arg2):
+            return (arg1, arg2)
+
+        self.assertEqual(index(request=None), None)
+
+    def test_argumentsFail(self):
+        app = waffleApp('test')
+
+        with self.assertRaises(TypeError):
+            @app.route('/index/arg1:str>/<int:arg2>', 'index')
+            def index(request, arg1, arg2):
+                return (arg1, arg2) 
+
+            index(request=None)
 
 if __name__ == '__main__':
     unittest.main()

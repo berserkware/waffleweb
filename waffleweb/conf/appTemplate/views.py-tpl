@@ -1,5 +1,0 @@
-from waffleweb import waffleApp
-
-app = waffleApp('{{ appName }}')
-
-# Put your views here

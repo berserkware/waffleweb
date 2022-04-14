@@ -1,2 +1,2 @@
 Run all tests:
-python3 -m unittest discover tests -s '*Test.py'
+python3 -m unittest discover '*Test.py' -s 'tests'

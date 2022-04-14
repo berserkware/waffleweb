@@ -10,15 +10,11 @@ class waffleApp():
 
     def __init__(self, appName: str):
         self.appName = appName
-        self.views = []
+        self._views = []
 
     @property
     def views(self):
         return self._views
-
-    @views.setter
-    def views(self, value):
-        self._views = value
 
     def route(self, path: str, name: str):
         '''
@@ -39,13 +35,25 @@ class waffleApp():
         '''
         
         def decorator(view):
+            #regex from https://stackoverflow.com/questions/1454913
+            viewURLArgs = re.compile(r'(?<=\<)(.*?)(?=\>)').findall(path)
+            viewArgs = []
+
+            for i in viewURLArgs:
+                argList = i.split(':')
+                if len(argList) != 2:
+                    raise AttributeError('Your URL arguments have to have a name and a type')
+                viewArgs.append(argList)
+
             #regex from https://stackoverflow.com/questions/31430167/regex-check-if-given-string-is-relative-url
             if re.compile(r'^(?!www\.|(?:http|ftp)s?://|[A-Za-z]:\\|//).*').search(path):
-                self.views.append({'path': path, 'name': name})
+                self._views.append({'path': path, 'name': name})
 
                 def wrapper(*args, **kwargs):
+                    for i in viewArgs:
+                        kwargs[str(i[0])] = None
                     view(*args, **kwargs)
                 return wrapper
             else:
                 raise ValueError('Your path has to be a valid relative URL pattern.')
-        return decorator 
+        return decorator
