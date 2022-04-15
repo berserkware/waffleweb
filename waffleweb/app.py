@@ -1,11 +1,11 @@
 import re
 
-class waffleApp():
+class WaffleApp():
     '''
-    The waffleApp() class is the centre of all the apps for your project.
+    The WaffleApp() class is the centre of all the apps for your project.
     It only takes one argument: name, which is the name of your
-    application. It is automatically defined when you create an app as so:
-    app = waffleApp('yourAppName')
+    application. It is automatically defined when you create an app as so: 
+    app = WaffleApp('yourAppName')
     '''
 
     def __init__(self, appName: str):
@@ -33,12 +33,14 @@ class waffleApp():
             #your view logic goes here
 
         '''
-        
+    
         def decorator(view):
-            #regex from https://stackoverflow.com/questions/1454913
+            #regex from https://stackoverflow.com/questions/14549131454913
+            #this gets all the attributes in the URLs and removes the <>
             viewURLArgs = re.compile(r'(?<=\<)(.*?)(?=\>)').findall(path)
             viewArgs = []
 
+            #this splits the attributes into their name and type and adds them to a list
             for i in viewURLArgs:
                 argList = i.split(':')
                 if len(argList) != 2:
@@ -46,10 +48,12 @@ class waffleApp():
                 viewArgs.append(argList)
 
             #regex from https://stackoverflow.com/questions/31430167/regex-check-if-given-string-is-relative-url
+            #this checks to see if the URL is reletive
             if re.compile(r'^(?!www\.|(?:http|ftp)s?://|[A-Za-z]:\\|//).*').search(path):
                 self._views.append({'path': path, 'name': name})
 
                 def wrapper(*args, **kwargs):
+                    #this adds the arguments to the functions arguments
                     for i in viewArgs:
                         kwargs[str(i[0])] = None
                     view(*args, **kwargs)

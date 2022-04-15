@@ -1,9 +1,9 @@
 import unittest
-from waffleweb import waffleApp
+from waffleweb import WaffleApp
 
 class basicRouteTest(unittest.TestCase):
     def test_pathInvalidRelitiveURL(self):
-        app = waffleApp('test')
+        app = WaffleApp('test')
 
         with self.assertRaises(ValueError):
             @app.route('www.google.com', 'index')
@@ -13,7 +13,7 @@ class basicRouteTest(unittest.TestCase):
             index()
     
     def test_pathValidRelitiveURL(self):
-        app = waffleApp('test')
+        app = WaffleApp('test')
         try:
             @app.route('/home/index', 'index')
             def index(request=None):
@@ -24,7 +24,7 @@ class basicRouteTest(unittest.TestCase):
             self.fail('index() raised ValueError unexpectably')
 
     def test_getAllViews(self):
-        app = waffleApp('test')
+        app = WaffleApp('test')
 
         @app.route('/index', 'index')
         def index(request=None):
@@ -38,7 +38,7 @@ class basicRouteTest(unittest.TestCase):
 
 
     def test_getCheckIfArgumentsCorrect(self):
-        app = waffleApp('test')
+        app = WaffleApp('test')
 
         @app.route('/index/<arg1:str>/<arg2:int>', 'index')
         def index(request, arg1, arg2):
@@ -47,7 +47,7 @@ class basicRouteTest(unittest.TestCase):
         self.assertEqual(index(request=None), None)
 
     def test_argumentsFail(self):
-        app = waffleApp('test')
+        app = WaffleApp('test')
 
         with self.assertRaises(TypeError):
             @app.route('/index/arg1:str>/<int:arg2>', 'index')
@@ -55,6 +55,15 @@ class basicRouteTest(unittest.TestCase):
                 return (arg1, arg2) 
 
             index(request=None)
+            
+    def test_argumentsRaiseAttributeError(self):
+        app = WaffleApp('test')
 
+        with self.assertRaises(AttributeError):
+            @app.route('/index/<arg1>/<arg2>', 'index')
+            def index(request, arg1, arg2):
+                return (arg1, arg2) 
+
+            index(request=None)
 if __name__ == '__main__':
     unittest.main()
