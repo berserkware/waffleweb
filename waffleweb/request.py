@@ -1,7 +1,7 @@
 class Request():
-    def __init__(self, request, clientIp):
+    def __init__(self, request, clientIP):
         self.headers = request.split('\n')
-        self.clientIp = clientIp
+        self.clientIP = clientIP
 
     @property
     def path(self):
@@ -17,19 +17,19 @@ class Request():
 
     @property
     def userAgent(self):
-        return self.headers[2].split()[1:]
+        return ' '.join(self.headers[2].split()[1:])
 
     @property
     def accept(self):
-        return self.headers[3].split()[1:]
+        return ' '.join(self.headers[3].split()[1:])
 
     @property
     def acceptLangauge(self):
-        return self.headers[4].split()[1:]
+        return ' '.join(self.headers[4].split()[1:])
 
     @property
     def acceptEncoding(self):
-        return self.headers[5].split()[1:]
+        return ' '.join(self.headers[5].split()[1:])
 
     @property
     def connection(self):
@@ -37,7 +37,7 @@ class Request():
 
     @property
     def cookie(self):
-        return self.headers[7].split()[1:]
+        return ' '.join(self.headers[7].split()[1:])
 
     @property
     def upgradeInsecureRequests(self):
