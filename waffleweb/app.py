@@ -16,14 +16,14 @@ class WaffleApp():
     def views(self):
         return self._views
 
-    def route(self, path: str, name: str):
+    def route(self, path: str, name=None):
         '''
         This is the decorator you put on all your views it gives your view a URL and a name.
         It takes two arguments path and name. The path argument is the reletive URL to your 
         view and the name argument is the name of your view.
 
-        the name argument is used to reference the view in templates and redirects, it looks
-        like this: appName:name
+        the name argument is defualted to the name of your view function. it is used to reference 
+        the view in templates and redirects, it looks like this: appName:name
 
         You can add varibles to your url by puting <argumentName:valueType>
         you then add the argumentName to your views arguments, example:
@@ -50,7 +50,11 @@ class WaffleApp():
             #regex from https://stackoverflow.com/questions/31430167/regex-check-if-given-string-is-relative-url
             #this checks to see if the URL is reletive
             if re.compile(r'^(?!www\.|(?:http|ftp)s?://|[A-Za-z]:\\|//).*').search(path):
-                self._views.append({'path': path, 'name': name})
+                #adds function to view registry
+                if name == None:
+                    self._views.append({'path': path, 'name': view.__name__, 'view': view.__name__})
+                else:
+                    self._views.append({'path': path, 'name': name, 'view': view.__name__})
 
                 def wrapper(*args, **kwargs):
                     #this adds the arguments to the functions arguments

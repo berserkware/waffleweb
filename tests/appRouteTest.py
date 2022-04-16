@@ -34,8 +34,7 @@ class basicRouteTest(unittest.TestCase):
         def article(request=None):
             pass
 
-        self.assertEqual(app.views, [{'path': '/index', 'name': 'index'}, {'path': '/article', 'name': 'article'}])
-
+        self.assertEqual(app.views, [{'path': '/index', 'name': 'index', 'view': 'index'}, {'path': '/article', 'name': 'article', 'view': 'article'}])
 
     def test_getCheckIfArgumentsCorrect(self):
         app = WaffleApp('test')

@@ -1,6 +1,8 @@
 from waffleweb import WaffleProject
 
-apps = []
+apps = [
+    'testApp'
+]
 
 proj = WaffleProject(apps)
 
