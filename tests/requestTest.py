@@ -37,7 +37,7 @@ class headerTest(unittest.TestCase):
         self.assertEqual(self.testRequest.accept, 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8')
 
     def test_acceptLangauge(self):
-        self.assertEqual(self.testRequest.acceptLangauge, 'en-US,en;q=0.5')
+        self.assertEqual(self.testRequest.acceptLanguage, 'en-US,en;q=0.5')
 
     def test_acceptEncoding(self):
         self.assertEqual(self.testRequest.acceptEncoding, 'gzip, deflate')
@@ -47,21 +47,6 @@ class headerTest(unittest.TestCase):
 
     def test_cookie(self):
         self.assertEqual(self.testRequest.cookie, 'csrftoken=Db8QXnkjOLbPd3AGTxlnEEGTSn0IMh44MB8Pf2dVAPSBARoU6DteVUu9nT9ELqcO; sessionid=h8xln73emxlqgpjbsnx9007ceyfla7at')
-
-    def test_upgradeInsecureRequests(self):
-        self.assertEqual(self.testRequest.upgradeInsecureRequests, '1')
-
-    def test_secFetchDest(self):
-        self.assertEqual(self.testRequest.secFetchDest, 'document')
-
-    def test_secFetchMode(self):
-        self.assertEqual(self.testRequest.secFetchMode, 'navigate')
-
-    def test_secFetchSite(self):
-        self.assertEqual(self.testRequest.secFetchSite, 'none')
-
-    def test_secFetchUser(self):
-        self.assertEqual(self.testRequest.secFetchUser, '?1')
 
     def test_clientIP(self):
         self.assertEqual(self.testRequest.clientIP, '101.98.137.19')
