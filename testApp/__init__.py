@@ -1,0 +1,1 @@
+from testApp.testApp import testApp as app

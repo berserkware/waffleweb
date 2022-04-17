@@ -24,20 +24,37 @@ class WaffleProject():
             if app.endswith(('.py', '.py3')):
                 #checks if can import app, if can't raises eception
                 try:
-                    self.apps.append(importlib.import_module(app[:app.index(".")])) 
+                    module = importlib.import_module(app[:app.index(".")])
+                    self.apps.append({
+                                    'module': module,
+                                    'app': module.app,
+                    }) 
                 except ModuleNotFoundError:
                     raise AppNotFoundError(f'Could not find app "{app[:app.index(".")]}"')
             else:
                 #checks if can import folder app, if can't raise exception
                 try:
                     importlib.import_module(f"{app}.{app}")
-                    self.apps.append(importlib.import_module(f"{app}"))
+                    module = importlib.import_module(app)
+                    self.apps.append({
+                        'module': module,
+                        'app': module.app,
+                    })
                 except ModuleNotFoundError:
                     raise AppNotFoundError(f'Could not find app "{app}", make sure you spelled it right and you app has a "{app}.py" file in it')
     
-    def handleRequest(self, request):
+    def handleRequest(self, request: Request):
         '''Handles the HTTP request.'''
-        return b"HTTP/1.1 200 OK\n\nHello World"
+        path = request.path.strip('/')
+
+        for app in self.apps:
+            module = app['module']
+            app = app['app']
+            for view in app.views:
+                if view['path'].strip('/') == path:
+                    return view['view'](request)
+                
+        return b"HTTP/1.1 404 NOT FOUND\n\nThe requested page could not be found"
 
     def run(self, host='127.0.0.1', port=8000):
         '''
@@ -80,7 +97,9 @@ class WaffleProject():
                     req = Request(conn.recv(1024).decode(), addr)
 
                     #gets the response
-                    response = self.handleRequest(req)
+                    response = bytes(self.handleRequest(req))
+
+                    print(response)
 
                     #sends the response
                     conn.sendall(response)

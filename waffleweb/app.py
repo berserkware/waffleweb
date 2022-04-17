@@ -52,9 +52,9 @@ class WaffleApp():
             if re.compile(r'^(?!www\.|(?:http|ftp)s?://|[A-Za-z]:\\|//).*').search(path):
                 #adds function to view registry
                 if name == None:
-                    self._views.append({'path': path, 'name': view.__name__, 'view': view.__name__})
+                    self._views.append({'path': path, 'name': view.__name__, 'view': view})
                 else:
-                    self._views.append({'path': path, 'name': name, 'view': view.__name__})
+                    self._views.append({'path': path, 'name': name, 'view': view})
 
                 def wrapper(*args, **kwargs):
                     #this adds the arguments to the functions arguments

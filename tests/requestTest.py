@@ -28,10 +28,10 @@ class headerTest(unittest.TestCase):
         self.assertEqual(self.testRequest.method, 'GET')
     
     def test_host(self):
-        self.assertEqual(self.testRequest.host, 'localhost:8080')
+        self.assertEqual(self.testRequest.headers['Host'], 'localhost:8080')
 
     def test_userAgent(self):
-        self.assertEqual(self.testRequest.userAgent, 'Mozilla/5.0 (X11; Ubuntu; Linux aarch64; rv:96.0) Gecko/20100101 Firefox/96.0')
+        self.assertEqual(self.testRequest.headers['User-Agent'], 'Mozilla/5.0 (X11; Ubuntu; Linux aarch64; rv:96.0) Gecko/20100101 Firefox/96.0')
 
     def test_accept(self):
         self.assertEqual(self.testRequest.accept, 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8')
