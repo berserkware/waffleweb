@@ -4,6 +4,7 @@ class Request():
         self.clientIP = clientIP
         self.requestHeaders = requestHeaders
 
+        #Splits the request into it's seporate headers and adds it to a dictionary.
         splitHeaders = requestHeaders.split('\n')
         for line in splitHeaders:
                 splitLine = line.strip().split(' ')
@@ -11,11 +12,11 @@ class Request():
 
     @property
     def path(self):
-        return self.requestHeaders.split()[1]
+        return self.requestHeaders.split('\n')[0].split()[1]
 
     @property
     def method(self):
-        return self.requestHeaders.split()[0]
+        return self.requestHeaders.split('\n')[0].split()[0]
 
     @property
     def host(self):

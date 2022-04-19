@@ -46,13 +46,15 @@ class WaffleProject():
         '''Handles the HTTP request.'''
         path = request.path.strip('/')
 
+        #Searches through all the apps to match the url
         for app in self.apps:
             module = app['module']
             app = app['app']
             for view in app.views:
                 if view['path'].strip('/') == path:
                     return view['view'](request)
-                
+
+        #Returns 404 if doesn't match URL
         return b"HTTP/1.1 404 NOT FOUND\n\nThe requested page could not be found"
 
     def run(self, host='127.0.0.1', port=8000):
@@ -86,9 +88,8 @@ class WaffleProject():
             print(f'Waffleweb version {waffleweb.__version__}')
             print(f'Server listening on host {host}, port {port}')
             print(f'Press Ctrl+C to stop server')
-
-            while True:
-                try:
+            try:
+                while True:
                     #waits for connection to server
                     conn, addr = sock.accept()
 
@@ -96,20 +97,16 @@ class WaffleProject():
                     req = Request(conn.recv(1024).decode(), addr)
 
                     #gets the response
-                    response = bytes(self.handleRequest(req))
-
-                    print(response)
+                    response = self.handleRequest(req)
 
                     #sends the response
-                    conn.sendall(response)
+                    conn.sendall(bytes(response))
 
                     timeNow = datetime.datetime.now()
                     print(f'{req.method} [{timeNow.strftime("%m/%d/%Y  %H:%M:%S")}] {req.path}')
-                    
+
                     #closes the connection
                     conn.close()
-                except KeyboardInterrupt as e:
-                    print('\nKeyboardInterrupt, Closing server')
-                    break 
-                except Exception:
-                    print(traceback.format_exc())
+            except KeyboardInterrupt as e:
+                print('\nKeyboardInterrupt, Closing server')
+                return

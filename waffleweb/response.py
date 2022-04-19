@@ -5,9 +5,12 @@ import waffleweb
 class ResponseHeaders(dict):
     def __init__(self, data):
         self._headers = {}
-        for header in data.split('\n'):
-            splitHeader = header.strip().split(' ')
-            self[splitHeader[0][:(len(splitHeader[0]) - 1)]] = ' '.join(splitHeader[1:])
+
+        #splits data into the seporate headers
+        if data:
+            for header in data.split('\n'):
+                splitHeader = header.strip().split(' ')
+                self[splitHeader[0][:(len(splitHeader[0]) - 1)]] = ' '.join(splitHeader[1:])
 
     def __setitem__(self, key, value):
         self._headers[key] = value
@@ -19,6 +22,7 @@ class ResponseHeaders(dict):
         return self._headers[key]
 
     def items(self):
+        '''Returns all headers'''
         return self._headers.items()
 
 class HTTPResponseBase():
@@ -32,6 +36,7 @@ class HTTPResponseBase():
         self.headers = ResponseHeaders(headers)
         self._charset = charset
 
+        #Checks if content type is in headers if it isn't adds one
         if 'Content-Type' not in self.headers:
             if contentType is None:
                 contentType = f'text/html; charset={self.charset}'
@@ -41,6 +46,7 @@ class HTTPResponseBase():
                 'You cannot have a contentType provided if you have a Content-Type in your headers.'
             )
 
+        #Checks if status code is valid.
         if status is not None:
             try:
                 self.statusCode = int(status)
@@ -63,6 +69,7 @@ class HTTPResponseBase():
 
     @property
     def charset(self):
+        '''Gets charset if charset is None, gets defualt charset.'''
         if self._charset is not None:
             return self._charset
 
@@ -73,6 +80,7 @@ class HTTPResponseBase():
         self._charset = value        
 
     def serializeHeaders(self):
+        '''This gets just the headers in a binary string.'''
         return b'\r\n'.join([
             key.encode(self.charset) + b': ' + value.encode(self.charset)
             for key, value in self.headers.items()
@@ -81,6 +89,7 @@ class HTTPResponseBase():
     __bytes__ = serializeHeaders    
 
     def convertBytes(self, value):
+        '''Encodes value and converts it to bytes.'''
         if isinstance(value, str):
             return bytes(value.encode(self.charset))
 
@@ -90,6 +99,24 @@ class HttpResponse(HTTPResponseBase):
     '''Handles the HTTP responses and content.'''
 
     def __init__(self, content=b'', *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
         self.content = content 
+
+    def serialize(self):
+        '''This gets the fully binary string including headers and content.'''
+        return b'HTTP/1.1 ' + self.convertBytes(self.statusCode) + b' ' + self.convertBytes(self.reasonPhrase) + b' ' + self.serializeHeaders() + b'\r\n\r\n' + self.content
+
+    __bytes__ = serialize
+
+    @property
+    def content(self):
+        return b"".join(self._content)
+
+    @content.setter
+    def content(self, value):
+        self._content = [self.convertBytes(value)]
+
+
 
     
