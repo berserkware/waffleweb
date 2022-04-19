@@ -1,15 +1,95 @@
 from http.client import responses
 
-import waffleweb.defaults
+import waffleweb
 
 class ResponseHeaders(dict):
-    pass
+    def __init__(self, data):
+        self._headers = {}
+        for header in data.split('\n'):
+            splitHeader = header.strip().split(' ')
+            self[splitHeader[0][:(len(splitHeader[0]) - 1)]] = ' '.join(splitHeader[1:])
+
+    def __setitem__(self, key, value):
+        self._headers[key] = value
+
+    def __delitem__(self, key):
+        del self._headers[key]
+
+    def __getitem__(self, key):
+        return self._headers[key]
+
+    def items(self):
+        return self._headers.items()
 
 class HTTPResponseBase():
     '''Handles the HTTP responses only.'''
+    
+    statusCode = 200
+
+    def __init__(
+        self, headers=None, contentType=None, charset=None, status=None, reason=None
+    ):
+        self.headers = ResponseHeaders(headers)
+        self._charset = charset
+
+        if 'Content-Type' not in self.headers:
+            if contentType is None:
+                contentType = f'text/html; charset={self.charset}'
+            self.headers['Content-Type'] = contentType
+        elif contentType:
+            raise ValueError(
+                'You cannot have a contentType provided if you have a Content-Type in your headers.'
+            )
+
+        if status is not None:
+            try:
+                self.statusCode = int(status)
+            except(ValueError, TypeError):
+                raise TypeError('HTTP status code has to be an integer.')
+
+            if 100 > status > 599:
+                raise ValueError('HTTP status code must be a integer from 100 to 599.')
+        self._reasonPhrase = reason
+
+    @property
+    def reasonPhrase(self):
+        if self._reasonPhrase is not None:
+            return self._reasonPhrase
+        return responses.get(self.statusCode, "Unknow status code.")
+        
+    @reasonPhrase.setter
+    def reasonPhrase(self, value):
+        self._reasonPhrase = value
+
+    @property
+    def charset(self):
+        if self._charset is not None:
+            return self._charset
+
+        return waffleweb.defaults.DEFAULT_CHARSET
+
+    @charset.setter
+    def charset(self, value):
+        self._charset = value        
+
+    def serializeHeaders(self):
+        return b'\r\n'.join([
+            key.encode(self.charset) + b': ' + value.encode(self.charset)
+            for key, value in self.headers.items()
+        ])
+
+    __bytes__ = serializeHeaders    
+
+    def convertBytes(self, value):
+        if isinstance(value, str):
+            return bytes(value.encode(self.charset))
+
+        return bytes(str(value).encode(self.charset))
 
 class HttpResponse(HTTPResponseBase):
     '''Handles the HTTP responses and content.'''
 
     def __init__(self, content=b'', *args, **kwargs):
-        pass
+        self.content = content 
+
+    

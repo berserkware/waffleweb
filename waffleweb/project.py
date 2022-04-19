@@ -1,11 +1,10 @@
-import os
-import re
 import socket
 import ipaddress
 import datetime
 import importlib
-import waffleweb
+import traceback
 
+import waffleweb
 from waffleweb.request import Request
 from waffleweb.exceptions import AppNotFoundError
 
@@ -109,6 +108,8 @@ class WaffleProject():
                     
                     #closes the connection
                     conn.close()
-                except KeyboardInterrupt:
+                except KeyboardInterrupt as e:
                     print('\nKeyboardInterrupt, Closing server')
-                    break
+                    break 
+                except Exception:
+                    print(traceback.format_exc())
