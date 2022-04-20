@@ -56,3 +56,9 @@ class HTTPResponseBaseTest(unittest.TestCase):
     def test_statusTooSmall(self):
         with self.assertRaises(ValueError):
             base = responses.HTTPResponseBase(status=23)
+
+    def test_statusJustRight(self):
+        try:
+            base = responses.HTTPResponseBase(status=35)
+        except ValueError:
+            self.fail('A ValueError was raised when initializing the HTTPResponseBase class')

@@ -31,7 +31,6 @@ class WaffleApp():
         @app.route('profile/<username:str>', 'profile')
         def profileView(request, username):
             #your view logic goes here
-
         '''
     
         def decorator(view):
