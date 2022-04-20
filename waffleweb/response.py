@@ -2,6 +2,9 @@ from http.client import responses
 
 import waffleweb
 
+class HTTP404(Exception):
+    pass
+
 class ResponseHeaders(dict):
     def __init__(self, data):
         self._headers = {}
@@ -95,7 +98,7 @@ class HTTPResponseBase():
 
         return bytes(str(value).encode(self.charset))
 
-class HttpResponse(HTTPResponseBase):
+class HTTPResponse(HTTPResponseBase):
     '''Handles the HTTP responses and content.'''
 
     def __init__(self, content=b'', *args, **kwargs):
@@ -105,7 +108,7 @@ class HttpResponse(HTTPResponseBase):
 
     def serialize(self):
         '''This gets the fully binary string including headers and content.'''
-        return b'HTTP/1.1 ' + self.convertBytes(self.statusCode) + b' ' + self.convertBytes(self.reasonPhrase) + b' ' + self.serializeHeaders() + b'\r\n\r\n' + self.content
+        return b'HTTP/1.1 ' + self.convertBytes(self.statusCode) + b' ' + self.convertBytes(self.reasonPhrase) + b'\r\n' + self.serializeHeaders() + b'\r\n\r\n' + self.content
 
     __bytes__ = serialize
 
@@ -116,7 +119,3 @@ class HttpResponse(HTTPResponseBase):
     @content.setter
     def content(self, value):
         self._content = [self.convertBytes(value)]
-
-
-
-    

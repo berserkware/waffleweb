@@ -6,7 +6,10 @@ import traceback
 
 import waffleweb
 from waffleweb.request import Request
-from waffleweb.exceptions import AppNotFoundError
+from waffleweb.response import HTTPResponse, HTTP404
+
+class AppNotFoundError(Exception):
+    pass
 
 class WaffleProject():
     '''
@@ -55,7 +58,7 @@ class WaffleProject():
                     return view['view'](request)
 
         #Returns 404 if doesn't match URL
-        return b"HTTP/1.1 404 NOT FOUND\n\nThe requested page could not be found"
+        raise HTTP404
 
     def run(self, host='127.0.0.1', port=8000):
         '''
@@ -97,13 +100,16 @@ class WaffleProject():
                     req = Request(conn.recv(1024).decode(), addr)
 
                     #gets the response
-                    response = self.handleRequest(req)
+                    try:
+                        response = self.handleRequest(req)
+                    except HTTP404:
+                        response = HTTPResponse('The requested page could not be found', status=404)
 
                     #sends the response
                     conn.sendall(bytes(response))
 
                     timeNow = datetime.datetime.now()
-                    print(f'{req.method} [{timeNow.strftime("%m/%d/%Y  %H:%M:%S")}] {req.path}')
+                    print(f'[{timeNow.strftime("%m/%d/%Y %H:%M:%S")}] HTTP/1.1 {req.method} {req.path} {response.statusCode} {response.reasonPhrase}')
 
                     #closes the connection
                     conn.close()
