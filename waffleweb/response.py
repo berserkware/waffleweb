@@ -24,6 +24,9 @@ class ResponseHeaders(dict):
     def __getitem__(self, key):
         return self._headers[key]
 
+    def __contains__(self, value):
+        return True if value in self._headers.keys() else False
+
     def items(self):
         '''Returns all headers'''
         return self._headers.items()
@@ -56,7 +59,7 @@ class HTTPResponseBase():
             except(ValueError, TypeError):
                 raise TypeError('HTTP status code has to be an integer.')
 
-            if 100 > status > 599:
+            if 100 > status or status > 599:
                 raise ValueError('HTTP status code must be a integer from 100 to 599.')
         self._reasonPhrase = reason
 
@@ -64,7 +67,7 @@ class HTTPResponseBase():
     def reasonPhrase(self):
         if self._reasonPhrase is not None:
             return self._reasonPhrase
-        return responses.get(self.statusCode, "Unknow status code.")
+        return responses.get(self.statusCode, "Unknown status code.")
         
     @reasonPhrase.setter
     def reasonPhrase(self, value):

@@ -4,7 +4,7 @@ import waffleweb.response as responses
 
 class ResponseHeadersTest(unittest.TestCase):
     def __init__(self, *args, **kwargs):
-        super(responseHeadersTest, self).__init__(*args, **kwargs)
+        super(ResponseHeadersTest, self).__init__(*args, **kwargs)
 
         self.response = responses.ResponseHeaders("""
                                             200 OK
@@ -51,7 +51,7 @@ class HTTPResponseBaseTest(unittest.TestCase):
 
     def test_statusTooBig(self):
         with self.assertRaises(ValueError):
-            base = responses.HttpResponseBase(status=1234)
+            base = responses.HTTPResponseBase(status=1234)
 
     def test_statusTooSmall(self):
         with self.assertRaises(ValueError):
@@ -59,6 +59,47 @@ class HTTPResponseBaseTest(unittest.TestCase):
 
     def test_statusJustRight(self):
         try:
-            base = responses.HTTPResponseBase(status=35)
+            base = responses.HTTPResponseBase(status=250)
         except ValueError:
             self.fail('A ValueError was raised when initializing the HTTPResponseBase class')
+
+    def test_reasonPhraseCorrect(self):
+        base = responses.HTTPResponseBase(status=404)
+        self.assertEqual(base.reasonPhrase, 'Not Found')
+
+    def test_reasonPhraseCustom(self):
+        base = responses.HTTPResponseBase(status=200, reason='tis ok')
+        self.assertEqual(base.reasonPhrase, 'tis ok')
+
+    def test_reasonPhraseUnknown(self):
+        base = responses.HTTPResponseBase(status=220)
+        self.assertEqual(base.reasonPhrase, 'Unknown status code.')
+
+    def test_reasonPhraseUnknownButGivenReason(self):
+        base = responses.HTTPResponseBase(status=220,  reason='i do not know the status code')
+        self.assertEqual(base.reasonPhrase, 'i do not know the status code')
+
+    def test_charsetGiven(self):
+        base = responses.HTTPResponseBase(charset='ascii')
+        self.assertEqual(base.charset, 'ascii')
+
+    def test_charsetDefault(self):
+        base = responses.HTTPResponseBase()
+        self.assertEqual(base.charset, 'utf-8')
+
+    def test_serializeHeaders(self):
+        base = responses.HTTPResponseBase()
+        self.assertEqual(bytes(base), b'Content-Type: text/html; charset=utf-8')
+
+    def test_convertBytesStr(self):
+        base = responses.HTTPResponseBase()
+        self.assertEqual(base.convertBytes('Testing 1 2 3'), b'Testing 1 2 3')
+
+class HTTPResponseTest(unittest.TestCase):
+    def test_content(self):
+        response = responses.HTTPResponse(content='Test content for tests')
+        self.assertEqual(response.content, b'Test content for tests')
+
+    def test_serialize(self):
+        response = responses.HTTPResponse(content='Test content for tests')
+        self.assertEqual(bytes(response), b'HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\n\r\nTest content for tests')
