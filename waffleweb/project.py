@@ -2,7 +2,7 @@ import socket
 import ipaddress
 import datetime
 import importlib
-import traceback
+import os
 
 import waffleweb
 from waffleweb.request import Request
@@ -18,7 +18,7 @@ class WaffleProject():
     a single python file or a folder.
     '''
 
-    def __init__(self, apps: list, BASE_DIR=None):
+    def __init__(self, apps: list):
         self.apps = []
 
         for app in apps:
@@ -47,16 +47,21 @@ class WaffleProject():
     
     def handleRequest(self, request: Request):
         '''Handles the HTTP request.'''
-        path = request.path.strip('/')
 
-        #Searches through all the apps to match the url
-        for app in self.apps:
-            module = app['module']
-            app = app['app']
-            for view in app.views:
-                if view['path'].strip('/') == path:
-                    return view['view'](request)
+        #gets the root and file extenstion
+        root, ext = os.path.splitext(request.path)
+        root = root.strip('/')
 
+        if ext == '':
+            #Searches through all the apps to match the url
+            for app in self.apps:
+                module = app['module']
+                app = app['app']
+                for view in app.views:
+                    if view['path'].strip('/') == root:
+                        return view['view'](request)
+        else:
+            pass
         #Returns 404 if doesn't match URL
         raise HTTP404
 
