@@ -1,6 +1,7 @@
 from http.client import responses
 
 import waffleweb
+import json
 
 class HTTP404(Exception):
     pass
@@ -97,9 +98,9 @@ class HTTPResponseBase():
     def convertBytes(self, value):
         '''Encodes value and converts it to bytes.'''
         if isinstance(value, str):
-            return bytes(value.encode(self.charset))
+            return bytes(value, encoding=self.charset)
 
-        return bytes(str(value).encode(self.charset))
+        return bytes(str(value), encoding=self.charset)
 
 class HTTPResponse(HTTPResponseBase):
     '''Handles the HTTP responses and content.'''
@@ -122,3 +123,26 @@ class HTTPResponse(HTTPResponseBase):
     @content.setter
     def content(self, value):
         self._content = [self.convertBytes(value)]
+
+class JSONResponse(HTTPResponseBase):
+    '''Handles the HTTP responses and json.'''
+
+    def __init__(self, json={}, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.json = json
+        self.headers['Content-Type'] = f'application/json; charset={self.charset}'
+
+    def serialize(self):
+        '''This gets the fully binary string including headers and json.'''
+        return b'HTTP/1.1 ' + self.convertBytes(self.statusCode) + b' ' + self.convertBytes(self.reasonPhrase) + b'\r\n' + self.serializeHeaders() + b'\r\n\r\n' + self.json
+
+    __bytes__ = serialize
+
+    @property
+    def json(self):
+        return self._json
+
+    @json.setter
+    def json(self, value):
+        self._json = bytes(json.dumps(value), encoding=self.charset)
