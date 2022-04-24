@@ -23,15 +23,6 @@ class basicRouteTest(unittest.TestCase):
         except ValueError:
             self.fail('index() raised ValueError unexpectably')
 
-    def test_getCheckIfArgumentsCorrect(self):
-        app = WaffleApp('test')
-
-        @app.route('/index/<arg1:str>/<arg2:int>', 'index')
-        def index(request, arg1, arg2):
-            return (arg1, arg2)
-
-        self.assertEqual(index(request=None), None)
-
     def test_argumentsFail(self):
         app = WaffleApp('test')
 

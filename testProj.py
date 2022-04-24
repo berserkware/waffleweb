@@ -1,7 +1,8 @@
 from waffleweb import WaffleProject
 
 apps = [
-    'testApp'
+    'testApp',
+    'MathAPI',
 ]
 
 proj = WaffleProject(apps)

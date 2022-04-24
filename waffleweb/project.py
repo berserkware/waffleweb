@@ -51,15 +51,32 @@ class WaffleProject():
         #gets the root and file extenstion
         root, ext = os.path.splitext(request.path)
         root = root.strip('/')
+        splitRoot = root.split('/')
 
         if ext == '':
             #Searches through all the apps to match the url
             for app in self.apps:
                 module = app['module']
                 app = app['app']
+
                 for view in app.views:
-                    if view['path'].strip('/') == root:
+                    urlMatches = True
+                    viewKwargs = {}
+
+                    if view['path'] == root:
                         return view['view'](request)
+
+                    if len(view['splitPath']) == len(splitRoot) and view['splitPath'] != ['']:
+                        for index, part in enumerate(view['splitPath']):
+                            if part != splitRoot[index] and type(part) == str:
+                                urlMatches = False
+                                break
+                            
+                            if type(part) == list:
+                                viewKwargs[str(part[0])] = splitRoot[index]
+
+                        if urlMatches:
+                            return view['view'](request, **viewKwargs)
         else:
             pass
         #Returns 404 if doesn't match URL

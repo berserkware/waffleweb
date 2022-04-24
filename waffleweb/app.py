@@ -1,3 +1,7 @@
+from argparse import ArgumentError
+from ast import arg
+from nntplib import ArticleInfo
+from posixpath import split
 import re
 
 class WaffleApp():
@@ -34,32 +38,38 @@ class WaffleApp():
         '''
     
         def decorator(view):
-            #regex from https://stackoverflow.com/questions/14549131454913
-            #this gets all the attributes in the URLs and removes the <>
-            viewURLArgs = re.compile(r'(?<=\<)(.*?)(?=\>)').findall(path)
-            viewArgs = []
-
-            #this splits the attributes into their name and type and adds them to a list
-            for i in viewURLArgs:
-                argList = i.split(':')
-                if len(argList) != 2:
-                    raise AttributeError('Your URL arguments have to have a name and a type')
-                viewArgs.append(argList)
-
             #regex from https://stackoverflow.com/questions/31430167/regex-check-if-given-string-is-relative-url
             #this checks to see if the URL is reletive
             if re.compile(r'^(?!www\.|(?:http|ftp)s?://|[A-Za-z]:\\|//).*').search(path):
+                splitPathWithArgs = []
+                splitPath = path.strip('/').split('/')
+
+                for part in splitPath:
+                    if part != '':
+                        #checks if part is a URL argument
+                        if part[0] == '<' and part[-1] == '>':
+                            #gets the arg without the < and >
+                            partArg = part[1:-1]
+
+                            argList = partArg.split(':')
+
+                            if len(argList) != 2:
+                                raise AttributeError('Your URL arguments have to have a name and a type')
+                            
+                            splitPathWithArgs.append(argList)
+                        else:
+                            splitPathWithArgs.append(part)
+
                 #adds function to view registry
-                if name == None:
-                    self._views.append({'path': path, 'name': view.__name__, 'view': view})
-                else:
-                    self._views.append({'path': path, 'name': name, 'view': view})
+                self._views.append({
+                    'path': path.strip('/'),
+                    'splitPath': splitPathWithArgs, 
+                    'name': view.__name__ if name == None else name, 
+                    'view': view
+                    })
 
                 def wrapper(*args, **kwargs):
-                    #this adds the arguments to the functions arguments
-                    for i in viewArgs:
-                        kwargs[str(i[0])] = None
-                    view(*args, **kwargs)
+                    return view(*args, **kwargs)
                 return wrapper
             else:
                 raise ValueError('Your path has to be a valid relative URL pattern.')
