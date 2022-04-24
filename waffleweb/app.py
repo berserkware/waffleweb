@@ -55,6 +55,9 @@ class WaffleApp():
 
                             if len(argList) != 2:
                                 raise AttributeError('Your URL arguments have to have a name and a type')
+
+                            if argList[1] not in ['int', 'str', 'float']:
+                                raise AttributeError('Your URL argument type has to be a integer, string or float')
                             
                             splitPathWithArgs.append(argList)
                         else:

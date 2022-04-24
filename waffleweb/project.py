@@ -73,7 +73,12 @@ class WaffleProject():
                                 break
                             
                             if type(part) == list:
-                                viewKwargs[str(part[0])] = splitRoot[index]
+                                if part[1] == 'int':
+                                    viewKwargs[str(part[0])] = int(splitRoot[index])
+                                elif part[1] == 'float':
+                                    viewKwargs[str(part[0])] = float(splitRoot[index])
+                                else:
+                                    viewKwargs[str(part[0])] = str(splitRoot[index])
 
                         if urlMatches:
                             return view['view'](request, **viewKwargs)

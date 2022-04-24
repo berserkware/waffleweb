@@ -26,21 +26,30 @@ class basicRouteTest(unittest.TestCase):
     def test_argumentsFail(self):
         app = WaffleApp('test')
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(AttributeError):
             @app.route('/index/arg1:str>/<int:arg2>', 'index')
             def index(request, arg1, arg2):
                 return (arg1, arg2) 
 
             index(request=None)
-            
+
     def test_argumentsRaiseAttributeError(self):
         app = WaffleApp('test')
+        with self.assertRaises(AttributeError):
+            @app.route('/index/<arg1:int>/<arg2:notAValidType>', 'index')
+            def index(request, arg1, arg2):
+                return (arg1, arg2) 
 
+            index(request=None)
+
+    def test_argumentsRaiseAttributeError2(self):
+        app = WaffleApp('test')
         with self.assertRaises(AttributeError):
             @app.route('/index/<arg1>/<arg2>', 'index')
             def index(request, arg1, arg2):
                 return (arg1, arg2) 
 
             index(request=None)
+    
 if __name__ == '__main__':
     unittest.main()
