@@ -2,6 +2,8 @@ from http.client import responses
 
 import waffleweb
 import json
+from datetime import datetime
+from pytz import timezone
 
 class HTTP404(Exception):
     pass
@@ -52,6 +54,12 @@ class HTTPResponseBase():
             raise ValueError(
                 'You cannot have a contentType provided if you have a Content-Type in your headers.'
             )
+
+        if 'Date' not in self.headers:
+            now = datetime.now(timezone('GMT'))
+            dateTime = now.strftime("%a, %d %b %Y %X %Z")
+
+            self.headers['Date'] = dateTime
 
         #Checks if status code is valid.
         if status is not None:
@@ -109,6 +117,7 @@ class HTTPResponse(HTTPResponseBase):
         super().__init__(*args, **kwargs)
         
         self.content = content 
+        self.headers['Content-Length'] = str(len(str(self.content)))
 
     def serialize(self):
         '''This gets the fully binary string including headers and content.'''

@@ -3,10 +3,11 @@ import ipaddress
 import datetime
 import importlib
 import os
+from urllib.parse import urlparse
 
 import waffleweb
-from waffleweb.request import Request
 from waffleweb.response import HTTPResponse, HTTP404
+from waffleweb.request import Request, RequestHandler
 
 class AppNotFoundError(Exception):
     pass
@@ -21,6 +22,9 @@ class WaffleProject():
     def __init__(self, apps: list):
         self.apps = []
 
+        self.importApps(apps)
+
+    def importApps(self, apps):
         for app in apps:
             #checks if appname ends with a python file extension
             if app.endswith(('.py', '.py3')):
@@ -44,48 +48,6 @@ class WaffleProject():
                     })
                 except ModuleNotFoundError:
                     raise AppNotFoundError(f'Could not find app "{app}", make sure you spelled it right and you app has a "{app}.py" file in it')
-    
-    def handleRequest(self, request: Request):
-        '''Handles the HTTP request.'''
-
-        #gets the root and file extenstion
-        root, ext = os.path.splitext(request.path)
-        root = root.strip('/')
-        splitRoot = root.split('/')
-
-        if ext == '':
-            #Searches through all the apps to match the url
-            for app in self.apps:
-                module = app['module']
-                app = app['app']
-
-                for view in app.views:
-                    urlMatches = True
-                    viewKwargs = {}
-
-                    if view['path'] == root:
-                        return view['view'](request)
-
-                    if len(view['splitPath']) == len(splitRoot) and view['splitPath'] != ['']:
-                        for index, part in enumerate(view['splitPath']):
-                            if part != splitRoot[index] and type(part) == str:
-                                urlMatches = False
-                                break
-                            
-                            if type(part) == list:
-                                if part[1] == 'int':
-                                    viewKwargs[str(part[0])] = int(splitRoot[index])
-                                elif part[1] == 'float':
-                                    viewKwargs[str(part[0])] = float(splitRoot[index])
-                                else:
-                                    viewKwargs[str(part[0])] = str(splitRoot[index])
-
-                        if urlMatches:
-                            return view['view'](request, **viewKwargs)
-        else:
-            pass
-        #Returns 404 if doesn't match URL
-        raise HTTP404
 
     def run(self, host='127.0.0.1', port=8000):
         '''
@@ -123,12 +85,11 @@ class WaffleProject():
                     #waits for connection to server
                     conn, addr = sock.accept()
 
-                    #turns the request into Request class
-                    req = Request(conn.recv(1024).decode(), addr)
+                    handler = RequestHandler(conn.recv(1024).decode(), addr, self.apps)
 
                     #gets the response
                     try:
-                        response = self.handleRequest(req)
+                        response = handler.getResponse()
                     except HTTP404:
                         response = HTTPResponse('The requested page could not be found', status=404)
 
@@ -136,7 +97,7 @@ class WaffleProject():
                     conn.sendall(bytes(response))
 
                     timeNow = datetime.datetime.now()
-                    print(f'[{timeNow.strftime("%m/%d/%Y %H:%M:%S")}] HTTP/1.1 {req.method} {req.path} {response.statusCode} {response.reasonPhrase}')
+                    print(f'[{timeNow.strftime("%m/%d/%Y %H:%M:%S")}] {handler.request.HTTPVersion} {handler.request.method} {handler.request.path} {response.statusCode} {response.reasonPhrase}')
 
                     #closes the connection
                     conn.close()

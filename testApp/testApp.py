@@ -16,5 +16,4 @@ def jsonTest(request):
 @testApp.route('argtest/<testArg:str>', 'argTest')
 def argTest(request, testArg):
     response = {'testArg': testArg}
-
     return JSONResponse(response)
