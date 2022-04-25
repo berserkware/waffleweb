@@ -87,10 +87,6 @@ class HTTPResponseBaseTest(unittest.TestCase):
         base = responses.HTTPResponseBase()
         self.assertEqual(base.charset, 'utf-8')
 
-    def test_serializeHeaders(self):
-        base = responses.HTTPResponseBase()
-        self.assertEqual(bytes(base), b'Content-Type: text/html; charset=utf-8')
-
     def test_convertBytesStr(self):
         base = responses.HTTPResponseBase()
         self.assertEqual(base.convertBytes('Testing 1 2 3'), b'Testing 1 2 3')
@@ -99,7 +95,3 @@ class HTTPResponseTest(unittest.TestCase):
     def test_content(self):
         response = responses.HTTPResponse(content='Test content for tests')
         self.assertEqual(response.content, b'Test content for tests')
-
-    def test_serialize(self):
-        response = responses.HTTPResponse(content='Test content for tests')
-        self.assertEqual(bytes(response), b'HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\n\r\nTest content for tests')

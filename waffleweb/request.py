@@ -1,9 +1,8 @@
 import os
-from posixpath import split
 
 from urllib.parse import urlparse
 
-from waffleweb.response import HTTP404
+from waffleweb.response import HTTP404, HTTPResponse
 
 class Request():
     def __init__(self, requestHeaders, clientIP):
@@ -72,38 +71,46 @@ class RequestHandler:
 
         return (root, splitRoot, ext)
     
+    def findView(self, root, splitRoot):
+        #Searches through all the apps to match the url
+        for app in self.apps:
+            module = app['module']
+            app = app['app']
+            for view in app.views:
+                urlMatches = True
+                viewKwargs = {}
+                if view['path'] == root:
+                    return view['view'](self.request)
+
+                if len(view['splitPath']) == len(splitRoot) and view['splitPath'] != ['']:
+                    for index, part in enumerate(view['splitPath']):
+                        if part != splitRoot[index] and type(part) == str:
+                            urlMatches = False
+                            break
+                        
+                        if type(part) == list:
+                            if part[1] == 'int':
+                                viewKwargs[str(part[0])] = int(splitRoot[index])
+                            elif part[1] == 'float':
+                                viewKwargs[str(part[0])] = float(splitRoot[index])
+                            else:
+                                viewKwargs[str(part[0])] = str(splitRoot[index])
+
+                    if urlMatches:
+                        return view['view'](self.request, **viewKwargs)
+        
+        return HTTP404
+
+        
+
     def getResponse(self):
         root, splitRoot, ext = self.splitURL()
 
         if ext == '':
-            #Searches through all the apps to match the url
-            for app in self.apps:
-                module = app['module']
-                app = app['app']
-
-                for view in app.views:
-                    urlMatches = True
-                    viewKwargs = {}
-
-                    if view['path'] == root:
-                        return view['view'](self.request)
-
-                    if len(view['splitPath']) == len(splitRoot) and view['splitPath'] != ['']:
-                        for index, part in enumerate(view['splitPath']):
-                            if part != splitRoot[index] and type(part) == str:
-                                urlMatches = False
-                                break
-                            
-                            if type(part) == list:
-                                if part[1] == 'int':
-                                    viewKwargs[str(part[0])] = int(splitRoot[index])
-                                elif part[1] == 'float':
-                                    viewKwargs[str(part[0])] = float(splitRoot[index])
-                                else:
-                                    viewKwargs[str(part[0])] = str(splitRoot[index])
-
-                        if urlMatches:
-                            return view['view'](self.request, **viewKwargs)
+            try:
+                return self.findView(root, splitRoot)
+            except HTTP404:
+                return HTTPResponse('The requested page could not be found', status=404)
         else:
             pass
 

@@ -9,30 +9,14 @@ class HTTP404(Exception):
     pass
 
 class ResponseHeaders(dict):
-    def __init__(self, data):
-        self._headers = {}
+    def __init__(self, data: str, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
         #splits data into the seporate headers
         if data:
             for header in data.split('\n'):
                 splitHeader = header.strip().split(' ')
                 self[splitHeader[0][:(len(splitHeader[0]) - 1)]] = ' '.join(splitHeader[1:])
-
-    def __setitem__(self, key, value):
-        self._headers[key] = value
-
-    def __delitem__(self, key):
-        del self._headers[key]
-
-    def __getitem__(self, key):
-        return self._headers[key]
-
-    def __contains__(self, value):
-        return True if value in self._headers.keys() else False
-
-    def items(self):
-        '''Returns all headers'''
-        return self._headers.items()
 
 class HTTPResponseBase():
     '''Handles the HTTP responses only.'''
@@ -136,10 +120,11 @@ class HTTPResponse(HTTPResponseBase):
 class JSONResponse(HTTPResponseBase):
     '''Handles the HTTP responses and json.'''
 
-    def __init__(self, json={}, *args, **kwargs):
+    def __init__(self, jsonContent={}, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.json = json
+        self.json = jsonContent
+        self.headers['Content-Length'] = str(len(json.dumps(jsonContent)))
         self.headers['Content-Type'] = f'application/json; charset={self.charset}'
 
     def serialize(self):

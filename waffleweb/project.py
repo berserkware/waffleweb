@@ -88,10 +88,7 @@ class WaffleProject():
                     handler = RequestHandler(conn.recv(1024).decode(), addr, self.apps)
 
                     #gets the response
-                    try:
-                        response = handler.getResponse()
-                    except HTTP404:
-                        response = HTTPResponse('The requested page could not be found', status=404)
+                    response = handler.getResponse()
 
                     #sends the response
                     conn.sendall(bytes(response))
