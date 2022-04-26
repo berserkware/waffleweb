@@ -22,9 +22,11 @@ class WaffleProject():
     def __init__(self, apps: list):
         self.apps = []
 
-        self.importApps(apps)
+        self._importApps(apps)
 
-    def importApps(self, apps):
+    def _importApps(self, apps):
+        '''This function looks for and imports all the app and adds them to a dictionary.'''
+
         for app in apps:
             #checks if appname ends with a python file extension
             if app.endswith(('.py', '.py3')):
@@ -93,6 +95,7 @@ class WaffleProject():
                     #sends the response
                     conn.sendall(bytes(response))
 
+                    #prints the request information
                     timeNow = datetime.datetime.now()
                     print(f'[{timeNow.strftime("%m/%d/%Y %H:%M:%S")}] {handler.request.HTTPVersion} {handler.request.method} {handler.request.path} {response.statusCode} {response.reasonPhrase}')
 

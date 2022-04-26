@@ -47,8 +47,10 @@ class WaffleApp():
                             #gets the arg without the < and >
                             partArg = part[1:-1]
 
+                            #splits Args into name and type
                             argList = partArg.split(':')
 
+                            #checks if argument has name and type
                             if len(argList) != 2:
                                 raise AttributeError('Your URL arguments have to have a name and a type')
 

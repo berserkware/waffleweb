@@ -1,9 +1,9 @@
-from http.client import responses
-
 import waffleweb
 import json
+
 from datetime import datetime
 from pytz import timezone
+from http.client import responses
 
 class HTTP404(Exception):
     pass
@@ -140,3 +140,29 @@ class JSONResponse(HTTPResponseBase):
     @json.setter
     def json(self, value):
         self._json = bytes(json.dumps(value), encoding=self.charset)
+
+class FileResponse(HTTPResponseBase):
+    '''Handles the HTTP responses and file.'''
+
+    def __init__(self, fileObj, mimeType=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        self.fileObj = fileObj
+
+        #add mimetype to content-type
+        if mimeType is not None:
+            self.headers['Content-Type'] = f'{mimeType}; charset={self.charset}'
+
+    def serialize(self):
+        '''This gets the fully binary string including headers and file.'''
+        return b'HTTP/1.1 ' + self.convertBytes(self.statusCode) + b' ' + self.convertBytes(self.reasonPhrase) + b'\r\n' + self.serializeHeaders() + b'\r\n\r\n' + self.fileObj
+
+    __bytes__ = serialize
+
+    @property
+    def fileObj(self):
+        return self._fileObj
+
+    @fileObj.setter
+    def fileObj(self, value):
+        self._fileObj = value.read()
