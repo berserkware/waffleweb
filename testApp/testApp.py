@@ -26,4 +26,4 @@ def argTest(request):
 @testApp.route('testimg', 'testImg')
 def argTest(request):
     with open('static/testImg.jpg', 'rb') as f:
-        return FileResponse(f, 'image/jpg')
+        return FileResponse(f, 'image/jpeg')

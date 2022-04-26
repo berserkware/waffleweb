@@ -99,7 +99,7 @@ class RequestHandler:
                     if urlMatches:
                         return view['view'](self.request, **viewKwargs)
         
-        return HTTP404
+        raise HTTP404
 
     def getResponse(self):
         self.root, self.splitRoot, self.ext = self._splitURL()
