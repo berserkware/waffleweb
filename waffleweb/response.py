@@ -147,6 +147,7 @@ class FileResponse(HTTPResponseBase):
     def __init__(self, fileObj, mimeType=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
+        self.mimeType = mimeType
         self.fileObj = fileObj
 
         #add mimetype to content-type

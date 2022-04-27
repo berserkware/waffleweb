@@ -58,8 +58,8 @@ class Request():
         return self.headers['Cookie']
 
 class RequestHandler:
-    def __init__(self, request, clientIP, apps):
-        self.request = Request(request, clientIP)
+    def __init__(self, request: Request, apps):
+        self.request = request
         self.apps = apps
 
     def _splitURL(self) -> tuple:

@@ -95,3 +95,27 @@ class HTTPResponseTest(unittest.TestCase):
     def test_content(self):
         response = responses.HTTPResponse(content='Test content for tests')
         self.assertEqual(response.content, b'Test content for tests')
+
+class JSONResponseTest(unittest.TestCase):
+    def test_json(self):
+        response = responses.JSONResponse(jsonContent={'testJson': 1234})
+        self.assertEqual(response.json, b'{"testJson": 1234}')
+
+class FileResponseTest(unittest.TestCase):
+    def test_file(self):
+        with open('tests/commands.txt', 'rb') as f:
+            response = responses.FileResponse(f, 'text/plain')
+
+            self.assertEqual(response.fileObj, b"Run all tests:\r\npython3 -m unittest discover -s tests -p '*Test.py'\r\n")
+
+    def test_mimeTypeNotNone(self):
+        with open('tests/commands.txt', 'rb') as f:
+            response = responses.FileResponse(f, 'text/plain')
+
+            self.assertEqual(response.headers['Content-Type'], 'text/plain; charset=utf-8')
+
+    def test_mimeTypeNone(self):
+        with open('tests/commands.txt', 'rb') as f:
+            response = responses.FileResponse(f)
+
+            self.assertEqual(response.headers['Content-Type'], 'text/html; charset=utf-8')
