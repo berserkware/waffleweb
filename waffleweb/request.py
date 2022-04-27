@@ -1,3 +1,4 @@
+from logging import exception
 import os
 
 from urllib.parse import urlparse
@@ -62,6 +63,27 @@ class RequestHandler:
         self.request = request
         self.apps = apps
 
+    def _checkMethodAllowed(self, view) -> bool:
+        if self.request.method in view['allowedMethods']:
+            return True
+        return False
+
+    def _getArg(self, index, part) -> tuple:
+        kwargName = ''
+        kwargValue = None
+
+        if part[1] == 'int':
+            kwargName = str(part[0])
+            kwargValue = int(self.splitRoot[index])
+        elif part[1] == 'float':
+            kwargName = str(part[0])
+            kwargValue = float(self.splitRoot[index])
+        else:
+            kwargName = str(part[0])
+            kwargValue = str(self.splitRoot[index])
+
+        return (kwargName, kwargValue)
+
     def _splitURL(self) -> tuple:
         reqPath = urlparse(self.request.path).path
 
@@ -72,7 +94,7 @@ class RequestHandler:
 
         return (root, splitRoot, ext)
 
-    def findView(self):
+    def getView(self):
         #Searches through all the apps to match the url
         for app in self.apps:
             app = app['app']
@@ -80,24 +102,23 @@ class RequestHandler:
                 urlMatches = True
                 viewKwargs = {}
                 if view['path'] == self.root:
-                    return view['view'](self.request)
+                    return (view, {})
 
+                #checks if length of the view's split path is equal to the length of the split request request path
                 if len(view['splitPath']) == len(self.splitRoot) and view['splitPath'] != ['']:
                     for index, part in enumerate(view['splitPath']):
+                        #checks if path part is equal to the split request path part at the same index
                         if part != self.splitRoot[index] and type(part) == str:
                             urlMatches = False
                             break
                         
+                        #adds args to view kwargs if part is list
                         if type(part) == list:
-                            if part[1] == 'int':
-                                viewKwargs[str(part[0])] = int(self.splitRoot[index])
-                            elif part[1] == 'float':
-                                viewKwargs[str(part[0])] = float(self.splitRoot[index])
-                            else:
-                                viewKwargs[str(part[0])] = str(self.splitRoot[index])
+                            kwarg = self._getArg(index, part)
+                            viewKwargs[kwarg[0]] = kwarg[1]
 
                     if urlMatches:
-                        return view['view'](self.request, **viewKwargs)
+                        return (view, viewKwargs)
         
         raise HTTP404
 
@@ -105,9 +126,16 @@ class RequestHandler:
         self.root, self.splitRoot, self.ext = self._splitURL()
         if self.ext == '':
             try:
-                return self.findView()
+                view, kwargs = self.getView()
+                if self._checkMethodAllowed(view):
+                    return view['view'](self.request, **kwargs)
+                else:
+                    methods = ', '.join(view["allowedMethods"])
+                    return HTTPResponse('Method Not Allowed', status=405, headers=f'Allow: {methods}') 
             except HTTP404:
                 return HTTPResponse('The requested page could not be found', status=404)
+            #except HTTP405:
+                #return HTTPResponse('Method Not Allowed', headers=f'Allow:')
         else:
             try:
                 handler = StaticHandler(self.root, self.splitRoot, self.ext)

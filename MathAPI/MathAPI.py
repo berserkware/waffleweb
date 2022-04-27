@@ -20,7 +20,7 @@ def math(request):
         </html>
     """)
 
-@MathAPI.route('math/<operator:str>/<num1:int>/<num2:int>', 'basicMath')
+@MathAPI.route('math/<operator:str>/<num1:int>/<num2:int>', 'basicMath', ['GET', 'POST'])
 def basicMath(request, operator, num1, num2):
     if operator == 'add':
         result = {'answer': num1 + num2}

@@ -11,12 +11,13 @@ class WaffleApp():
     def __init__(self, appName: str):
         self.appName = appName
         self._views = []
+        self._methods = ['OPTIONS', 'GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'TRACE', 'CONNECT']
 
     @property
     def views(self):
         return self._views
 
-    def route(self, path: str, name=None):
+    def route(self, path='/', name=None, methods=['OPTIONS', 'GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'TRACE', 'CONNECT']):
         '''
         This is the decorator you put on all your views it gives your view a URL and a name.
         It takes two arguments path and name. The path argument is the reletive URL to your 
@@ -26,19 +27,24 @@ class WaffleApp():
         the view in templates and redirects, it looks like this: appName:name
 
         You can add varibles to your url by puting <argumentName:valueType>
-        you then add the argumentName to your views arguments, example:
+        you then add the argumentName to your views arguments.
 
-        @app.route('profile/<username:str>', 'profile')
+        You can make a view only allowed certain methods by adding a list to your view decorator.
+        It defaults to all HTTP/1.1 methods
+
+        View example:
+
+        @app.route('profile/<username:str>', 'profile', methods=['GET', 'POST'])
         def profileView(request, username):
             #your view logic goes here
         '''
-    
+
         def decorator(view):
             #regex from https://stackoverflow.com/questions/31430167/regex-check-if-given-string-is-relative-url
             #this checks to see if the URL is reletive
             if re.compile(r'^(?!www\.|(?:http|ftp)s?://|[A-Za-z]:\\|//).*').search(path):
                 splitPathWithArgs = []
-                splitPath = path.strip('/').split('/')
+                splitPath = str(path).strip('/').split('/')
 
                 for part in splitPath:
                     if part != '':
@@ -66,7 +72,8 @@ class WaffleApp():
                     'path': path.strip('/'),
                     'splitPath': splitPathWithArgs, 
                     'name': view.__name__ if name == None else name, 
-                    'view': view
+                    'view': view,
+                    'allowedMethods': methods,
                     })
 
                 def wrapper(*args, **kwargs):
