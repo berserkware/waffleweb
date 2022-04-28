@@ -1,4 +1,3 @@
-from logging import exception
 import os
 
 from urllib.parse import urlparse
@@ -12,11 +11,27 @@ class Request():
         self.clientIP = clientIP
         self.requestHeaders = requestHeaders
 
+        self.postData = {}
+
         #Splits the request into it's seporate headers and adds it to a dictionary.
         splitHeaders = requestHeaders.split('\n')
         for line in splitHeaders:
                 splitLine = line.strip().split(' ')
                 self.headers[str(splitLine[0][:(len(splitLine[0]) - 1)])] = ' '.join(splitLine[1:])
+
+        #adds forms data to the postData variable
+        if self.method == 'POST':
+            if self.content != '':
+                #If Content-Type is not in headers then make it 'application/x-www-form-urlencoded'
+                if 'Content-Type' not in self.headers.keys():
+                    self.headers['Content-Type'] = 'application/x-www-form-urlencoded'
+                
+                #Spits the form values and adds them to a dictionary if Content-Type is 'application/x-www-form-urlencoded'
+                if self.headers['Content-Type'] == 'application/x-www-form-urlencoded':
+                    formValues = self.content.split('&')
+                    for value in formValues:
+                        key, value = value.split('=')
+                        self.postData[str(key)] = str(value)
 
     @property
     def path(self):
@@ -57,6 +72,10 @@ class Request():
     @property
     def cookie(self):
         return self.headers['Cookie']
+
+    @property
+    def content(self):
+        return self.requestHeaders.split('\r')[len(self.requestHeaders.split('\r')) - 1].strip()
 
 class RequestHandler:
     '''Handles a requests, Returns response'''
@@ -171,6 +190,8 @@ class RequestHandler:
                     return self._handleGet(view, kwargs)
                 elif self.request.method == 'HEAD':
                     return self._handleHead(view, kwargs)
+                elif self.request.method == 'POST':
+                    return self._handlePost(view, kwargs)
                 else:
                     return HTTPResponse('Not Implemented Error', status=501) 
             except HTTP404:

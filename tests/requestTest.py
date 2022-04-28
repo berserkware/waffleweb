@@ -1,4 +1,6 @@
 from urllib import response
+from pytz import timezone
+from datetime import datetime
 from waffleweb.project import WaffleProject
 from waffleweb.request import Request, RequestHandler
 
@@ -19,7 +21,10 @@ testRequest = Request("""GET / HTTP/1.1
                         Sec-Fetch-Dest: document
                         Sec-Fetch-Mode: navigate
                         Sec-Fetch-Site: none
-                        Sec-Fetch-User: ?1""", '101.98.137.19')
+                        Sec-Fetch-User: ?1\r
+                        \r 
+                        testContent1=12&testContent2=123
+                        """, '101.98.137.19')
 
 class RequestHeaderTest(unittest.TestCase):
     def __init__(self, *args, **kwargs):
@@ -56,6 +61,9 @@ class RequestHeaderTest(unittest.TestCase):
     def test_clientIP(self):
         self.assertEqual(self.testRequest.clientIP, '101.98.137.19')
 
+    def test_content(self):
+        self.assertEqual(self.testRequest.content, 'testContent1=12&testContent2=123')
+
 class RequestHandlerTest(unittest.TestCase):
     def test_splitURL(self):
         APPS = []
@@ -89,3 +97,24 @@ class RequestHandlerTest(unittest.TestCase):
     def test_methodNotImplemented(self):
         response = requests.delete('http://localhost:8080/math/add/1/1')
         self.assertEqual(response.status_code, 501)
+
+    def test_handleGet(self):
+        response = requests.get('http://localhost:8080/math/add/1/1')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {'answer': 2})
+
+    def test_handleHead(self):
+        response = requests.head('http://localhost:8080/math')
+        self.assertEqual(response.status_code, 200)
+        now = datetime.now(timezone('GMT'))
+        dateTime = now.strftime("%a, %d %b %Y %X %Z")
+        self.assertEqual(response.headers, {
+            'Content-Type': 'text/html; charset=utf-8',
+            'Date': dateTime,
+            'Content-Length': '427',
+            })
+
+    def test_handlePost(self):
+        data = {'testData1': 15, 'testData2': 30}
+        response = requests.post('http://localhost:8080/math/postTest', data=data)
+        self.assertEqual(response.content, b'testData1:15, testData2:30')
