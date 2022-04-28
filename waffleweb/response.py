@@ -97,7 +97,7 @@ class HTTPResponseBase():
 class HTTPResponse(HTTPResponseBase):
     '''Handles the HTTP responses and content.'''
 
-    def __init__(self, content=b'', *args, **kwargs):
+    def __init__(self, content=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
         self.content = content 
@@ -105,7 +105,7 @@ class HTTPResponse(HTTPResponseBase):
 
     def serialize(self):
         '''This gets the fully binary string including headers and content.'''
-        return b'HTTP/1.1 ' + self.convertBytes(self.statusCode) + b' ' + self.convertBytes(self.reasonPhrase) + b'\r\n' + self.serializeHeaders() + b'\r\n\r\n' + self.content
+        return b'HTTP/1.1 ' + self.convertBytes(self.statusCode) + b' ' + self.convertBytes(self.reasonPhrase) + b'\r\n' + self.serializeHeaders() + b'\r\n\r\n' + (self.content if self.content != b'None' else b'')
 
     __bytes__ = serialize
 
@@ -120,7 +120,7 @@ class HTTPResponse(HTTPResponseBase):
 class JSONResponse(HTTPResponseBase):
     '''Handles the HTTP responses and json.'''
 
-    def __init__(self, jsonContent={}, *args, **kwargs):
+    def __init__(self, jsonContent=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.json = jsonContent
@@ -129,7 +129,7 @@ class JSONResponse(HTTPResponseBase):
 
     def serialize(self):
         '''This gets the fully binary string including headers and json.'''
-        return b'HTTP/1.1 ' + self.convertBytes(self.statusCode) + b' ' + self.convertBytes(self.reasonPhrase) + b'\r\n' + self.serializeHeaders() + b'\r\n\r\n' + self.json
+        return b'HTTP/1.1 ' + self.convertBytes(self.statusCode) + b' ' + self.convertBytes(self.reasonPhrase) + b'\r\n' + self.serializeHeaders() + b'\r\n\r\n' + (self.json if self.json != b'None' else b'')
 
     __bytes__ = serialize
 
@@ -144,7 +144,7 @@ class JSONResponse(HTTPResponseBase):
 class FileResponse(HTTPResponseBase):
     '''Handles the HTTP responses and file.'''
 
-    def __init__(self, fileObj, mimeType=None, *args, **kwargs):
+    def __init__(self, fileObj=None, mimeType=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
         self.mimeType = mimeType
@@ -156,7 +156,7 @@ class FileResponse(HTTPResponseBase):
 
     def serialize(self):
         '''This gets the fully binary string including headers and file.'''
-        return b'HTTP/1.1 ' + self.convertBytes(self.statusCode) + b' ' + self.convertBytes(self.reasonPhrase) + b'\r\n' + self.serializeHeaders() + b'\r\n\r\n' + self.fileObj
+        return b'HTTP/1.1 ' + self.convertBytes(self.statusCode) + b' ' + self.convertBytes(self.reasonPhrase) + b'\r\n' + self.serializeHeaders() +  + b'\r\n\r\n' + (self.fileObj if self.fileObj != b'None' else b'')
 
     __bytes__ = serialize
 

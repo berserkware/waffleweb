@@ -3,7 +3,7 @@ import os
 
 from urllib.parse import urlparse
 
-from waffleweb.response import HTTP404, HTTPResponse
+from waffleweb.response import HTTP404, FileResponse, HTTPResponse, JSONResponse
 from waffleweb.static import StaticHandler
 
 class Request():
@@ -59,16 +59,21 @@ class Request():
         return self.headers['Cookie']
 
 class RequestHandler:
-    def __init__(self, request: Request, apps):
+    '''Handles a requests, Returns response'''
+    def __init__(self, request: Request, apps: list):
         self.request = request
         self.apps = apps
 
-    def _checkMethodAllowed(self, view) -> bool:
-        if self.request.method in view['allowedMethods']:
-            return True
-        return False
+    def _405MethodNotAllowed(self, view) -> HTTPResponse:
+        '''Returns a 405 response'''
+        methods = ', '.join(view["allowedMethods"])
+        return HTTPResponse(status=405, headers=f'Allow: {methods}') 
 
     def _getArg(self, index, part) -> tuple:
+        '''
+        Gets the kwargs and converts them to their type.
+        returns a tuple with the name and type
+        '''
         kwargName = ''
         kwargValue = None
 
@@ -94,7 +99,9 @@ class RequestHandler:
 
         return (root, splitRoot, ext)
 
-    def getView(self):
+    def _getView(self):
+        '''Finds a view matching the request url, Returns view and the views kwargs.'''
+
         #Searches through all the apps to match the url
         for app in self.apps:
             app = app['app']
@@ -122,20 +129,52 @@ class RequestHandler:
         
         raise HTTP404
 
+    def _handleHead(self, view, kwargs):
+        if 'HEAD' not in view['allowedMethods']:
+            #Returns 405 response if request method is not in the view's allowed methods
+            return self._405MethodNotAllowed(view)
+
+        newView = view['view'](self.request, **kwargs)
+
+        if type(newView) == HTTPResponse:
+            newView.content = None
+        elif newView == JSONResponse:
+            newView.json = None
+        elif newView == FileResponse:
+            newView.fileObj = None
+
+        return newView
+
+    def _handleGet(self, view, kwargs):
+        if 'GET' not in view['allowedMethods']:
+            #Returns 405 response if request method is not in the view's allowed methods
+            return self._405MethodNotAllowed(view)
+
+        return view['view'](self.request, **kwargs)
+
+    def _handlePost(self, view, kwargs):
+        if 'POST' not in view['allowedMethods']:
+            #Returns 405 response if request method is not in the view's allowed methods
+            return self._405MethodNotAllowed(view)
+
+        return view['view'](self.request, **kwargs)
+
     def getResponse(self):
+        '''Gets a response to a request, retuerns Response.'''
+
         self.root, self.splitRoot, self.ext = self._splitURL()
         if self.ext == '':
+            view, kwargs = self._getView()
             try:
-                view, kwargs = self.getView()
-                if self._checkMethodAllowed(view):
-                    return view['view'](self.request, **kwargs)
+                #Gets methods and runs it handle function
+                if self.request.method == 'GET':
+                    return self._handleGet(view, kwargs)
+                elif self.request.method == 'HEAD':
+                    return self._handleHead(view, kwargs)
                 else:
-                    methods = ', '.join(view["allowedMethods"])
-                    return HTTPResponse('Method Not Allowed', status=405, headers=f'Allow: {methods}') 
+                    return HTTPResponse('Not Implemented Error', status=501) 
             except HTTP404:
                 return HTTPResponse('The requested page could not be found', status=404)
-            #except HTTP405:
-                #return HTTPResponse('Method Not Allowed', headers=f'Allow:')
         else:
             try:
                 handler = StaticHandler(self.root, self.splitRoot, self.ext)

@@ -87,8 +87,10 @@ class WaffleProject():
                     #waits for connection to server
                     conn, addr = sock.accept()
 
+                    #turns the request into a Request object.
                     request = Request(conn.recv(1024).decode(), addr)
 
+                    #Creates a RequestHandler object.
                     handler = RequestHandler(request, self.apps)
 
                     #gets the response

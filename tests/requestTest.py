@@ -1,7 +1,9 @@
+from urllib import response
 from waffleweb.project import WaffleProject
 from waffleweb.request import Request, RequestHandler
 
 import unittest
+import requests
 
 from waffleweb.response import HTTP404
 
@@ -75,3 +77,15 @@ class RequestHandlerTest(unittest.TestCase):
         handler = RequestHandler(request, APPS)
 
         self.assertEqual(handler._splitURL(), ('page1/10/index', ['page1', '10', 'index'], ''))
+
+    def test_methodNotAllowed(self):
+        response = requests.head('http://localhost:8080/math/add/1/1')
+        self.assertEqual(response.status_code, 405)
+
+    def test_methodAllowed(self):
+        response = requests.get('http://localhost:8080/math/add/1/1')
+        self.assertEqual(response.status_code, 200)
+
+    def test_methodNotImplemented(self):
+        response = requests.delete('http://localhost:8080/math/add/1/1')
+        self.assertEqual(response.status_code, 501)
