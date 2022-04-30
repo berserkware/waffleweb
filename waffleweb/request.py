@@ -29,9 +29,56 @@ class Request():
                 #Spits the form values and adds them to a dictionary if Content-Type is 'application/x-www-form-urlencoded'
                 if self.headers['Content-Type'] == 'application/x-www-form-urlencoded':
                     formValues = self.content.split('&')
+
+                    #For every form value add it to a dictionary called postData
                     for value in formValues:
-                        key, value = value.split('=')
-                        self.postData[str(key)] = str(value)
+                        try:
+                            key, value = value.split('=')
+                            self.postData[str(key.strip('\n'))] = str(value.strip('\n'))
+                        except ValueError:
+                            pass
+
+                #If the contentType is equal to 'multipart/form-data' split it and add it to a dictionary
+                elif self.headers['Content-Type'].split(';')[0] == 'multipart/form-data':
+                    #gets the boundry
+                    contentTypeHeader = self.headers['Content-Type'].split(';')
+                    boundary = 'boundary'
+
+                    for index, keyvalue in enumerate(contentTypeHeader):
+                        if index != 0:
+                            key, value = keyvalue.split('=')
+                            if key.strip() == 'boundary':
+                                boundary = value
+
+                    #splits the form values by the boundry
+                    splitFormValues = self.content.split('--' + boundary)
+
+                    #goes through all the split values
+                    for formValue in splitFormValues:
+                        if formValue != '\n' and formValue != '--\n':
+                            #splits the data into its seporate headers and removes empty items
+                            dataWithSpaces = formValue.split('\n')
+                            data = []
+                            for i in dataWithSpaces:
+                                if i != '':
+                                    data.append(i)
+
+                            #Goes through all the headers of the formValues
+                            for field in data[0].split(';'):
+                                #checks to see if its a header
+                                if field.split(':')[0] == '\nContent-Disposition:':
+                                    continue
+                                #if not then get the name of field
+                                else:
+                                    try:
+                                        key, value = field.split('=')
+                                        if key.strip() == 'name':
+                                            name = value.strip('"')
+                                    except ValueError:
+                                        pass
+
+                            #adds to postData
+                            self.postData[str(name)] = data[-1]
 
     @property
     def path(self):
@@ -75,7 +122,21 @@ class Request():
 
     @property
     def content(self):
-        return self.requestHeaders.split('\r')[len(self.requestHeaders.split('\r')) - 1].strip()
+        splitContent = []
+        isContent = False
+
+        #this splits the requests by the \r
+        for line in self.requestHeaders.split('\r'):
+            #check if isContent is True to start adding to the content
+            if isContent == True:
+                splitContent.append(line)
+
+            #checks if the line is equest = '\n'. this splits the request into content and header
+            if line == '\n':
+                isContent = True
+
+        #returns the joins content
+        return ''.join(splitContent)
 
 class RequestHandler:
     '''Handles a requests, Returns response'''
@@ -83,9 +144,9 @@ class RequestHandler:
         self.request = request
         self.apps = apps
 
-    def _405MethodNotAllowed(self, view) -> HTTPResponse:
+    def _405MethodNotAllowed(self, allowedMethods) -> HTTPResponse:
         '''Returns a 405 response'''
-        methods = ', '.join(view["allowedMethods"])
+        methods = ', '.join(allowedMethods)
         return HTTPResponse(status=405, headers=f'Allow: {methods}') 
 
     def _getArg(self, index, part) -> tuple:
@@ -151,7 +212,7 @@ class RequestHandler:
     def _handleHead(self, view, kwargs):
         if 'HEAD' not in view['allowedMethods']:
             #Returns 405 response if request method is not in the view's allowed methods
-            return self._405MethodNotAllowed(view)
+            return self._405MethodNotAllowed(view['allowedMethods'])
 
         newView = view['view'](self.request, **kwargs)
 
@@ -167,24 +228,37 @@ class RequestHandler:
     def _handleGet(self, view, kwargs):
         if 'GET' not in view['allowedMethods']:
             #Returns 405 response if request method is not in the view's allowed methods
-            return self._405MethodNotAllowed(view)
+            return self._405MethodNotAllowed(view['allowedMethods'])
 
         return view['view'](self.request, **kwargs)
 
     def _handlePost(self, view, kwargs):
         if 'POST' not in view['allowedMethods']:
             #Returns 405 response if request method is not in the view's allowed methods
-            return self._405MethodNotAllowed(view)
+            return self._405MethodNotAllowed(view['allowedMethods'])
 
         return view['view'](self.request, **kwargs)
+
+    def _handleOptions(self, view, kwargs):
+        if view is None:
+            methods = ', '.join(['OPTIONS', 'GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'TRACE', 'CONNECT'])
+            return HTTPResponse(status=204, headers=f'Allow: {methods}') 
+
+        methods = ', '.join(view['allowedMethods'])
+        return HTTPResponse(status=204, headers=f'Allow: {methods}') 
 
     def getResponse(self):
         '''Gets a response to a request, retuerns Response.'''
 
         self.root, self.splitRoot, self.ext = self._splitURL()
         if self.ext == '':
-            view, kwargs = self._getView()
+            #if the route is equal to '*' return a OPTIONS response
+            if self.root == '*':
+                return self._handleOptions(None, {})
+
             try:
+                view, kwargs = self._getView()
+
                 #Gets methods and runs it handle function
                 if self.request.method == 'GET':
                     return self._handleGet(view, kwargs)
@@ -192,6 +266,8 @@ class RequestHandler:
                     return self._handleHead(view, kwargs)
                 elif self.request.method == 'POST':
                     return self._handlePost(view, kwargs)
+                elif self.request.method == 'OPTIONS':
+                    return self._handleOptions(view, kwargs)
                 else:
                     return HTTPResponse('Not Implemented Error', status=501) 
             except HTTP404:

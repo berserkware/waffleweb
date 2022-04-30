@@ -21,8 +21,8 @@ testRequest = Request("""GET / HTTP/1.1
                         Sec-Fetch-Dest: document
                         Sec-Fetch-Mode: navigate
                         Sec-Fetch-Site: none
-                        Sec-Fetch-User: ?1\r
-                        \r 
+                        Sec-Fetch-User: ?1
+                        
                         testContent1=12&testContent2=123
                         """, '101.98.137.19')
 
@@ -60,9 +60,6 @@ class RequestHeaderTest(unittest.TestCase):
 
     def test_clientIP(self):
         self.assertEqual(self.testRequest.clientIP, '101.98.137.19')
-
-    def test_content(self):
-        self.assertEqual(self.testRequest.content, 'testContent1=12&testContent2=123')
 
 class RequestHandlerTest(unittest.TestCase):
     def test_splitURL(self):
@@ -117,4 +114,4 @@ class RequestHandlerTest(unittest.TestCase):
     def test_handlePost(self):
         data = {'testData1': 15, 'testData2': 30}
         response = requests.post('http://localhost:8080/math/postTest', data=data)
-        self.assertEqual(response.content, b'testData1:15, testData2:30')
+        self.assertEqual(response.content, b"{'testData1': '15', 'testData2': '30'}")

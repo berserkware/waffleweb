@@ -37,4 +37,4 @@ def basicMath(request, operator, num1, num2):
 
 @MathAPI.route('math/postTest', 'postTest', ['POST'])
 def postTest(request):
-    return HTTPResponse(f'testData1:{request.postData["testData1"]}, testData2:{request.postData["testData2"]}')
+    return HTTPResponse(request.postData)
