@@ -259,7 +259,7 @@ class RequestHandler:
             try:
                 view, kwargs = self._getView()
 
-                #Gets methods and runs it handle function
+                #Gets methods and runs it's handle function
                 if self.request.method == 'GET':
                     return self._handleGet(view, kwargs)
                 elif self.request.method == 'HEAD':

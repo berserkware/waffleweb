@@ -15,8 +15,8 @@ class StaticHandler:
             with open(path, 'rb') as f:
                 mt = mimetypes.guess_type(self.root + self.ext)
                 if mt[0] is not None:
-                    return FileResponse(f, mt[0])
+                    return FileResponse(f, mimeType=mt[0])
                 else:
-                    return FileResponse(f, 'application/octet-stream')
+                    return FileResponse(f, mimeType='application/octet-stream')
         except FileNotFoundError:
             raise HTTP404

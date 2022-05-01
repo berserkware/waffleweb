@@ -87,6 +87,10 @@ class HTTPResponseBase():
 
     __bytes__ = serializeHeaders    
 
+    def serialize(self, content):
+        '''This gets the fully binary string including headers and the content.'''
+        return b'HTTP/1.1 ' + self.convertBytes(self.statusCode) + b' ' + self.convertBytes(self.reasonPhrase) + b'\r\n' + self.serializeHeaders() + b'\r\n\r\n' + content
+
     def convertBytes(self, value):
         '''Encodes value and converts it to bytes.'''
         if isinstance(value, str):
@@ -103,11 +107,9 @@ class HTTPResponse(HTTPResponseBase):
         self.content = content 
         self.headers['Content-Length'] = str(len(str(self.content)))
 
-    def serialize(self):
-        '''This gets the fully binary string including headers and content.'''
-        return b'HTTP/1.1 ' + self.convertBytes(self.statusCode) + b' ' + self.convertBytes(self.reasonPhrase) + b'\r\n' + self.serializeHeaders() + b'\r\n\r\n' + (self.content if self.content != b'None' else b'')
-
-    __bytes__ = serialize
+    def __bytes__(self):
+        content = (self.content if self.content != b'None' else b'')
+        return self.serialize(content)
 
     @property
     def content(self):
@@ -127,11 +129,9 @@ class JSONResponse(HTTPResponseBase):
         self.headers['Content-Length'] = str(len(json.dumps(jsonContent)))
         self.headers['Content-Type'] = f'application/json; charset={self.charset}'
 
-    def serialize(self):
-        '''This gets the fully binary string including headers and json.'''
-        return b'HTTP/1.1 ' + self.convertBytes(self.statusCode) + b' ' + self.convertBytes(self.reasonPhrase) + b'\r\n' + self.serializeHeaders() + b'\r\n\r\n' + (self.json if self.json != b'None' else b'')
-
-    __bytes__ = serialize
+    def __bytes__(self):
+        json = (self.json if self.json != b'None' else b'')
+        return self.serialize(json)
 
     @property
     def json(self):
@@ -154,11 +154,9 @@ class FileResponse(HTTPResponseBase):
         if mimeType is not None:
             self.headers['Content-Type'] = f'{mimeType}; charset={self.charset}'
 
-    def serialize(self):
-        '''This gets the fully binary string including headers and file.'''
-        return b'HTTP/1.1 ' + self.convertBytes(self.statusCode) + b' ' + self.convertBytes(self.reasonPhrase) + b'\r\n' + self.serializeHeaders() +  + b'\r\n\r\n' + (self.fileObj if self.fileObj != b'None' else b'')
-
-    __bytes__ = serialize
+    def __bytes__(self):
+        fileObj = (self.fileObj if self.fileObj != b'None' else b'')
+        return self.serialize(fileObj)
 
     @property
     def fileObj(self):
