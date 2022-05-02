@@ -37,27 +37,6 @@ class RequestHeaderTest(unittest.TestCase):
     def test_method(self):
         self.assertEqual(self.testRequest.method, 'GET')
     
-    def test_host(self):
-        self.assertEqual(self.testRequest.headers['Host'], 'localhost:8080')
-
-    def test_userAgent(self):
-        self.assertEqual(self.testRequest.headers['User-Agent'], 'Mozilla/5.0 (X11; Ubuntu; Linux aarch64; rv:96.0) Gecko/20100101 Firefox/96.0')
-
-    def test_accept(self):
-        self.assertEqual(self.testRequest.accept, 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8')
-
-    def test_acceptLangauge(self):
-        self.assertEqual(self.testRequest.acceptLanguage, 'en-US,en;q=0.5')
-
-    def test_acceptEncoding(self):
-        self.assertEqual(self.testRequest.acceptEncoding, 'gzip, deflate')
-
-    def test_connection(self):
-        self.assertEqual(self.testRequest.connection, 'keep-alive')
-
-    def test_cookie(self):
-        self.assertEqual(self.testRequest.cookie, 'csrftoken=Db8QXnkjOLbPd3AGTxlnEEGTSn0IMh44MB8Pf2dVAPSBARoU6DteVUu9nT9ELqcO; sessionid=h8xln73emxlqgpjbsnx9007ceyfla7at')
-
     def test_clientIP(self):
         self.assertEqual(self.testRequest.clientIP, '101.98.137.19')
 
@@ -106,6 +85,7 @@ class RequestHandlerTest(unittest.TestCase):
         now = datetime.now(timezone('GMT'))
         dateTime = now.strftime("%a, %d %b %Y %X %Z")
         self.assertEqual(response.headers, {
+            'Cookie': '', 
             'Content-Type': 'text/html; charset=utf-8',
             'Date': dateTime,
             'Content-Length': '427',

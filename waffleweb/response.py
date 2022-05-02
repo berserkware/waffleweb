@@ -5,6 +5,8 @@ from datetime import datetime
 from pytz import timezone
 from http.client import responses
 
+from waffleweb.cookie import Cookies
+
 class HTTP404(Exception):
     pass
 
@@ -28,6 +30,9 @@ class HTTPResponseBase():
     ):
         self.headers = ResponseHeaders(headers)
         self._charset = charset
+        self.cookies = Cookies()
+
+        self.headers['Cookie'] = str(self.cookies)
 
         #Checks if content type is in headers if it isn't adds one
         if 'Content-Type' not in self.headers:
@@ -76,7 +81,17 @@ class HTTPResponseBase():
 
     @charset.setter
     def charset(self, value):
-        self._charset = value        
+        self._charset = value 
+
+    def setCookie(self, name, value):
+        '''Sets a cookie to a value, takes two arguments: name and value'''
+        self.cookies.setCookie(name, value)   
+        self.headers['Cookie'] = str(self.cookies)    
+
+    def deleteCookie(self, name):
+        '''Deletes a cookie if exists, takes one argument: name.'''
+        self.cookies.removeCookie(name)
+        self.headers['Cookie'] = str(self.cookies)
 
     def serializeHeaders(self):
         '''This gets just the headers in a binary string.'''

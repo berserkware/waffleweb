@@ -38,3 +38,9 @@ def basicMath(request, operator, num1, num2):
 @MathAPI.route('math/postTest', 'postTest', ['POST'])
 def postTest(request):
     return HTTPResponse(request.postData)
+
+@MathAPI.route('cookieTest')
+def cookieTest(request):
+    res = HTTPResponse('testing 123')
+    res.setCookie('testCookie', 'testVal')
+    return res

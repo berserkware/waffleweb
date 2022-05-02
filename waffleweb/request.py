@@ -1,6 +1,8 @@
+from email import header
 import os
 
 from urllib.parse import urlparse
+from waffleweb.cookie import Cookies
 
 from waffleweb.response import HTTP404, FileResponse, HTTPResponse, JSONResponse
 from waffleweb.static import StaticHandler
@@ -80,6 +82,11 @@ class Request():
                             #adds to postData
                             self.postData[str(name)] = data[-1]
 
+        if 'Cookie' in self.headers.keys():
+            self.cookies = Cookies(self.headers['Cookie'])
+        else:
+            self.cookies = Cookies()
+
     @property
     def path(self):
         return self.requestHeaders.split('\n')[0].split()[1]
@@ -91,34 +98,6 @@ class Request():
     @property
     def HTTPVersion(self):
         return self.requestHeaders.split('\n')[0].split()[2]
-
-    @property
-    def host(self):
-        return self.headers['Host']
-
-    @property
-    def userAgent(self):
-        return self.headers['User-Agent']
-
-    @property
-    def accept(self):
-        return self.headers['Accept']
-
-    @property
-    def acceptLanguage(self):
-        return self.headers['Accept-Language']
-
-    @property
-    def acceptEncoding(self):
-        return self.headers['Accept-Encoding']
-
-    @property
-    def connection(self):
-        return self.headers['Connection']
-
-    @property
-    def cookie(self):
-        return self.headers['Cookie']
 
     @property
     def content(self):
