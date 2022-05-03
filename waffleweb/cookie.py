@@ -17,7 +17,7 @@ class Cookies(dict):
 
         cookiess = '; '.join(cookies)
         if cookiess != '':
-            return '; '.join(cookies) + ';'
+            return '; '.join(cookies)
         else:
             return ''
 

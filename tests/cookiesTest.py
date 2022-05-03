@@ -9,7 +9,7 @@ from waffleweb.cookie import Cookies
 class basicCookieTest(unittest.TestCase):
     def test_cookie(self):
         with requests.Session() as s:
-            request = requests.get('http://localhost:8080/cookieTest')
+            request = s.get('http://localhost:8080/cookieTest')
             self.assertEqual(s.cookies.get_dict(), {'testCookie': 'testVal'})
 
 class CookiesTest(unittest.TestCase):
@@ -20,7 +20,7 @@ class CookiesTest(unittest.TestCase):
 
     def test_strCookie(self):
         cookies = Cookies('testCookie=testValue; testCookie2=testValue2')
-        self.assertEqual(str(cookies), 'testCookie=testValue; testCookie2=testValue2;')
+        self.assertEqual(str(cookies), 'testCookie=testValue; testCookie2=testValue2')
 
     def test_setCookie(self):
         cookies = Cookies('testCookie=testValue')

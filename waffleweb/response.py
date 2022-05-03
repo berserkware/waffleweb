@@ -1,3 +1,4 @@
+from requests import head
 import waffleweb
 import json
 
@@ -32,7 +33,8 @@ class HTTPResponseBase():
         self._charset = charset
         self.cookies = Cookies()
 
-        self.headers['Cookie'] = str(self.cookies)
+        if str(self.cookies) != '':
+            self.headers['Set-Cookie'] = str(self.cookies)
 
         #Checks if content type is in headers if it isn't adds one
         if 'Content-Type' not in self.headers:
@@ -86,19 +88,29 @@ class HTTPResponseBase():
     def setCookie(self, name, value):
         '''Sets a cookie to a value, takes two arguments: name and value'''
         self.cookies.setCookie(name, value)   
-        self.headers['Cookie'] = str(self.cookies)    
+        #self.headers['Set-Cookie'] = str(self.cookies)    
 
     def deleteCookie(self, name):
         '''Deletes a cookie if exists, takes one argument: name.'''
         self.cookies.removeCookie(name)
-        self.headers['Cookie'] = str(self.cookies)
+        #if str(self.cookies) != '':
+        #    self.headers['Set-Cookie'] = str(self.cookies)
+        #else:
+        #    del self.headers['Set-Cookie']
 
     def serializeHeaders(self):
         '''This gets just the headers in a binary string.'''
-        return b'\r\n'.join([
+        headers = b'\r\n'.join([
             key.encode(self.charset) + b': ' + value.encode(self.charset)
             for key, value in self.headers.items()
         ])
+        setCookies = (b'' if str(self.cookies) == '' else 
+            b'\r\n' + b'\r\n'.join([
+                b'Set-Cookie' + b': ' + f'{key}={value}'.encode(self.charset)
+                for key, value in self.cookies.items()
+                ]))
+
+        return headers + setCookies
 
     __bytes__ = serializeHeaders    
 

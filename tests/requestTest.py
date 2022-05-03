@@ -85,7 +85,6 @@ class RequestHandlerTest(unittest.TestCase):
         now = datetime.now(timezone('GMT'))
         dateTime = now.strftime("%a, %d %b %Y %X %Z")
         self.assertEqual(response.headers, {
-            'Cookie': '', 
             'Content-Type': 'text/html; charset=utf-8',
             'Date': dateTime,
             'Content-Length': '427',
