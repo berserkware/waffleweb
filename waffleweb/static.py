@@ -5,7 +5,8 @@ from pathlib import Path
 from waffleweb.response import HTTP404, FileResponse, HTTPResponse
 
 class StaticHandler:
-    def __init__(self, root, splitRoot, ext):
+    def __init__(self, request, root, splitRoot, ext):
+        self.request = request
         self.root, self.splitRoot, self.ext = root, splitRoot, ext
 
     def findFile(self):
@@ -15,8 +16,8 @@ class StaticHandler:
             with open(path, 'rb') as f:
                 mt = mimetypes.guess_type(self.root + self.ext)
                 if mt[0] is not None:
-                    return FileResponse(f, mimeType=mt[0])
+                    return FileResponse(self.request, f, mimeType=mt[0])
                 else:
-                    return FileResponse(f, mimeType='application/octet-stream')
+                    return FileResponse(self.request, f, mimeType='application/octet-stream')
         except FileNotFoundError:
             raise HTTP404

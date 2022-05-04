@@ -5,7 +5,7 @@ MathAPI = WaffleApp('MathAPI')
 
 @MathAPI.route('/math/', 'math')
 def math(request):
-    return HTTPResponse("""
+    return HTTPResponse(request, """
         <!DOCTYPE html>
         <html>
             <head>
@@ -18,7 +18,7 @@ def math(request):
                 <p>Availiable Operators: add, subtract, multiply, divide</p>
             </body>
         </html>
-    """)
+    """,)
 
 @MathAPI.route('math/<operator:str>/<num1:int>/<num2:int>', 'basicMath', ['GET', 'POST'])
 def basicMath(request, operator, num1, num2):
@@ -33,14 +33,14 @@ def basicMath(request, operator, num1, num2):
     else:
         result = {'error': 'Unknown operator'}
 
-    return JSONResponse(result)
+    return JSONResponse(request, result)
 
 @MathAPI.route('math/postTest', 'postTest', ['POST'])
 def postTest(request):
-    return HTTPResponse(request.postData)
+    return HTTPResponse(request, request.postData)
 
 @MathAPI.route('cookieTest')
 def cookieTest(request):
-    res = HTTPResponse('testing 123')
+    res = HTTPResponse(request, content='testing 123')
     res.setCookie('testCookie', 'testVal')
     return res

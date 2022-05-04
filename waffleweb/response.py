@@ -1,4 +1,5 @@
-from requests import head
+from wsgiref import headers
+from requests import head, request
 import waffleweb
 import json
 
@@ -32,9 +33,6 @@ class HTTPResponseBase():
         self.headers = ResponseHeaders(headers)
         self._charset = charset
         self.cookies = Cookies()
-
-        if str(self.cookies) != '':
-            self.headers['Set-Cookie'] = str(self.cookies)
 
         #Checks if content type is in headers if it isn't adds one
         if 'Content-Type' not in self.headers:
@@ -87,27 +85,28 @@ class HTTPResponseBase():
 
     def setCookie(self, name, value):
         '''Sets a cookie to a value, takes two arguments: name and value'''
-        self.cookies.setCookie(name, value)   
-        #self.headers['Set-Cookie'] = str(self.cookies)    
+        if self.request == None:
+            self.cookies.setCookie(name, value, self.request.path)  
+        else:
+            self.cookies.setCookie(name, value, '/')  
 
     def deleteCookie(self, name):
         '''Deletes a cookie if exists, takes one argument: name.'''
         self.cookies.removeCookie(name)
-        #if str(self.cookies) != '':
-        #    self.headers['Set-Cookie'] = str(self.cookies)
-        #else:
-        #    del self.headers['Set-Cookie']
 
     def serializeHeaders(self):
         '''This gets just the headers in a binary string.'''
+        #gets the headers
         headers = b'\r\n'.join([
             key.encode(self.charset) + b': ' + value.encode(self.charset)
             for key, value in self.headers.items()
         ])
+
+        #Gets the cookies to set
         setCookies = (b'' if str(self.cookies) == '' else 
             b'\r\n' + b'\r\n'.join([
-                b'Set-Cookie' + b': ' + f'{key}={value}'.encode(self.charset)
-                for key, value in self.cookies.items()
+                b'Set-Cookie' + b': ' + f'{key}={cookie.value}; path={cookie.path}'.encode(self.charset)
+                for key, cookie in self.cookies.items()
                 ]))
 
         return headers + setCookies
@@ -128,9 +127,10 @@ class HTTPResponseBase():
 class HTTPResponse(HTTPResponseBase):
     '''Handles the HTTP responses and content.'''
 
-    def __init__(self, content=None, *args, **kwargs):
+    def __init__(self, request=None, content=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        
+        self.request = request
+
         self.content = content 
         self.headers['Content-Length'] = str(len(str(self.content)))
 
@@ -149,8 +149,9 @@ class HTTPResponse(HTTPResponseBase):
 class JSONResponse(HTTPResponseBase):
     '''Handles the HTTP responses and json.'''
 
-    def __init__(self, jsonContent=None, *args, **kwargs):
+    def __init__(self, request=None, jsonContent=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.request = request
 
         self.json = jsonContent
         self.headers['Content-Length'] = str(len(json.dumps(jsonContent)))
@@ -171,9 +172,10 @@ class JSONResponse(HTTPResponseBase):
 class FileResponse(HTTPResponseBase):
     '''Handles the HTTP responses and file.'''
 
-    def __init__(self, fileObj=None, mimeType=None, *args, **kwargs):
+    def __init__(self, request=None, fileObj=None, mimeType=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        
+        self.request = request
+
         self.mimeType = mimeType
         self.fileObj = fileObj
 

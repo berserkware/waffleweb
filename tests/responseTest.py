@@ -1,6 +1,21 @@
 import unittest
 
+from waffleweb.request import Request
 import waffleweb.response as responses
+
+request = Request("""GET /page1/10/index HTTP/1.1
+                        Host: localhost:8080
+                        User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux aarch64; rv:96.0) Gecko/20100101 Firefox/96.0
+                        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+                        Accept-Language: en-US,en;q=0.5
+                        Accept-Encoding: gzip, deflate
+                        Connection: keep-alive
+                        Cookie: csrftoken=Db8QXnkjOLbPd3AGTxlnEEGTSn0IMh44MB8Pf2dVAPSBARoU6DteVUu9nT9ELqcO; sessionid=h8xln73emxlqgpjbsnx9007ceyfla7at
+                        Upgrade-Insecure-Requests: 1
+                        Sec-Fetch-Dest: document
+                        Sec-Fetch-Mode: navigate
+                        Sec-Fetch-Site: none
+                        Sec-Fetch-User: ?1""", '101.98.137.19')
 
 class ResponseHeadersTest(unittest.TestCase):
     def __init__(self, *args, **kwargs):
@@ -104,18 +119,18 @@ class JSONResponseTest(unittest.TestCase):
 class FileResponseTest(unittest.TestCase):
     def test_file(self):
         with open('tests/commands.txt', 'rb') as f:
-            response = responses.FileResponse(f, 'text/plain')
+            response = responses.FileResponse(request, f, 'text/plain')
 
             self.assertEqual(response.fileObj, b"Run all tests:\r\npython3 -m unittest discover -s tests -p '*Test.py'\r\n")
 
     def test_mimeTypeNotNone(self):
         with open('tests/commands.txt', 'rb') as f:
-            response = responses.FileResponse(f, 'text/plain')
+            response = responses.FileResponse(request, f, 'text/plain')
 
             self.assertEqual(response.headers['Content-Type'], 'text/plain; charset=utf-8')
 
     def test_mimeTypeNone(self):
         with open('tests/commands.txt', 'rb') as f:
-            response = responses.FileResponse(f)
+            response = responses.FileResponse(request, f)
 
             self.assertEqual(response.headers['Content-Type'], 'text/html; charset=utf-8')

@@ -253,7 +253,7 @@ class RequestHandler:
                 return HTTPResponse('The requested page could not be found', status=404)
         else:
             try:
-                handler = StaticHandler(self.root, self.splitRoot, self.ext)
+                handler = StaticHandler(self.request, self.root, self.splitRoot, self.ext)
                 return handler.findFile()
             except HTTP404:
                 return HTTPResponse('The requested file could not be found', status=404)

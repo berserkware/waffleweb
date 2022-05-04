@@ -1,3 +1,14 @@
+class Cookie():
+    '''This is a cookie num num num'''
+
+    def __init__(self, name, value, path='/'):
+        self.name = str(name)
+        self.value = value
+        self.path = path
+
+    def __str__(self):
+        return f'{self.name}={self.value}; path={self.path}'
+
 class Cookies(dict):
     '''This stores Cookies, it is a dictionary.'''
 
@@ -7,12 +18,12 @@ class Cookies(dict):
         if cookies is not None:
             for cookie in cookies.split(';'):
                 name, value = cookie.split('=')
-                self[str(name).strip()] = str(value).strip()
+                self[str(name).strip()] = Cookie(name, value, '/')
 
     def __str__(self):
         cookies = []
         for cookieKey in self.keys():
-            cookie = f'{cookieKey}={self[cookieKey]}'
+            cookie = f'{cookieKey}={self[cookieKey].value}'
             cookies.append(cookie)
 
         cookiess = '; '.join(cookies)
@@ -21,9 +32,9 @@ class Cookies(dict):
         else:
             return ''
 
-    def setCookie(self, name, value):
+    def setCookie(self, name, value, path):
         '''Sets a cookie to a value, takes two arguments: name and value.'''
-        self[str(name)] = str(value)
+        self[str(name)] = Cookie(name, value, path)
 
     def removeCookie(self, name):
         '''Deletes a cookie if exists, takes one argument: name.'''
