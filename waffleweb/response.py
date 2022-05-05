@@ -32,7 +32,7 @@ class HTTPResponseBase():
     ):
         self.headers = ResponseHeaders(headers)
         self._charset = charset
-        self.cookies = Cookies()
+        self.cookiesToSet = Cookies()
 
         #Checks if content type is in headers if it isn't adds one
         if 'Content-Type' not in self.headers:
@@ -83,16 +83,31 @@ class HTTPResponseBase():
     def charset(self, value):
         self._charset = value 
 
-    def setCookie(self, name, value):
+    def setCookie(
+            self, 
+            name, 
+            value, 
+            path=None, 
+            maxAge=None, 
+            domain=None, 
+            secure=False, 
+            HTTPOnly=False, 
+            sameSite=None, 
+            strict=False, 
+            lax=False, 
+            none=False
+        ):
         '''Sets a cookie to a value, takes two arguments: name and value'''
-        if self.request == None:
-            self.cookies.setCookie(name, value, self.request.path)  
+        if path is not None:
+            self.cookiesToSet.setCookie(name=name, value=value, path=path, maxAge=maxAge, domain=domain, secure=secure, HTTPOnly=HTTPOnly, sameSite=sameSite, strict=strict, lax=lax, none=none)
+        elif path is None and self.request is not None:
+            self.cookiesToSet.setCookie(name=name, value=value, path=self.request.path, maxAge=maxAge, domain=domain, secure=secure, HTTPOnly=HTTPOnly, sameSite=sameSite, strict=strict, lax=lax, none=none)
         else:
-            self.cookies.setCookie(name, value, '/')  
+            self.cookiesToSet.setCookie(name=name, value=value, path='/', maxAge=maxAge, domain=domain, secure=secure, HTTPOnly=HTTPOnly, sameSite=sameSite, strict=strict, lax=lax, none=none)  
 
     def deleteCookie(self, name):
         '''Deletes a cookie if exists, takes one argument: name.'''
-        self.cookies.removeCookie(name)
+        self.cookiesToSet.removeCookie(name)
 
     def serializeHeaders(self):
         '''This gets just the headers in a binary string.'''
@@ -103,10 +118,10 @@ class HTTPResponseBase():
         ])
 
         #Gets the cookies to set
-        setCookies = (b'' if str(self.cookies) == '' else 
+        setCookies = (b'' if str(self.cookiesToSet) == '' else 
             b'\r\n' + b'\r\n'.join([
                 b'Set-Cookie' + b': ' + f'{key}={cookie.value}; path={cookie.path}'.encode(self.charset)
-                for key, cookie in self.cookies.items()
+                for key, cookie in self.cookiesToSet.items()
                 ]))
 
         return headers + setCookies
@@ -132,7 +147,7 @@ class HTTPResponse(HTTPResponseBase):
         self.request = request
 
         self.content = content 
-        self.headers['Content-Length'] = str(len(str(self.content)))
+        self.headers['Content-Length'] = str(len(self.content))
 
     def __bytes__(self):
         content = (self.content if self.content != b'None' else b'')
@@ -182,6 +197,8 @@ class FileResponse(HTTPResponseBase):
         #add mimetype to content-type
         if mimeType is not None:
             self.headers['Content-Type'] = f'{mimeType}; charset={self.charset}'
+
+        self.headers['Content-Length'] = str(len(self.fileObj))
 
     def __bytes__(self):
         fileObj = (self.fileObj if self.fileObj != b'None' else b'')

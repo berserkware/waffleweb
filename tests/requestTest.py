@@ -87,7 +87,7 @@ class RequestHandlerTest(unittest.TestCase):
         self.assertEqual(response.headers, {
             'Content-Type': 'text/html; charset=utf-8',
             'Date': dateTime,
-            'Content-Length': '427',
+            'Content-Length': '411',
             })
 
     def test_handlePost(self):
