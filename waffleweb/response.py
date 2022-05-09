@@ -1,5 +1,3 @@
-from wsgiref import headers
-from requests import head, request
 import waffleweb
 import json
 
@@ -8,6 +6,7 @@ from pytz import timezone
 from http.client import responses
 
 from waffleweb.cookie import Cookies
+from waffleweb.template import getEnviroment
 
 class HTTP404(Exception):
     pass
@@ -211,3 +210,9 @@ class FileResponse(HTTPResponseBase):
     @fileObj.setter
     def fileObj(self, value):
         self._fileObj = value.read()
+
+def render(request, filePath: str, context: dict={}):
+    env = getEnviroment()
+    template = env.get_template(filePath)
+    templateRender = template.render(**context)
+    return HTTPResponse(request, templateRender)

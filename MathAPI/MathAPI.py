@@ -1,5 +1,5 @@
 from waffleweb import WaffleApp
-from waffleweb.response import HTTPResponse, JSONResponse
+from waffleweb.response import HTTPResponse, JSONResponse, render
 
 MathAPI = WaffleApp('MathAPI')
 
@@ -44,3 +44,7 @@ def cookieTest(request):
     res = HTTPResponse(request, content='testing 123')
     res.setCookie('testCookie', 'testVal')
     return res
+
+@MathAPI.route('templateTest')
+def testPlate(request):
+    return render(request, 'testPlate.html')

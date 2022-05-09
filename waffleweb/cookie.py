@@ -37,6 +37,7 @@ class Cookies(dict):
     def __init__(self, cookies=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        #Gets all the cookies from cookies
         if cookies is not None:
             for cookie in cookies.split(';'):
                 name, value = cookie.split('=')

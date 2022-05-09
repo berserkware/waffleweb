@@ -8,7 +8,6 @@ setup(
   description = 'A python library for making scalable websites easy',
   author = 'Caleb Mckay',
   author_email = 'bersekware@gmail.com',
-  install_requires=['pytz'],
   classifiers=[
     'Intended Audience :: Developers',
     'License :: OSI Approved :: MIT License',
