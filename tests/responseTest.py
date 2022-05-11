@@ -134,3 +134,10 @@ class FileResponseTest(unittest.TestCase):
             response = responses.FileResponse(request, f)
 
             self.assertEqual(response.headers['Content-Type'], 'text/html; charset=utf-8')
+
+class testErrors(unittest.TestCase):
+    def test_404(self):
+        pass
+
+    def test_405(self):
+        pass

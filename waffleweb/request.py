@@ -1,10 +1,11 @@
-from email import header
 import os
+import jinja2
 
 from urllib.parse import urlparse
-from waffleweb.cookie import Cookies
+from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from waffleweb.response import HTTP404, FileResponse, HTTPResponse, JSONResponse
+from waffleweb.cookie import Cookies
+from waffleweb.response import HTTP404, FileResponse, HTTPResponse, JSONResponse, render
 from waffleweb.static import StaticHandler
 
 class Request():
@@ -119,9 +120,10 @@ class Request():
 
 class RequestHandler:
     '''Handles a requests, Returns response'''
-    def __init__(self, request: Request, apps: list):
+    def __init__(self, request: Request, apps: list, debug=False):
         self.request = request
         self.apps = apps
+        self.debug = debug
 
     def _405MethodNotAllowed(self, allowedMethods) -> HTTPResponse:
         '''Returns a 405 response'''
@@ -248,12 +250,19 @@ class RequestHandler:
                 elif self.request.method == 'OPTIONS':
                     return self._handleOptions(view, kwargs)
                 else:
-                    return HTTPResponse('Not Implemented Error', status=501) 
+                    return HTTPResponse(None, 'Not Implemented Error', status=501) 
             except HTTP404:
-                return HTTPResponse('The requested page could not be found', status=404)
+                if self.debug:
+                    return HTTPResponse(None, 'The requested page could not be found', status=404)
+                else:
+                    return HTTPResponse(None, 'The requested page could not be found', status=404)
         else:
             try:
                 handler = StaticHandler(self.request, self.root, self.splitRoot, self.ext)
                 return handler.findFile()
             except HTTP404:
-                return HTTPResponse('The requested file could not be found', status=404)
+                #if debug mode is on show errors
+                if self.debug:
+                    return HTTPResponse(None, 'The requested file could not be found', status=404)
+                else:
+                    return HTTPResponse(None, 'The requested file could not be found', status=404)

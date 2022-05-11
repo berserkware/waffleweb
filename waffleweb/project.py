@@ -2,12 +2,12 @@ import socket
 import ipaddress
 import datetime
 import importlib
-import os
-from urllib.parse import urlparse
-
+import traceback
 import waffleweb
+
 from waffleweb.response import HTTPResponse, HTTP404
 from waffleweb.request import Request, RequestHandler
+from waffleweb.template import renderErrorPage, renderTemplate
 
 class AppNotFoundError(Exception):
     pass
@@ -51,7 +51,7 @@ class WaffleProject():
                 except ModuleNotFoundError:
                     raise AppNotFoundError(f'Could not find app "{app}", make sure you spelled it right and you app has a "{app}.py" file in it')
 
-    def run(self, host='127.0.0.1', port=8000):
+    def run(self, host='127.0.0.1', port=8000, debug=False):
         '''
         This runs the test server,
         default host is 127.0.0.1,
@@ -84,27 +84,53 @@ class WaffleProject():
             print(f'Press Ctrl+C to stop server')
             try:
                 while True:
-                    #waits for connection to server
-                    conn, addr = sock.accept()
+                    try:
+                        #waits for connection to server
+                        conn, addr = sock.accept()
 
-                    #turns the request into a Request object.
-                    request = Request(conn.recv(1024).decode(), addr)
+                        #turns the request into a Request object.
+                        request = Request(conn.recv(1024).decode(), addr)
 
-                    #Creates a RequestHandler object.
-                    handler = RequestHandler(request, self.apps)
+                        #Creates a RequestHandler object.
+                        handler = RequestHandler(request, self.apps, debug)
 
-                    #gets the response
-                    response = handler.getResponse()
+                        #gets the response
+                        response = handler.getResponse()
 
-                    #sends the response
-                    conn.sendall(bytes(response))
+                        #sends the response
+                        conn.sendall(bytes(response))
 
-                    #prints the request information
-                    timeNow = datetime.datetime.now()
-                    print(f'[{timeNow.strftime("%m/%d/%Y %H:%M:%S")}] {handler.request.HTTPVersion} {handler.request.method} {handler.request.path} {response.statusCode} {response.reasonPhrase}')
+                        #prints the request information
+                        timeNow = datetime.datetime.now()
+                        print(f'[{timeNow.strftime("%m/%d/%Y %H:%M:%S")}] {handler.request.HTTPVersion} {handler.request.method} {handler.request.path} {response.statusCode} {response.reasonPhrase}')
 
-                    #closes the connection
-                    conn.close()
+                        #closes the connection
+                        conn.close()
+                    except Exception as e:
+                        #gets the exception
+                        exception = traceback.TracebackException.from_exception(e)
+                        
+                        #prints the excepts
+                        traceback.print_exc()
+
+                        #if debug mode is on return a page with the error data else give generic error
+                        if debug:
+                            #gets the traceback
+                            stack = exception.stack.format()
+                            stackStr = '\n'.join([f'<code>{stackLine}</code>' for stackLine in stack])
+
+                            context = {
+                                'mainErrorMessage': exception.exc_type.__name__,
+                                'subErrorMessage': str(e),
+                                'trackbackMessage': stackStr,
+                                }
+
+                            response = HTTPResponse(None, renderErrorPage(context['mainErrorMessage'], context['subErrorMessage'], context['trackbackMessage']))
+                            conn.sendall(bytes(response))
+                        else:
+                            conn.sendall(bytes(HTTPResponse(None, '<h1>An error occured!</h1>')))
+
             except KeyboardInterrupt as e:
                 print('\nKeyboardInterrupt, Closing server')
                 return
+

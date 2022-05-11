@@ -1,12 +1,13 @@
 import waffleweb
 import json
+import os
 
 from datetime import datetime
 from pytz import timezone
 from http.client import responses
 
 from waffleweb.cookie import Cookies
-from waffleweb.template import getEnviroment
+from waffleweb.template import renderTemplate
 
 class HTTP404(Exception):
     pass
@@ -211,8 +212,17 @@ class FileResponse(HTTPResponseBase):
     def fileObj(self, value):
         self._fileObj = value.read()
 
-def render(request, filePath: str, context: dict={}):
-    env = getEnviroment()
-    template = env.get_template(filePath)
-    templateRender = template.render(**context)
-    return HTTPResponse(request, templateRender)
+def render(request=None, filePath: str=None, context: dict={}, headers=None, charset=None, status=None, reason=None):
+    '''
+    Returns a HTTPResponse with the rendered template, this uses jinja2.\n
+    it takes 7 arguments:\n
+        request - A Request object\n
+        filePath - The file path to the template\n
+        context - A dict with all the varibles for the template\n
+        headers - Add headers to the response\n
+        charset - The charset for the response\n
+        status - The status code for the response\n
+        reason - The status reason for the response\n
+    '''
+    templateRender = renderTemplate(filePath=filePath, context=context)
+    return HTTPResponse(request, templateRender, headers=headers, charset=charset, status=status, reason=reason)
