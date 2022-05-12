@@ -12,11 +12,15 @@ from waffleweb.template import renderErrorPage, renderTemplate
 class AppNotFoundError(Exception):
     pass
 
+class AppImportError(Exception):
+    pass
+
 class WaffleProject():
     '''
     The centre of all waffleweb projects. It takes only one
     argument: apps. Apps hold all of your views, they can be 
-    a single python file or a folder.
+    a single python file or a folder. Each app in your list has
+    to be as so: moduleName.waffleAppObject
     '''
 
     def __init__(self, apps: list):
@@ -28,28 +32,29 @@ class WaffleProject():
         '''This function looks for and imports all the app and adds them to a dictionary.'''
 
         for app in apps:
-            #checks if appname ends with a python file extension
-            if app.endswith(('.py', '.py3')):
-                #checks if can import app, if can't raises eception
-                try:
-                    module = importlib.import_module(app[:app.index(".")])
-                    self.apps.append({
-                                    'module': module,
-                                    'app': module.app,
+            #trys to import app, if can't raise AppNotFoundError
+            try:
+                #Gets the module and the appName
+                splitAppName = app.split('.')
+                if len(splitAppName) < 2:
+                    raise AppImportError('Your app has to have a module and a WaffleApp, example: moduleName.waffleAppObjectName')
+
+                #Gets the a varible
+                app = splitAppName[len(splitAppName) - 1]
+
+                #Gets the module
+                module = ".".join(splitAppName[:(len(splitAppName) - 1)])
+
+                #imports the app
+                module = importlib.import_module(module)
+
+                #adds it to app list
+                self.apps.append({
+                                'module': module,
+                                'app': getattr(module, str(app)),
                     }) 
-                except ModuleNotFoundError:
-                    raise AppNotFoundError(f'Could not find app "{app[:app.index(".")]}"')
-            else:
-                #checks if can import folder app, if can't raise exception
-                try:
-                    importlib.import_module(f"{app}.{app}")
-                    module = importlib.import_module(app)
-                    self.apps.append({
-                        'module': module,
-                        'app': module.app,
-                    })
-                except ModuleNotFoundError:
-                    raise AppNotFoundError(f'Could not find app "{app}", make sure you spelled it right and you app has a "{app}.py" file in it')
+            except ModuleNotFoundError:
+                raise AppNotFoundError(f'Could not find app "{str(app)}"')
 
     def run(self, host='127.0.0.1', port=8000, debug=False):
         '''

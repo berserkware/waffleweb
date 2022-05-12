@@ -1,11 +1,12 @@
 import unittest
+
 from waffleweb import WaffleProject
-from waffleweb.project import AppNotFoundError
+from waffleweb.project import AppNotFoundError, AppImportError
 
 class projectAppTest(unittest.TestCase):
     def test_importPyAppValid(self):
         apps = [
-            'testApp.py'
+            'testApp.app'
         ]
 
         try:
@@ -15,15 +16,15 @@ class projectAppTest(unittest.TestCase):
 
     def test_importPyAppInvalid(self):
         apps = [
-            'apps.py'
+            'apps'
         ]
 
-        with self.assertRaises(AppNotFoundError):
+        with self.assertRaises(AppImportError):
             proj = WaffleProject(apps)
 
     def test_importFolderAppThatIsValid(self):
         apps = [
-            'TestApp2'
+            'TestApp2.app'
         ]
 
         try:
@@ -33,7 +34,7 @@ class projectAppTest(unittest.TestCase):
 
     def test_importFolderAppThatDoesntExist(self):
         apps = [
-            'appThatNone'
+            'appThatNone.app'
         ]
 
         with self.assertRaises(AppNotFoundError):
@@ -41,7 +42,7 @@ class projectAppTest(unittest.TestCase):
 
     def test_importFolderWithoutPyFileInside(self):
         apps = [
-            'TestApp3'
+            'TestApp3.app'
         ]
 
         with self.assertRaises(AppNotFoundError):

@@ -1,1 +1,1 @@
-from .TestApp2 import app as app
+from .TestApp2 import app
