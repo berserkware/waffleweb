@@ -1,5 +1,7 @@
 import unittest
 
+import requests
+
 from waffleweb.request import Request
 import waffleweb.response as responses
 
@@ -135,9 +137,11 @@ class FileResponseTest(unittest.TestCase):
 
             self.assertEqual(response.headers['Content-Type'], 'text/html; charset=utf-8')
 
-class testErrors(unittest.TestCase):
+class ErrorsTest(unittest.TestCase):
     def test_404(self):
-        pass
+        res = requests.get('http://localhost:8080/this-is-404')
+        self.assertEqual(res.content, b'\n        <title>404 Page Not Found</title>\n        <h1>404 Page Not Found</h1>\n        <h2>The requested page could not be found</h2>\n        <h3>Views searched:<br>math<br>math/&lt;operator:str&gt;/&lt;num1:int&gt;/&lt;num2:int&gt;<br>math/postTest<br>cookieTest<br>templateTest<br>exceptTest</h3>\n    ')
 
     def test_405(self):
-        pass
+        res = requests.get('http://localhost:8080/math/postTest')
+        self.assertEqual(res.content, b'\n        <title>404 Method Not Allowed</title>\n        <h1>404 Method Not Allowed</h1>\n        <h2>Allowed Methods: POST</h2>\n        \n    ')

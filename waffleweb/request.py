@@ -2,11 +2,11 @@ import os
 import jinja2
 
 from urllib.parse import urlparse
-from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from waffleweb.cookie import Cookies
 from waffleweb.response import HTTP404, FileResponse, HTTPResponse, JSONResponse, render
 from waffleweb.static import StaticHandler
+from waffleweb.template import renderErrorPage
 
 class Request():
     def __init__(self, requestHeaders, clientIP):
@@ -128,7 +128,14 @@ class RequestHandler:
     def _405MethodNotAllowed(self, allowedMethods) -> HTTPResponse:
         '''Returns a 405 response'''
         methods = ', '.join(allowedMethods)
-        return HTTPResponse(status=405, headers=f'Allow: {methods}') 
+        if self.debug:
+            render = renderErrorPage(
+                mainMessage='404 Method Not Allowed',
+                subMessage=f'Allowed Methods: {methods}',
+            )
+            return HTTPResponse(None, render, status=405, headers=f'Allow: {methods}') 
+        else:
+            return HTTPResponse(None, status=405, headers=f'Allow: {methods}') 
 
     def _getArg(self, index, part) -> tuple:
         '''
@@ -250,12 +257,37 @@ class RequestHandler:
                 elif self.request.method == 'OPTIONS':
                     return self._handleOptions(view, kwargs)
                 else:
-                    return HTTPResponse(None, 'Not Implemented Error', status=501) 
+                    if self.debug:
+                        render = renderErrorPage(
+                            mainMessage='501 Not Implemented Error', 
+                            subMessage=f'The requested method is not implemented',
+                            traceback=f'Method:{self.request.method}',
+                            )
+                        return HTTPResponse(None, render, status=501) 
+                    else:
+                        return HTTPResponse(None, 'Not Implemented Error', status=501) 
             except HTTP404:
                 if self.debug:
-                    return HTTPResponse(None, 'The requested page could not be found', status=404)
+                    #Gets all searched views.
+                    searchedViews = []
+                    for app in self.apps:
+                        app = app['app']
+                        for view in app.views:
+                            path = view['path']
+
+                            #turns the arrows into one html cannot render
+                            path = path.replace('<', '&lt;')
+                            path = path.replace('>', '&gt;')
+                            searchedViews.append(path)
+
+                    render = renderErrorPage(
+                        mainMessage='404 Page Not Found', 
+                        subMessage=f'The requested page could not be found',
+                        traceback=f'Views searched:<br>{"<br>".join(searchedViews)}',
+                        )
+                    return HTTPResponse(None, render, status=404)
                 else:
-                    return HTTPResponse(None, 'The requested page could not be found', status=404)
+                    return HTTPResponse(None, '404 The requested page could not be found', status=404)
         else:
             try:
                 handler = StaticHandler(self.request, self.root, self.splitRoot, self.ext)
@@ -263,6 +295,7 @@ class RequestHandler:
             except HTTP404:
                 #if debug mode is on show errors
                 if self.debug:
-                    return HTTPResponse(None, 'The requested file could not be found', status=404)
+                    render = renderErrorPage(mainMessage='404 File Not Found<br>', subMessage='The requested file could not be found')
+                    return HTTPResponse(None, render, status=404)
                 else:
                     return HTTPResponse(None, 'The requested file could not be found', status=404)

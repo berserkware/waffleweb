@@ -1,8 +1,9 @@
+from inspect import trace
 import waffleweb
 
 from jinja2 import Environment, FileSystemLoader, ModuleLoader, select_autoescape
 
-def _getEnviromentModule(module: str):
+def _getEnviromentModule(module: str) -> Environment:
     '''Gets a jinja Enviroment with the loader being PackageLoader.'''
     env = Environment(
         loader=ModuleLoader(module),
@@ -10,7 +11,7 @@ def _getEnviromentModule(module: str):
     )
     return env
 
-def _getEnviromentFile():
+def _getEnviromentFile() -> Environment:
     '''Gets a jinja Enviroment with the loader being FileSystemLoader.'''
     env = Environment(
         loader=FileSystemLoader(searchpath=f"./{waffleweb.defaults.DEFUALT_TEMPLATE_DIR}"),
@@ -18,7 +19,7 @@ def _getEnviromentFile():
     )
     return env
 
-def renderTemplate(filePath: str, context: dict, moduleName: str=None, loaderTypeFile: bool=True):
+def renderTemplate(filePath: str, context: dict, moduleName: str=None, loaderTypeFile: bool=True) -> str:
     '''
     renders a template using jinja2, takes four arguments:
         filepath - required - the file path to the template
@@ -39,16 +40,17 @@ def renderTemplate(filePath: str, context: dict, moduleName: str=None, loaderTyp
 
     return templateRender
     
-def renderErrorPage(mainMessage: str, subMessage: str, traceback: str):
+def renderErrorPage(mainMessage: str, subMessage: str=None, traceback: str=None) -> str:
     '''
     Renders and error page for debug, it takes 3 arguments:
         mainMessage
-        subMessage
-        traceback
+        subMessage - optional
+        traceback - optional
     '''
 
     return f'''
+        <title>{mainMessage}</title>
         <h1>{mainMessage}</h1>
-        <h2>{subMessage}</h2>
-        <h3>{traceback}</h3>
+        {(f'<h2>{subMessage}</h2>' if subMessage is not None else '')}
+        {(f'<h3>{traceback}</h3>' if traceback is not None else '')}
     '''

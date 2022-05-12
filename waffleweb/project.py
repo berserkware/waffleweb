@@ -117,7 +117,7 @@ class WaffleProject():
                         if debug:
                             #gets the traceback
                             stack = exception.stack.format()
-                            stackStr = '\n'.join([f'<code>{stackLine}</code>' for stackLine in stack])
+                            stackStr = '\n'.join([f'<code>{stackLine}</code><br>' for stackLine in stack])
 
                             context = {
                                 'mainErrorMessage': exception.exc_type.__name__,
