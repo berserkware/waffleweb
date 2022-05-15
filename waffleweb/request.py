@@ -170,6 +170,8 @@ class RequestHandler:
     def _getView(self):
         '''Finds a view matching the request url, Returns view and the views kwargs.'''
 
+        self.root, self.splitRoot, self.ext = self._splitURL()
+
         #Searches through all the apps to match the url
         for app in self.apps:
             app = app['app']
@@ -273,7 +275,7 @@ class RequestHandler:
                     for app in self.apps:
                         app = app['app']
                         for view in app.views:
-                            path = view['path']
+                            path = view['unstripedPath']
 
                             #turns the arrows into one html cannot render
                             path = path.replace('<', '&lt;')

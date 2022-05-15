@@ -1,5 +1,8 @@
 import re
 
+from waffleweb.middleware import MiddlewareHandler
+from waffleweb.request import Request
+
 class WaffleApp():
     '''
     The WaffleApp() class is the centre of all the apps for your project.
@@ -8,10 +11,10 @@ class WaffleApp():
     app = WaffleApp('yourAppName')
     '''
 
-    def __init__(self, appName: str):
+    def __init__(self, appName: str, middleware: list[str]=[]):
         self.appName = appName
+        self.middlewareHandler = MiddlewareHandler(middleware)
         self._views = []
-        self._methods = ['OPTIONS', 'GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'TRACE', 'CONNECT']
 
     @property
     def views(self):
@@ -69,15 +72,18 @@ class WaffleApp():
 
                 #adds function to view registry
                 self._views.append({
+                    'unstripedPath': path,
                     'path': path.strip('/'),
                     'splitPath': splitPathWithArgs, 
                     'name': view.__name__ if name == None else name, 
                     'view': view,
                     'allowedMethods': methods,
+                    'middlewareHandler': self.middlewareHandler,
                     })
 
                 def wrapper(*args, **kwargs):
                     return view(*args, **kwargs)
+
                 return wrapper
             else:
                 raise ValueError('Your path has to be a valid relative URL pattern.')

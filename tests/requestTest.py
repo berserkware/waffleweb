@@ -86,8 +86,9 @@ class RequestHandlerTest(unittest.TestCase):
         dateTime = now.strftime("%a, %d %b %Y %X %Z")
         self.assertEqual(response.headers, {
             'Content-Type': 'text/html; charset=utf-8',
+            'Set-Cookie': 'addedCookie=32; path=/math',
             'Date': dateTime,
-            'Content-Length': '411',
+            'Content-Length': '4',
             })
 
     def test_handlePost(self):

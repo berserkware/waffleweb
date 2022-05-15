@@ -6,7 +6,7 @@ from waffleweb.project import AppNotFoundError, AppImportError
 class projectAppTest(unittest.TestCase):
     def test_importPyAppValid(self):
         apps = [
-            'testApp.app'
+            'apps.testApp.app'
         ]
 
         try:
@@ -24,7 +24,7 @@ class projectAppTest(unittest.TestCase):
 
     def test_importFolderAppThatIsValid(self):
         apps = [
-            'TestApp2.app'
+            'apps.TestApp2.app'
         ]
 
         try:
@@ -34,7 +34,7 @@ class projectAppTest(unittest.TestCase):
 
     def test_importFolderAppThatDoesntExist(self):
         apps = [
-            'appThatNone.app'
+            'apps.appThatNone.app'
         ]
 
         with self.assertRaises(AppNotFoundError):
@@ -42,7 +42,7 @@ class projectAppTest(unittest.TestCase):
 
     def test_importFolderWithoutPyFileInside(self):
         apps = [
-            'TestApp3.app'
+            'apps.TestApp3.app'
         ]
 
         with self.assertRaises(AppNotFoundError):

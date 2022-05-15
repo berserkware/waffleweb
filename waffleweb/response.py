@@ -147,7 +147,6 @@ class HTTPResponse(HTTPResponseBase):
         self.request = request
 
         self.content = content 
-        self.headers['Content-Length'] = str(len(self.content))
 
     def __bytes__(self):
         content = (self.content if self.content != b'None' else b'')
@@ -160,6 +159,7 @@ class HTTPResponse(HTTPResponseBase):
     @content.setter
     def content(self, value):
         self._content = [self.convertBytes(value)]
+        self.headers['Content-Length'] = str(len(self.content))
 
 class JSONResponse(HTTPResponseBase):
     '''Handles the HTTP responses and json.'''

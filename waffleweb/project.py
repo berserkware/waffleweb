@@ -8,6 +8,7 @@ import waffleweb
 from waffleweb.response import HTTPResponse, HTTP404
 from waffleweb.request import Request, RequestHandler
 from waffleweb.template import renderErrorPage, renderTemplate
+from waffleweb.middleware import MiddlewareHandler
 
 class AppNotFoundError(Exception):
     pass
@@ -17,24 +18,31 @@ class AppImportError(Exception):
 
 class WaffleProject():
     '''
-    The centre of all waffleweb projects. It takes only one
-    argument: apps. Apps hold all of your views, they can be 
-    a single python file or a folder. Each app in your list has
-    to be as so: moduleName.waffleAppObject
+    The centre of all waffleweb projects. It takes two arguments: 
+        apps - list of string - Apps hold all of your views, they can be a single python 
+        file or a folder. Each app in your list has to be 
+        as so: moduleName.waffleAppObject
+
+        middleware - list of string - this is list of all your middleware,
+        Each middleware in your list has to be as so: moduleName.middlewareObject
     '''
 
-    def __init__(self, apps: list):
-        self.apps = []
+    def __init__(self, apps: list[str], middleware: list[str]=[]):
+        self.apps = self.loadApps(apps)
+        self.middlewareHandler = MiddlewareHandler(middleware)
 
-        self._importApps(apps)
+    def loadApps(self, apps) -> list:
+        '''
+        This function looks for and imports all the apps and adds them to a 
+        dictionary then adds it to a list then returns the list.
+        '''
 
-    def _importApps(self, apps):
-        '''This function looks for and imports all the app and adds them to a dictionary.'''
+        loadedApps = []
 
         for app in apps:
-            #trys to import app, if can't raise AppNotFoundError
+            #trys to import app, if can't, raise AppNotFoundError
             try:
-                #Gets the module and the appName
+                #Gets the module and the app name
                 splitAppName = app.split('.')
                 if len(splitAppName) < 2:
                     raise AppImportError('Your app has to have a module and a WaffleApp, example: moduleName.waffleAppObjectName')
@@ -49,12 +57,14 @@ class WaffleProject():
                 module = importlib.import_module(module)
 
                 #adds it to app list
-                self.apps.append({
+                loadedApps.append({
                                 'module': module,
                                 'app': getattr(module, str(app)),
                     }) 
             except ModuleNotFoundError:
                 raise AppNotFoundError(f'Could not find app "{str(app)}"')
+        
+        return loadedApps
 
     def run(self, host='127.0.0.1', port=8000, debug=False):
         '''
@@ -96,11 +106,34 @@ class WaffleProject():
                         #turns the request into a Request object.
                         request = Request(conn.recv(1024).decode(), addr)
 
+                        #Run middleware on Request
+                        request = self.middlewareHandler.runRequestMiddleware(request)
+
                         #Creates a RequestHandler object.
                         handler = RequestHandler(request, self.apps, debug)
 
+                        appMiddlewareHandler = None
+
+                        try:
+                            #Get the app from the view and runs the apps middleware on the request
+                            view = handler._getView()[0]
+                            for app in self.apps:
+                                app = app['app']
+                                for appView in app.views:
+                                    if appView == view:
+                                        appMiddlewareHandler = appView['middlewareHandler']
+                                        request = appMiddlewareHandler.runRequestMiddleware(request)
+                        except HTTP404:
+                            pass
+
                         #gets the response
                         response = handler.getResponse()
+
+                        #Run middleware on response
+                        response = self.middlewareHandler.runResponseMiddleware(response)
+
+                        if appMiddlewareHandler is not None:
+                            response = appMiddlewareHandler.runResponseMiddleware(response)
 
                         #sends the response
                         conn.sendall(bytes(response))

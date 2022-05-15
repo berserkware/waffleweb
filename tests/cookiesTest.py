@@ -25,7 +25,7 @@ class basicCookieTest(unittest.TestCase):
     def test_cookie(self):
         with requests.Session() as s:
             request = s.get('http://localhost:8080/cookieTest')
-            self.assertEqual(s.cookies.get_dict(), {'testCookie': 'testVal'})
+            self.assertEqual(s.cookies.get_dict(), {'testCookie': 'testVal', 'addedCookie': '32',})
 
 class CookiesTest(unittest.TestCase):
     def test_getCookie(self):
