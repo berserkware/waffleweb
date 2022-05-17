@@ -1,8 +1,8 @@
 import os
 import jinja2
+import waffleweb
 
 from urllib.parse import urlparse
-
 from waffleweb.cookie import Cookies
 from waffleweb.response import HTTP404, FileResponse, HTTPResponse, JSONResponse, render
 from waffleweb.static import StaticHandler
@@ -120,9 +120,9 @@ class Request():
 
 class RequestHandler:
     '''Handles a requests, Returns response'''
-    def __init__(self, request: Request, apps: list, debug=False):
+    def __init__(self, request: Request, debug=False):
         self.request = request
-        self.apps = apps
+        self.apps = waffleweb.defaults.APPS
         self.debug = debug
 
     def _405MethodNotAllowed(self, allowedMethods) -> HTTPResponse:

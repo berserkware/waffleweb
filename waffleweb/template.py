@@ -1,5 +1,9 @@
-from inspect import trace
 import waffleweb
+import importlib
+try:
+    settings = importlib.import_module('settings')
+except ModuleNotFoundError:
+    settings = None
 
 from jinja2 import Environment, FileSystemLoader, ModuleLoader, select_autoescape
 
@@ -13,8 +17,14 @@ def _getEnviromentModule(module: str) -> Environment:
 
 def _getEnviromentFile() -> Environment:
     '''Gets a jinja Enviroment with the loader being FileSystemLoader.'''
+
+    #Gets the template directory
+    templateDir = waffleweb.defaults.DEFUALT_TEMPLATE_DIR
+    if hasattr(settings, 'TEMPLATE_DIR'):
+        templateDir = getattr(settings, 'TEMPLATE_DIR')
+
     env = Environment(
-        loader=FileSystemLoader(searchpath=f"./{waffleweb.defaults.DEFUALT_TEMPLATE_DIR}"),
+        loader=FileSystemLoader(searchpath=templateDir),
         autoescape=select_autoescape,
     )
     return env

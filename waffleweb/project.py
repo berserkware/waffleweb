@@ -4,6 +4,10 @@ import datetime
 import importlib
 import traceback
 import waffleweb
+try:
+    settings = importlib.import_module('settings')
+except ModuleNotFoundError:
+    settings = None
 
 from waffleweb.response import HTTPResponse, HTTP404
 from waffleweb.request import Request, RequestHandler
@@ -29,6 +33,7 @@ class WaffleProject():
 
     def __init__(self, apps: list[str], middleware: list[str]=[]):
         self.apps = self.loadApps(apps)
+        waffleweb.defaults.APPS = self.apps
         self.middlewareHandler = MiddlewareHandler(middleware)
 
     def loadApps(self, apps) -> list:
@@ -110,7 +115,7 @@ class WaffleProject():
                         request = self.middlewareHandler.runRequestMiddleware(request)
 
                         #Creates a RequestHandler object.
-                        handler = RequestHandler(request, self.apps, debug)
+                        handler = RequestHandler(request, debug)
 
                         appMiddlewareHandler = None
 
