@@ -63,7 +63,7 @@ class RequestHandlerTest(unittest.TestCase):
         self.assertEqual(handler._splitURL(), ('page1/10/index', ['page1', '10', 'index'], ''))
 
     def test_methodNotAllowed(self):
-        response = requests.head('http://localhost:8080/math/add/1/1')
+        response = requests.get('http://localhost:8080/math/postTest')
         self.assertEqual(response.status_code, 405)
 
     def test_methodAllowed(self):

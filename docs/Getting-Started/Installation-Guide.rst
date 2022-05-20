@@ -3,14 +3,17 @@ Installation
 ============
 Python Version
 ..............
-Waffleweb has only been tested in Python 3.9, so it is recommended to use Python 3.9<=.
+| Waffleweb has only been tested in Python 3.9, so it is recommended to use Python 3.9<=.
 
 Dependincies
 ............
 - `Jinja2 <https://palletsprojects.com/p/jinja/>`__ Jinja2 is used for templating.
-- `pytz <https://pypi.org/project/pytz/>`__ Pytz is used for timezones
+- `pytz <https://pypi.org/project/pytz/>`__ Pytz is used for timezones.
 
 Installing Waffleweb
 ....................
-To install Waffleweb you have to use pip::
-    ``pip install waffleweb``
+To install Waffleweb you have to use pip:
+
+.. code-block:: python
+
+   pip install waffleweb

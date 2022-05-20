@@ -163,7 +163,7 @@ class RequestHandler:
         #gets the root and file extenstion
         root, ext = os.path.splitext(reqPath)
         root = root.strip('/')
-        splitRoot = root.split('/')
+        splitRoot = root.strip('/').split('/')
 
         return (root, splitRoot, ext)
 
@@ -171,6 +171,7 @@ class RequestHandler:
         '''Finds a view matching the request url, Returns view and the views kwargs.'''
 
         self.root, self.splitRoot, self.ext = self._splitURL()
+
 
         #Searches through all the apps to match the url
         for app in self.apps:
@@ -189,10 +190,12 @@ class RequestHandler:
                             urlMatches = False
                             break
                         
-                        #adds args to view kwargs if part is list
-                        if type(part) == list:
-                            kwarg = self._getArg(index, part)
-                            viewKwargs[kwarg[0]] = kwarg[1]
+                        #makes sure not static file
+                        if self.ext == '':
+                            #adds args to view kwargs if part is list
+                            if type(part) == list:
+                                kwarg = self._getArg(index, part)
+                                viewKwargs[kwarg[0]] = kwarg[1]
 
                     if urlMatches:
                         return (view, viewKwargs)
@@ -200,7 +203,8 @@ class RequestHandler:
         raise HTTP404
 
     def _handleHead(self, view, kwargs):
-        if 'HEAD' not in view['allowedMethods']:
+        #Checks if GET or HEAD is in allowed methods
+        if 'GET' not in view['allowedMethods'] and 'HEAD' not in view['allowedMethods']:
             #Returns 405 response if request method is not in the view's allowed methods
             return self._405MethodNotAllowed(view['allowedMethods'])
 
@@ -230,6 +234,11 @@ class RequestHandler:
         return view['view'](self.request, **kwargs)
 
     def _handleOptions(self, view, kwargs):
+        #Checks if GET or OPTIONS is in allowed methods
+        if 'GET' not in view['allowedMethods'] and 'OPTIONS' not in view['allowedMethods']:
+            #Returns 405 response if request method is not in the view's allowed methods
+            return self._405MethodNotAllowed(view['allowedMethods'])
+
         if view is None:
             methods = ', '.join(['OPTIONS', 'GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'TRACE', 'CONNECT'])
             return HTTPResponse(status=204, headers=f'Allow: {methods}') 
@@ -240,10 +249,10 @@ class RequestHandler:
     def getResponse(self):
         '''Gets a response to a request, retuerns Response.'''
 
-        self.root, self.splitRoot, self.ext = self._splitURL()
-        if self.ext == '':
+        root, splitRoot, ext = self._splitURL()
+        if ext == '':
             #if the route is equal to '*' return a OPTIONS response
-            if self.root == '*':
+            if root == '*':
                 return self._handleOptions(None, {})
 
             try:
@@ -292,7 +301,7 @@ class RequestHandler:
                     return HTTPResponse(None, '404 The requested page could not be found', status=404)
         else:
             try:
-                handler = StaticHandler(self.request, self.root, self.splitRoot, self.ext)
+                handler = StaticHandler(self.request, root, splitRoot, ext)
                 return handler.findFile()
             except HTTP404:
                 #if debug mode is on show errors

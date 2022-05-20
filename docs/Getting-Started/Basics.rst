@@ -1,0 +1,93 @@
+==========
+The Basics
+==========
+
+Creating a project
+..................
+To create a project create a python file and put a WaffleProject object in it as so::
+
+	project.py:
+ 
+.. code-block:: python
+    
+    from waffleweb import WaffleProject
+
+    apps = [
+
+    ]
+
+    yourProject = WaffleProject(apps)
+    
+Apps hold all of your views, we will add some soon.
+
+Creating an app
+...............
+To create an app create a python file and put a WaffleApp object in it as so::
+
+	app.py:
+
+.. code-block:: python
+    
+    from waffleweb import WaffleApp
+
+    yourApp = WaffleApp('appName')
+    
+WaffleApp only needs to take one variable for now: the name of your app.
+to register your app all you need to do is add 'appTest1.yourApp' to your project's
+app list. your project.py should now look as so::
+
+    project.py:
+    
+.. code-block:: python
+
+    from waffleweb import WaffleProject
+
+    apps = [
+        'app.yourApp'
+    ]
+
+    yourProject = WaffleProject(apps)
+    ``
+
+Running your project
+....................
+To run your project under the default addres 127.0.0.1:8000 add this code to your project
+file::
+
+	project.py:
+
+.. code-block:: python
+    
+    if __name__ == '__main__':
+        yourProject.run()
+
+In your terminal you should now see:
+
+.. code-block:: bash
+
+    Waffleweb version 0.1.0
+    Server listening on host 127.0.0.1, port 8000
+    Press Ctrl+C to stop server
+
+If you want to change the host or port you can specify them in run()::
+
+	project.py:
+
+.. code-block:: python
+
+    yourProject.run('0.0.0.0', 8080)
+
+Right now if you go to '127.0.0.1:8000' you will see a 404 page this is because we haven't
+routed any views. We will add some views later.
+
+----------
+Debug Mode
+----------
+Debug mode allows you to see extra data about 404 and traceback and error data in the browser.
+You can turn on debug mode by adding debug=True to run()::
+
+	project.py:
+
+.. code-block:: python
+
+    yourProject.run(debug=True)
