@@ -29,7 +29,7 @@ def _getEnviromentFile() -> Environment:
     )
     return env
 
-def renderTemplate(filePath: str, context: dict, moduleName: str=None, loaderTypeFile: bool=True) -> str:
+def renderTemplate(filePath: str, context: dict={}, moduleName: str=None, loaderTypeFile: bool=True) -> str:
     '''
     renders a template using jinja2, takes four arguments:
         filepath - required - the file path to the template

@@ -1,12 +1,16 @@
 import os
-import jinja2
+import importlib
 import waffleweb
+try:
+    settings = importlib.import_module('settings')
+except ModuleNotFoundError:
+    settings = None
 
 from urllib.parse import urlparse
 from waffleweb.cookie import Cookies
-from waffleweb.response import HTTP404, FileResponse, HTTPResponse, JSONResponse, render
+from waffleweb.response import HTTP404, FileResponse, HTTPResponse, HTTPResponsePermenentRedirect, HTTPResponseRedirect, JSONResponse, render
 from waffleweb.static import StaticHandler
-from waffleweb.template import renderErrorPage
+from waffleweb.template import renderErrorPage, renderTemplate
 
 class Request():
     def __init__(self, requestHeaders, clientIP):
@@ -162,7 +166,6 @@ class RequestHandler:
 
         #gets the root and file extenstion
         root, ext = os.path.splitext(reqPath)
-        root = root.strip('/')
         splitRoot = root.strip('/').split('/')
 
         return (root, splitRoot, ext)
@@ -171,7 +174,7 @@ class RequestHandler:
         '''Finds a view matching the request url, Returns view and the views kwargs.'''
 
         self.root, self.splitRoot, self.ext = self._splitURL()
-
+        self.root = self.root.strip('/')
 
         #Searches through all the apps to match the url
         for app in self.apps:
@@ -256,7 +259,13 @@ class RequestHandler:
                 return self._handleOptions(None, {})
 
             try:
+                #If the view path ends without a slash and the client goes to that page with a slash raise 404
                 view, kwargs = self._getView()
+                if view['unstripedPath'].endswith('/') == False and root.endswith('/'):
+                    raise HTTP404
+                #if the view path ends with a slash and the client goes to that page without a slash redirect to page without slash
+                elif view['unstripedPath'].endswith('/') and root.endswith('/') == False:
+                    return HTTPResponsePermenentRedirect(f'{root}/')
 
                 #Gets methods and runs it's handle function
                 if self.request.method == 'GET':
@@ -291,14 +300,18 @@ class RequestHandler:
                             path = path.replace('>', '&gt;')
                             searchedViews.append(path)
 
-                    render = renderErrorPage(
+                    page = renderErrorPage(
                         mainMessage='404 Page Not Found', 
                         subMessage=f'The requested page could not be found',
                         traceback=f'Views searched:<br>{"<br>".join(searchedViews)}',
                         )
-                    return HTTPResponse(None, render, status=404)
+                    return HTTPResponse(None, page, status=404)
                 else:
-                    return HTTPResponse(None, '404 The requested page could not be found', status=404)
+                    if hasattr(settings, 'file404'):
+                        file404 = getattr(settings, 'file404')
+
+                    page = renderTemplate(file404)
+                    return HTTPResponse(None, page, status=404)
         else:
             try:
                 handler = StaticHandler(self.request, root, splitRoot, ext)
@@ -306,7 +319,11 @@ class RequestHandler:
             except HTTP404:
                 #if debug mode is on show errors
                 if self.debug:
-                    render = renderErrorPage(mainMessage='404 File Not Found<br>', subMessage='The requested file could not be found')
-                    return HTTPResponse(None, render, status=404)
+                    page = renderErrorPage(mainMessage='404 File Not Found<br>', subMessage='The requested file could not be found')
+                    return HTTPResponse(None, page, status=404)
                 else:
-                    return HTTPResponse(None, 'The requested file could not be found', status=404)
+                    if hasattr(settings, 'file404'):
+                        file404 = getattr(settings, 'file404')
+
+                    page = renderTemplate(file404)
+                    return HTTPResponse(None, page, status=404)

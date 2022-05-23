@@ -17,5 +17,5 @@ class AppMiddlewareTest(unittest.TestCase):
         self.assertEqual(res.content, b'{}')
 
     def test_afterResponse(self):
-        res = requests.get('http://localhost:8080')
+        res = requests.get('http://localhost:8080/')
         self.assertEqual(res.content, b'middlewareified')

@@ -212,6 +212,20 @@ class FileResponse(HTTPResponseBase):
     def fileObj(self, value):
         self._fileObj = value.read()
 
+class HTTPResponseRedirectBase(HTTPResponse):
+    '''The base redirect class'''
+    def __init__(self, redirectTo, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.headers['Location'] = redirectTo
+
+class HTTPResponseRedirect(HTTPResponseRedirectBase):
+    '''A Http response redirect, takes one argument: redirectTo'''
+    statusCode = 302
+
+class HTTPResponsePermenentRedirect(HTTPResponseRedirectBase):
+    '''A Http response permanent redirect, takes one argument: redirectTo'''
+    statusCode = 308
+
 def render(request=None, filePath: str=None, context: dict={}, headers=None, charset=None, status=None, reason=None):
     '''
     Returns a HTTPResponse with the rendered template, this uses jinja2.\n
@@ -226,3 +240,4 @@ def render(request=None, filePath: str=None, context: dict={}, headers=None, cha
     '''
     templateRender = renderTemplate(filePath=filePath, context=context)
     return HTTPResponse(request, templateRender, headers=headers, charset=charset, status=status, reason=reason)
+

@@ -60,7 +60,7 @@ class RequestHandlerTest(unittest.TestCase):
 
         handler = RequestHandler(request, APPS)
 
-        self.assertEqual(handler._splitURL(), ('page1/10/index', ['page1', '10', 'index'], ''))
+        self.assertEqual(handler._splitURL(), ('/page1/10/index', ['page1', '10', 'index'], ''))
 
     def test_methodNotAllowed(self):
         response = requests.get('http://localhost:8080/math/postTest')
@@ -80,18 +80,19 @@ class RequestHandlerTest(unittest.TestCase):
         self.assertEqual(response.json(), {'answer': 2})
 
     def test_handleHead(self):
-        response = requests.head('http://localhost:8080/math')
+        response = requests.head('http://localhost:8080/math/')
         self.assertEqual(response.status_code, 200)
         now = datetime.now(timezone('GMT'))
         dateTime = now.strftime("%a, %d %b %Y %X %Z")
+
         self.assertEqual(response.headers, {
             'Content-Type': 'text/html; charset=utf-8',
-            'Set-Cookie': 'addedCookie=32; path=/math',
             'Date': dateTime,
             'Content-Length': '4',
+            'Set-Cookie': 'addedCookie=32; path=/math/',
             })
 
     def test_handlePost(self):
         data = {'testData1': 15, 'testData2': 30}
-        response = requests.post('http://localhost:8080/math/postTest', data=data)
+        response = requests.post('http://localhost:8080/math/postTest/', data=data)
         self.assertEqual(response.content, b"{'testData1': '15', 'testData2': '30'}")

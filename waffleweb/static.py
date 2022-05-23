@@ -11,6 +11,7 @@ from waffleweb.response import HTTP404, FileResponse, HTTPResponse
 from waffleweb.defaults import DEFUALT_STATIC_DIR
 
 def findStatic(path, mode='rb', buffering=-1, encoding=None, errors=None, newline=None, closefd=True, opener=None):
+    '''Finds a static file, takes all the same arguments as open()'''
     staticDir = DEFUALT_STATIC_DIR.strip('/')
     if hasattr(settings, 'STATIC_DIR'):
         staticDir = getattr(settings, 'STATIC_DIR').strip('/')
@@ -36,6 +37,7 @@ class StaticHandler:
         self.root, self.splitRoot, self.ext = root, splitRoot, ext
 
     def findFile(self): 
+        '''Finds a static file, returns a FileResponse'''
         try:
             with openStatic(self.path, 'rb') as f:
                 mt = mimetypes.guess_type(self.root + self.ext)
