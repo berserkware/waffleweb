@@ -70,10 +70,6 @@ class RequestHandlerTest(unittest.TestCase):
         response = requests.get('http://localhost:8080/math/add/1/1')
         self.assertEqual(response.status_code, 200)
 
-    def test_methodNotImplemented(self):
-        response = requests.delete('http://localhost:8080/math/add/1/1')
-        self.assertEqual(response.status_code, 501)
-
     def test_handleGet(self):
         response = requests.get('http://localhost:8080/math/add/1/1')
         self.assertEqual(response.status_code, 200)

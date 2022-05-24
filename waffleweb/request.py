@@ -205,6 +205,13 @@ class RequestHandler:
         
         raise HTTP404
 
+    def _handleGet(self, view, kwargs):
+        if 'GET' not in view['allowedMethods']:
+            #Returns 405 response if request method is not in the view's allowed methods
+            return self._405MethodNotAllowed(view['allowedMethods'])
+
+        return view['view'](self.request, **kwargs)
+
     def _handleHead(self, view, kwargs):
         #Checks if GET or HEAD is in allowed methods
         if 'GET' not in view['allowedMethods'] and 'HEAD' not in view['allowedMethods']:
@@ -222,15 +229,29 @@ class RequestHandler:
 
         return newView
 
-    def _handleGet(self, view, kwargs):
-        if 'GET' not in view['allowedMethods']:
+    def _handlePost(self, view, kwargs):
+        if 'POST' not in view['allowedMethods']:
             #Returns 405 response if request method is not in the view's allowed methods
             return self._405MethodNotAllowed(view['allowedMethods'])
 
         return view['view'](self.request, **kwargs)
 
-    def _handlePost(self, view, kwargs):
-        if 'POST' not in view['allowedMethods']:
+    def _handlePut(self, view, kwargs):
+        if 'PUT' not in view['allowedMethods']:
+            #Returns 405 response if request method is not in the view's allowed methods
+            return self._405MethodNotAllowed(view['allowedMethods'])
+
+        return view['view'](self.request, **kwargs)
+
+    def _handleDelete(self, view, kwargs):
+        if 'DELETE' not in view['allowedMethods']:
+            #Returns 405 response if request method is not in the view's allowed methods
+            return self._405MethodNotAllowed(view['allowedMethods'])
+
+        return view['view'](self.request, **kwargs)
+
+    def _handleConnect(self, view, kwargs):
+        if 'CONNECT' not in view['allowedMethods']:
             #Returns 405 response if request method is not in the view's allowed methods
             return self._405MethodNotAllowed(view['allowedMethods'])
 
@@ -248,6 +269,20 @@ class RequestHandler:
 
         methods = ', '.join(view['allowedMethods'])
         return HTTPResponse(status=204, headers=f'Allow: {methods}') 
+
+    def _handleTrace(self, view, kwargs):
+        if 'TRACE' not in view['allowedMethods']:
+            #Returns 405 response if request method is not in the view's allowed methods
+            return self._405MethodNotAllowed(view['allowedMethods'])
+
+        return view['view'](self.request, **kwargs)
+
+    def _handlePatch(self, view, kwargs):
+        if 'PATCH' not in view['allowedMethods']:
+            #Returns 405 response if request method is not in the view's allowed methods
+            return self._405MethodNotAllowed(view['allowedMethods'])
+
+        return view['view'](self.request, **kwargs)
 
     def getResponse(self):
         '''Gets a response to a request, retuerns Response.'''
@@ -274,8 +309,20 @@ class RequestHandler:
                     return self._handleHead(view, kwargs)
                 elif self.request.method == 'POST':
                     return self._handlePost(view, kwargs)
+                elif self.request.method == 'PUT':
+                    return self._handlePut(view, kwargs)
+                elif self.request.method == 'DELETE':
+                    return self._handleDelete(view, kwargs)
+                elif self.request.method == 'CONNECT':
+                    return self._handleConnect(view, kwargs)
+                elif self.request.method == 'POST':
+                    return self._handlePost(view, kwargs)
                 elif self.request.method == 'OPTIONS':
                     return self._handleOptions(view, kwargs)
+                elif self.request.method == 'TRACE':
+                    return self._handleTrace(view, kwargs)
+                elif self.request.method == 'PATCH':
+                    return self._handlePatch(view, kwargs)
                 else:
                     if self.debug:
                         render = renderErrorPage(
