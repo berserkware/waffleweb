@@ -7,14 +7,6 @@ except ModuleNotFoundError:
 
 from jinja2 import Environment, FileSystemLoader, ModuleLoader, select_autoescape
 
-def _getEnviromentModule(module: str) -> Environment:
-    '''Gets a jinja Enviroment with the loader being PackageLoader.'''
-    env = Environment(
-        loader=ModuleLoader(module),
-        autoescape=select_autoescape,
-    )
-    return env
-
 def _getEnviromentFile() -> Environment:
     '''Gets a jinja Enviroment with the loader being FileSystemLoader.'''
 
@@ -29,26 +21,26 @@ def _getEnviromentFile() -> Environment:
     )
     return env
 
-def renderTemplate(filePath: str, context: dict={}, moduleName: str=None, loaderTypeFile: bool=True) -> str:
+def renderTemplate(filePath: str, context: dict={}) -> str:
     '''
-    renders a template using jinja2, takes four arguments:
+    renders a template using jinja2, takes three arguments:
         filepath - required - the file path to the template
         context - the variables for the template
-        loaderTypeFile - default:True - if True uses loader FileSystemLoader if False use loader ModuleLoader.
-        moduleName - Needed if your loaderTypeFile == False
     '''
 
-    #gets the enviroment
-    if loaderTypeFile == True:
-        env = _getEnviromentFile()
+    if hasattr(settings, 'TEMPLATE_RENDERER'):
+        renderer = getattr(settings, 'TEMPLATE_RENDERER')
+
+        return renderer(filePath, context)
     else:
-        env = _getEnviromentModule(moduleName)
+        #gets the enviroment
+        env = _getEnviromentFile()
 
-    #gets the template render
-    template = env.get_template(filePath)
-    templateRender = template.render(**context)
+        #gets the template render
+        template = env.get_template(filePath)
+        templateRender = template.render(**context)
 
-    return templateRender
+        return templateRender
     
 def renderErrorPage(mainMessage: str, subMessage: str=None, traceback: str=None) -> str:
     '''

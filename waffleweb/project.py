@@ -1,3 +1,4 @@
+from cgitb import handler
 import socket
 import ipaddress
 import datetime
@@ -13,6 +14,7 @@ from waffleweb.response import HTTPResponse, HTTP404
 from waffleweb.request import Request, RequestHandler
 from waffleweb.template import renderErrorPage, renderTemplate
 from waffleweb.middleware import MiddlewareHandler
+from waffleweb.wsgi import WsgiRequestHandler
 
 class AppNotFoundError(Exception):
     pass
@@ -177,3 +179,5 @@ class WaffleProject():
                 print('\nKeyboardInterrupt, Closing server')
                 return
 
+    def wsgiApplication(self, environ, startResponse):
+        handler = WsgiRequestHandler(environ, startResponse)

@@ -161,38 +161,30 @@ class HTTPResponse(HTTPResponseBase):
         self._content = [self.convertBytes(value)]
         self.headers['Content-Length'] = str(len(self.content))
 
-class JSONResponse(HTTPResponseBase):
+class JSONResponse(HTTPResponse):
     '''Handles the HTTP responses and json.'''
 
-    def __init__(self, request=None, jsonContent=None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.request = request
+    def __init__(self, request=None, data=None, **kwargs):
+        super().__init__(**kwargs)
+        data = json.dumps(data)
+        self.content = data
 
-        self.json = jsonContent
-        self.headers['Content-Length'] = str(len(json.dumps(jsonContent)))
+        self.request = request
         self.headers['Content-Type'] = f'application/json; charset={self.charset}'
 
-    def __bytes__(self):
-        json = (self.json if self.json != b'None' else b'')
-        return self.serialize(json)
-
     @property
-    def json(self):
-        return self._json
-
-    @json.setter
-    def json(self, value):
-        self._json = bytes(json.dumps(value), encoding=self.charset)
+    def data(self):
+        return self.content
 
 class FileResponse(HTTPResponseBase):
     '''Handles the HTTP responses and file.'''
 
-    def __init__(self, request=None, fileObj=None, mimeType=None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.request = request
-
+    def __init__(self, request=None, fileObj=None, mimeType=None, **kwargs):
+        super().__init__(**kwargs)
+        self.content = fileObj.read()
         self.mimeType = mimeType
-        self.fileObj = fileObj
+
+        self.request = request
 
         #add mimetype to content-type
         if mimeType is not None:
@@ -200,22 +192,14 @@ class FileResponse(HTTPResponseBase):
 
         self.headers['Content-Length'] = str(len(self.fileObj))
 
-    def __bytes__(self):
-        fileObj = (self.fileObj if self.fileObj != b'None' else b'')
-        return self.serialize(fileObj)
-
     @property
     def fileObj(self):
-        return self._fileObj
-
-    @fileObj.setter
-    def fileObj(self, value):
-        self._fileObj = value.read()
+        return self.content
 
 class HTTPResponseRedirectBase(HTTPResponse):
     '''The base redirect class'''
-    def __init__(self, redirectTo, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, redirectTo, **kwargs):
+        super().__init__(**kwargs)
         self.headers['Location'] = redirectTo
 
 class HTTPResponseRedirect(HTTPResponseRedirectBase):

@@ -115,8 +115,8 @@ class HTTPResponseTest(unittest.TestCase):
 
 class JSONResponseTest(unittest.TestCase):
     def test_json(self):
-        response = responses.JSONResponse(jsonContent={'testJson': 1234})
-        self.assertEqual(response.json, b'{"testJson": 1234}')
+        response = responses.JSONResponse(data={'testJson': 1234})
+        self.assertEqual(response.data, b'{"testJson": 1234}')
 
 class FileResponseTest(unittest.TestCase):
     def test_file(self):

@@ -13,7 +13,8 @@ from waffleweb.static import StaticHandler
 from waffleweb.template import renderErrorPage, renderTemplate
 
 class Request():
-    def __init__(self, requestHeaders, clientIP):
+    def __init__(self, requestHeaders, clientIP, wsgi=False):
+        self.wsgi = wsgi
         self.headers = {}
         self.clientIP = clientIP
         self.requestHeaders = requestHeaders
@@ -28,69 +29,71 @@ class Request():
 
         #adds forms data to the postData variable
         if self.method == 'POST':
-            if self.content != '':
-                #If Content-Type is not in headers then make it 'application/x-www-form-urlencoded'
-                if 'Content-Type' not in self.headers.keys():
-                    self.headers['Content-Type'] = 'application/x-www-form-urlencoded'
-                
-                #Spits the form values and adds them to a dictionary if Content-Type is 'application/x-www-form-urlencoded'
-                if self.headers['Content-Type'] == 'application/x-www-form-urlencoded':
-                    formValues = self.content.split('&')
-
-                    #For every form value add it to a dictionary called postData
-                    for value in formValues:
-                        try:
-                            key, value = value.split('=')
-                            self.postData[str(key.strip('\n'))] = str(value.strip('\n'))
-                        except ValueError:
-                            pass
-
-                #If the contentType is equal to 'multipart/form-data' split it and add it to a dictionary
-                elif self.headers['Content-Type'].split(';')[0] == 'multipart/form-data':
-                    #gets the boundry
-                    contentTypeHeader = self.headers['Content-Type'].split(';')
-                    boundary = 'boundary'
-
-                    for index, keyvalue in enumerate(contentTypeHeader):
-                        if index != 0:
-                            key, value = keyvalue.split('=')
-                            if key.strip() == 'boundary':
-                                boundary = value
-
-                    #splits the form values by the boundry
-                    splitFormValues = self.content.split('--' + boundary)
-
-                    #goes through all the split values
-                    for formValue in splitFormValues:
-                        if formValue != '\n' and formValue != '--\n':
-                            #splits the data into its seporate headers and removes empty items
-                            dataWithSpaces = formValue.split('\n')
-                            data = []
-                            for i in dataWithSpaces:
-                                if i != '':
-                                    data.append(i)
-
-                            #Goes through all the headers of the formValues
-                            for field in data[0].split(';'):
-                                #checks to see if its a header
-                                if field.split(':')[0] == '\nContent-Disposition:':
-                                    continue
-                                #if not then get the name of field
-                                else:
-                                    try:
-                                        key, value = field.split('=')
-                                        if key.strip() == 'name':
-                                            name = value.strip('"')
-                                    except ValueError:
-                                        pass
-
-                            #adds to postData
-                            self.postData[str(name)] = data[-1]
+            self._getPostData()
 
         if 'Cookie' in self.headers.keys():
             self.cookies = Cookies(self.headers['Cookie'])
         else:
             self.cookies = Cookies()
+
+    def _getPostData(self):
+        if self.content != '':
+            #If Content-Type is not in headers then make it 'application/x-www-form-urlencoded'
+            if 'Content-Type' not in self.headers.keys():
+                self.headers['Content-Type'] = 'application/x-www-form-urlencoded'
+                
+            #Spits the form values and adds them to a dictionary if Content-Type is 'application/x-www-form-urlencoded'
+            if self.headers['Content-Type'] == 'application/x-www-form-urlencoded':
+                formValues = self.content.split('&')
+                #For every form value add it to a dictionary called postData
+                for value in formValues:
+                    try:
+                        key, value = value.split('=')
+                        self.postData[str(key.strip('\n'))] = str(value.strip('\n'))
+                    except ValueError:
+                        pass
+
+            #If the contentType is equal to 'multipart/form-data' split it and add it to a dictionary
+            elif self.headers['Content-Type'].split(';')[0] == 'multipart/form-data':
+                #gets the boundry
+                contentTypeHeader = self.headers['Content-Type'].split(';')
+                boundary = 'boundary'
+
+                for index, keyvalue in enumerate(contentTypeHeader):
+                    if index != 0:
+                        key, value = keyvalue.split('=')
+                        if key.strip() == 'boundary':
+                            boundary = value
+
+                #splits the form values by the boundry
+                splitFormValues = self.content.split('--' + boundary)
+
+                #goes through all the split values
+                for formValue in splitFormValues:
+                    if formValue != '\n' and formValue != '--\n':
+                        #splits the data into its seporate headers and removes empty items
+                        dataWithSpaces = formValue.split('\n')
+                        data = []
+                        for i in dataWithSpaces:
+                            if i != '':
+                                data.append(i)
+
+                        #Goes through all the headers of the formValues
+                        for field in data[0].split(';'):
+                            #checks to see if its a header
+                            if field.split(':')[0] == '\nContent-Disposition:':
+                                continue
+                            #if not then get the name of field
+                            else:
+                                try:
+                                    key, value = field.split('=')
+                                    if key.strip() == 'name':
+                                        name = value.strip('"')
+                                except ValueError:
+                                    pass
+
+                        #adds to postData
+                        self.postData[str(name)] = data[-1]
 
     @property
     def path(self):
@@ -205,6 +208,7 @@ class RequestHandler:
         
         raise HTTP404
 
+
     def _handleGet(self, view, kwargs):
         if 'GET' not in view['allowedMethods']:
             #Returns 405 response if request method is not in the view's allowed methods
@@ -283,6 +287,7 @@ class RequestHandler:
             return self._405MethodNotAllowed(view['allowedMethods'])
 
         return view['view'](self.request, **kwargs)
+
 
     def getResponse(self):
         '''Gets a response to a request, retuerns Response.'''
