@@ -1,3 +1,3 @@
 class WsgiRequestHandler:
-    def __init__(self, environ, startRespons):
+    def __init__(self, environ, startResponse):
         pass

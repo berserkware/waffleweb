@@ -38,7 +38,7 @@ class RequestHeaderTest(unittest.TestCase):
         self.assertEqual(self.testRequest.method, 'GET')
     
     def test_clientIP(self):
-        self.assertEqual(self.testRequest.clientIP, '101.98.137.19')
+        self.assertEqual(self.testRequest.IP, '101.98.137.19')
 
 class RequestHandlerTest(unittest.TestCase):
     def test_splitURL(self):

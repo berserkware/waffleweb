@@ -13,50 +13,56 @@ from waffleweb.static import StaticHandler
 from waffleweb.template import renderErrorPage, renderTemplate
 
 class Request():
-    def __init__(self, requestHeaders, clientIP, wsgi=False):
+    def __init__(self, rawRequest, IP, wsgi=False):
+        self.rawRequest = rawRequest
         self.wsgi = wsgi
-        self.headers = {}
-        self.clientIP = clientIP
-        self.requestHeaders = requestHeaders
+        self.META = {}
+        self.IP = IP
+        self.POST = {}
 
-        self.postData = {}
-
-        #Splits the request into it's seporate headers and adds it to a dictionary.
-        splitHeaders = requestHeaders.split('\n')
-        for line in splitHeaders:
-                splitLine = line.strip().split(' ')
-                self.headers[str(splitLine[0][:(len(splitLine[0]) - 1)])] = ' '.join(splitLine[1:])
+        if self.wsgi == False:
+            #Gets all the headers
+            for line in self.rawRequest.split('\r'):
+                if len(line.split(': ')) == 2:    
+                    splitLine = line.strip().split(' ')
+                    self.META[str(splitLine[0][:(len(splitLine[0]) - 1)]).upper().replace('-', '_')] = ' '.join(splitLine[1:])
+    
+                if line == '\n':
+                    break
+        else:
+            self.META = self.rawRequest
 
         #adds forms data to the postData variable
         if self.method == 'POST':
             self._getPostData()
 
-        if 'Cookie' in self.headers.keys():
-            self.cookies = Cookies(self.headers['Cookie'])
+        if 'COOKIE' in self.META.keys():
+            self.COOKIES = Cookies(self.META['COOKIE'])
+        elif 'HTTP_COOKIE' in self.META.keys():
+            self.COOKIES = Cookies(self.META['HTTP_COOKIE'])
         else:
-            self.cookies = Cookies()
+            self.COOKIES = Cookies()
 
     def _getPostData(self):
-        if self.content != '':
-            #If Content-Type is not in headers then make it 'application/x-www-form-urlencoded'
-            if 'Content-Type' not in self.headers.keys():
-                self.headers['Content-Type'] = 'application/x-www-form-urlencoded'
-                
+        #Gets just the content-type
+        contentType = self.META['CONTENT_TYPE'].split(';')[0]
+        
+        if self.body != '':
             #Spits the form values and adds them to a dictionary if Content-Type is 'application/x-www-form-urlencoded'
-            if self.headers['Content-Type'] == 'application/x-www-form-urlencoded':
-                formValues = self.content.split('&')
+            if contentType == 'application/x-www-form-urlencoded':
+                formValues = self.body.split('&')
                 #For every form value add it to a dictionary called postData
                 for value in formValues:
                     try:
                         key, value = value.split('=')
-                        self.postData[str(key.strip('\n'))] = str(value.strip('\n'))
+                        self.POST[str(key.strip('\n'))] = {'value': str(value.strip('\n'))}
                     except ValueError:
                         pass
 
             #If the contentType is equal to 'multipart/form-data' split it and add it to a dictionary
-            elif self.headers['Content-Type'].split(';')[0] == 'multipart/form-data':
+            elif contentType == 'multipart/form-data':
                 #gets the boundry
-                contentTypeHeader = self.headers['Content-Type'].split(';')
+                contentTypeHeader = self.META['CONTENT_TYPE'].split(';')
                 boundary = 'boundary'
 
                 for index, keyvalue in enumerate(contentTypeHeader):
@@ -66,7 +72,7 @@ class Request():
                             boundary = value
 
                 #splits the form values by the boundry
-                splitFormValues = self.content.split('--' + boundary)
+                splitFormValues = self.body.split('--' + boundary)
 
                 #goes through all the split values
                 for formValue in splitFormValues:
@@ -78,52 +84,59 @@ class Request():
                             if i != '':
                                 data.append(i)
 
-                        #Goes through all the headers of the formValues
-                        for field in data[0].split(';'):
-                            #checks to see if its a header
-                            if field.split(':')[0] == '\nContent-Disposition:':
-                                continue
-                            #if not then get the name of field
-                            else:
-                                try:
-                                    key, value = field.split('=')
-                                    if key.strip() == 'name':
-                                        name = value.strip('"')
-                                except ValueError:
-                                    pass
+                        headers = {}
+
+                        for field in data[0].split('\n'):
+                            headers[field.split(': ')[0].upper().replace('-', '_')] = field.split(': ')[1]
+                        
+                        #gets the name
+                        cd = headers['CONTENT_DISPOSITION'].split('; ')
+                        for i in cd:
+                            if i.split('=')[0] == 'name':
+                                name = i.split('=')[1].strip('"')
 
                         #adds to postData
-                        self.postData[str(name)] = data[-1]
+                        self.POST[str(name)] = {'value': data[-1], 'headers': headers}
 
     @property
     def path(self):
-        return self.requestHeaders.split('\n')[0].split()[1]
+        if self.wsgi == False:
+            return self.rawRequest.split('\n')[0].split()[1]
+        else:
+            return self.META['RAW_URI']
 
     @property
     def method(self):
-        return self.requestHeaders.split('\n')[0].split()[0]
+        if self.wsgi == False:
+            return self.rawRequest.split('\n')[0].split()[0]
+        else:
+            return self.META['REQUEST_METHOD']
 
     @property
     def HTTPVersion(self):
-        return self.requestHeaders.split('\n')[0].split()[2]
+        return self.rawRequest.split('\n')[0].split()[2]
 
     @property
-    def content(self):
-        splitContent = []
-        isContent = False
+    def body(self):
+        if self.wsgi == False:
+            splitContent = []
+            isContent = False
 
-        #this splits the requests by the \r
-        for line in self.requestHeaders.split('\r'):
-            #check if isContent is True to start adding to the content
-            if isContent == True:
-                splitContent.append(line)
+            #this splits the requests by the \r
+            for line in self.rawRequest.split('\r'):
+                #check if isContent is True to start adding to the content
+                if isContent == True:
+                    splitContent.append(line)
 
-            #checks if the line is equest = '\n'. this splits the request into content and header
-            if line == '\n':
-                isContent = True
+                #checks if the line is equest = '\n'. this splits the request into content and header
+                if line == '\n':
+                    isContent = True
 
-        #returns the joins content
-        return ''.join(splitContent)
+            #returns the joins content
+            return ''.join(splitContent)
+        else:
+            length = int(self.META.get('CONTENT_LENGTH', '0'))
+            return self.META['wsgi.input'].read(length)
 
 class RequestHandler:
     '''Handles a requests, Returns response'''
