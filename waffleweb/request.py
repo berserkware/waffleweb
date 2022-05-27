@@ -11,11 +11,24 @@ from waffleweb.cookie import Cookies
 from waffleweb.response import HTTP404, FileResponse, HTTPResponse, HTTPResponsePermenentRedirect, HTTPResponseRedirect, JSONResponse, render
 from waffleweb.static import StaticHandler
 from waffleweb.template import renderErrorPage, renderTemplate
+from waffleweb.files import File
 
-class Request():
+class File:
+    """
+    A file.
+    """
+
+    def __init__(self, name, data, contentType, size=None):
+        self.name = name
+        self.data = data
+        self.contentType = contentType
+        self.size = size
+
+class Request:
     def __init__(self, rawRequest, IP, wsgi=False):
         self.rawRequest = rawRequest
         self.wsgi = wsgi
+        self.FILES = {}
         self.META = {}
         self.IP = IP
         self.POST = {}
@@ -89,11 +102,17 @@ class Request():
                         for field in data[0].split('\n'):
                             headers[field.split(': ')[0].upper().replace('-', '_')] = field.split(': ')[1]
                         
-                        #gets the name
+                        name = ''
+                        #gets stuff from the content disposation
                         cd = headers['CONTENT_DISPOSITION'].split('; ')
                         for i in cd:
                             if i.split('=')[0] == 'name':
                                 name = i.split('=')[1].strip('"')
+                            elif i.split('=')[0] == 'filename':
+                                size = len(str(data[-1]))
+
+                                contentType = headers.get('CONTENT_TYPE')
+                                self.FILES[name] = File(i.split('=')[1].strip('"'), data[-1], (contentType if contentType != -1 else 'text/plain'), size)
 
                         #adds to postData
                         self.POST[str(name)] = {'value': data[-1], 'headers': headers}

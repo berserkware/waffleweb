@@ -40,6 +40,13 @@ class RequestHeaderTest(unittest.TestCase):
     def test_clientIP(self):
         self.assertEqual(self.testRequest.IP, '101.98.137.19')
 
+    def test_FILES(self):
+        file = open('tests/test.html')
+        files = {'test': file}
+        res = requests.post('http://localhost:8080/filesPostTest/', files=files)
+        self.assertEqual(b'<h1>Testing Testing 123</h1>', res.content)
+        file.close()
+
 class RequestHandlerTest(unittest.TestCase):
     def test_splitURL(self):
         APPS = []

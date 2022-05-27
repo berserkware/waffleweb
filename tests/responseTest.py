@@ -145,7 +145,7 @@ class HTTPResponseRedirectTest(unittest.TestCase):
 class ErrorsTest(unittest.TestCase):
     def test_404(self):
         res = requests.get('http://localhost:8080/this-is-404')
-        self.assertEqual(res.content, b'\n        <title>404 Page Not Found</title>\n        <h1>404 Page Not Found</h1>\n        <h2>The requested page could not be found</h2>\n        <h3>Views searched:<br>/math/<br>math/&lt;operator:str&gt;/&lt;num1:int&gt;/&lt;num2:int&gt;/<br>math/postTest/<br>cookieTest/<br>templateTest/<br>exceptTest/<br>redirecternator/<br>/<br>/testBefore/</h3>\n    ')
+        self.assertEqual(res.content, b'\n        <title>404 Page Not Found</title>\n        <h1>404 Page Not Found</h1>\n        <h2>The requested page could not be found</h2>\n        <h3>Views searched:<br>/math/<br>math/&lt;operator:str&gt;/&lt;num1:int&gt;/&lt;num2:int&gt;/<br>math/postTest/<br>cookieTest/<br>templateTest/<br>exceptTest/<br>redirecternator/<br>filesPostTest/<br>/<br>/testBefore/</h3>\n    ')
 
     def test_405(self):
         res = requests.get('http://localhost:8080/math/postTest')
