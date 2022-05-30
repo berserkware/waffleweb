@@ -1,19 +1,42 @@
 class Cookie():
-    '''This is a cookie num num num'''
+    '''
+    This is a cookie num num num, takes 11 arguments::
+        name - The name of the cookie.
+
+        value - The value of the cookie.
+
+        path - the path of the cookie.
+
+        maxAge - Maximum age of the cookie.
+
+        domain - Domian of the cookie.
+
+        secure - If the cookie is secure
+
+        HTTPOnly - If the cookie is Http only
+
+        sameSite - If the cookie is restricted to a first-party of same-site context.
+
+        strict
+
+        lax
+
+        none
+    '''
 
     def __init__(
             self, 
-            name, 
-            value, 
-            path=None, 
-            maxAge=None, 
-            domain=None, 
-            secure=False, 
-            HTTPOnly=False, 
-            sameSite=None, 
-            strict=False, 
-            lax=False, 
-            none=False
+            name: str, 
+            value: str, 
+            path: str=None, 
+            maxAge: str=None, 
+            domain: str=None, 
+            secure: bool=False, 
+            HTTPOnly: bool=False, 
+            sameSite: str=None, 
+            strict: bool=False, 
+            lax: bool=False, 
+            none: bool=False
         ):
         self.name = str(name)
         self.value = value
@@ -32,9 +55,12 @@ class Cookie():
         return f'{self.name}={self.value}; {f"path={self.path}; " if self.path is not None else ""}{f"Domain={self.domain};" if self.domain is not None else ""}{f"Max-Age={self.maxAge};" if self.maxAge is not None else ""}{f"Secure; " if self.secure == True else ""}{f"HttpOnly; " if self.HTTPOnly == True else ""}{f"SameSite={self.sameSite};" if self.sameSite is not None else ""}{f"Strict; " if self.strict == True else ""}{f"Lax; " if self.lax == True else ""}{f"None; " if self.none == True else ""}'
 
 class Cookies(dict):
-    '''This stores Cookies, it is a dictionary.'''
+    '''
+    This stores Cookies, it is a dictionary. Takes 1 arguments::
+        cookies - a string of cookies, example: nameThing=valueThing; anotherNameThing=anotherValueThing
+    '''
 
-    def __init__(self, cookies=None, *args, **kwargs):
+    def __init__(self, cookies: str=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         #Gets all the cookies from cookies
@@ -49,11 +75,9 @@ class Cookies(dict):
             cookie = f'{cookieKey}={self[cookieKey].value}'
             cookies.append(cookie)
 
-        cookiess = '; '.join(cookies)
-        if cookiess != '':
-            return '; '.join(cookies)
-        else:
-            return ''
+        joinedCookies = '; '.join(cookies)
+
+        return joinedCookies
 
     def setCookie(
             self, 

@@ -1,6 +1,7 @@
 import importlib
 
-from waffleweb.request import Request
+from waffleweb.request import Request, RequestHandler
+from waffleweb.response import HTTP404
 
 class MiddlewareNotFoundError(Exception):
     pass

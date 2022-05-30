@@ -149,4 +149,4 @@ class ErrorsTest(unittest.TestCase):
 
     def test_405(self):
         res = requests.get('http://localhost:8080/math/postTest')
-        self.assertEqual(res.content, b'\n        <title>404 Method Not Allowed</title>\n        <h1>404 Method Not Allowed</h1>\n        <h2>Allowed Methods: POST</h2>\n        \n    ')
+        self.assertEqual(res.content, b'\n        <title>405 Method Not Allowed</title>\n        <h1>405 Method Not Allowed</h1>\n        <h2>Allowed Methods: POST</h2>\n        \n    ')

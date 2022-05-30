@@ -8,21 +8,10 @@ except ModuleNotFoundError:
 
 from urllib.parse import urlparse
 from waffleweb.cookie import Cookies
-from waffleweb.response import HTTP404, FileResponse, HTTPResponse, HTTPResponsePermenentRedirect, HTTPResponseRedirect, JSONResponse, render
+from waffleweb.response import HTTP404, FileResponse, HTTPResponse, HTTPResponsePermenentRedirect, JSONResponse
 from waffleweb.static import StaticHandler
 from waffleweb.template import renderErrorPage, renderTemplate
 from waffleweb.files import File
-
-class File:
-    """
-    A file.
-    """
-
-    def __init__(self, name, data, contentType, size=None):
-        self.name = name
-        self.data = data
-        self.contentType = contentType
-        self.size = size
 
 class Request:
     def __init__(self, rawRequest, IP, wsgi=False):
@@ -45,6 +34,8 @@ class Request:
         else:
             self.META = self.rawRequest
 
+        self.body = self._getBody()
+
         #adds forms data to the postData variable
         if self.method == 'POST':
             self._getPostData()
@@ -57,13 +48,17 @@ class Request:
             self.COOKIES = Cookies()
 
     def _getPostData(self):
-        #Gets just the content-type
-        contentType = self.META['CONTENT_TYPE'].split(';')[0]
+        try:
+            #Gets just the content-type
+            contentType = self.META['CONTENT_TYPE'].split(';')[0]
+        except KeyError:
+            contentType = 'application/x-www-form-urlencoded'
         
         if self.body != '':
             #Spits the form values and adds them to a dictionary if Content-Type is 'application/x-www-form-urlencoded'
             if contentType == 'application/x-www-form-urlencoded':
                 formValues = self.body.split('&')
+
                 #For every form value add it to a dictionary called postData
                 for value in formValues:
                     try:
@@ -89,33 +84,57 @@ class Request:
 
                 #goes through all the split values
                 for formValue in splitFormValues:
-                    if formValue != '\n' and formValue != '--\n':
+                    if formValue != '\n' and formValue != '--\n' and formValue != '' and formValue != '--\r\n':
                         #splits the data into its seporate headers and removes empty items
                         dataWithSpaces = formValue.split('\n')
                         data = []
                         for i in dataWithSpaces:
-                            if i != '':
+                            if i != '' and i != '\r':
                                 data.append(i)
 
                         headers = {}
-
                         for field in data[0].split('\n'):
                             headers[field.split(': ')[0].upper().replace('-', '_')] = field.split(': ')[1]
                         
+                        isFile = False
                         name = ''
                         #gets stuff from the content disposation
                         cd = headers['CONTENT_DISPOSITION'].split('; ')
                         for i in cd:
                             if i.split('=')[0] == 'name':
-                                name = i.split('=')[1].strip('"')
+                                name = i.split('=')[1].strip('\r').strip('"')
                             elif i.split('=')[0] == 'filename':
                                 size = len(str(data[-1]))
 
                                 contentType = headers.get('CONTENT_TYPE')
-                                self.FILES[name] = File(i.split('=')[1].strip('"'), data[-1], (contentType if contentType != -1 else 'text/plain'), size)
+                                self.FILES[str(name)] = File(i.split('=')[1].strip('\r').strip('"'), data[-1].strip('\r'), (contentType if contentType != -1 else 'text/plain'), size)
+                                isFile = True
 
-                        #adds to postData
-                        self.POST[str(name)] = {'value': data[-1], 'headers': headers}
+                        if isFile == False:
+                            #adds to postData
+                            self.POST[str(name)] = {'value': data[-1].strip('\r'), 'headers': headers}
+
+    def _getBody(self):
+        if self.wsgi == False:
+            splitContent = []
+            isContent = False
+
+            #this splits the requests by the \r
+            for line in self.rawRequest.split('\r'):
+                #check if isContent is True to start adding to the content
+                if isContent == True:
+                    splitContent.append(line)
+
+                #checks if the line is equest = '\n'. this splits the request into content and header
+                if line == '\n':
+                    isContent = True
+
+            #returns the joins content
+            return ''.join(splitContent)
+        else:
+            length = int(self.META.get('CONTENT_LENGTH', '0'))
+            body = self.META['wsgi.input'].read(length).decode('utf-8')
+            return body
 
     @property
     def path(self):
@@ -135,28 +154,6 @@ class Request:
     def HTTPVersion(self):
         return self.rawRequest.split('\n')[0].split()[2]
 
-    @property
-    def body(self):
-        if self.wsgi == False:
-            splitContent = []
-            isContent = False
-
-            #this splits the requests by the \r
-            for line in self.rawRequest.split('\r'):
-                #check if isContent is True to start adding to the content
-                if isContent == True:
-                    splitContent.append(line)
-
-                #checks if the line is equest = '\n'. this splits the request into content and header
-                if line == '\n':
-                    isContent = True
-
-            #returns the joins content
-            return ''.join(splitContent)
-        else:
-            length = int(self.META.get('CONTENT_LENGTH', '0'))
-            return self.META['wsgi.input'].read(length)
-
 class RequestHandler:
     '''Handles a requests, Returns response'''
     def __init__(self, request: Request, debug=False):
@@ -169,12 +166,12 @@ class RequestHandler:
         methods = ', '.join(allowedMethods)
         if self.debug:
             render = renderErrorPage(
-                mainMessage='404 Method Not Allowed',
+                mainMessage='405 Method Not Allowed',
                 subMessage=f'Allowed Methods: {methods}',
             )
             return HTTPResponse(None, render, status=405, headers=f'Allow: {methods}') 
         else:
-            return HTTPResponse(None, status=405, headers=f'Allow: {methods}') 
+            return HTTPResponse(None, '405 Method not Allowed', status=405, headers=f'Allow: {methods}') 
 
     def _getArg(self, index, part) -> tuple:
         '''
@@ -394,8 +391,10 @@ class RequestHandler:
                     if hasattr(settings, 'file404'):
                         file404 = getattr(settings, 'file404')
 
-                    page = renderTemplate(file404)
-                    return HTTPResponse(None, page, status=404)
+                        page = renderTemplate(file404)
+                        return HTTPResponse(None, page, status=404)
+                    else:
+                        return HTTPResponse(None, '404 The requested page could not be found.')
         else:
             try:
                 handler = StaticHandler(self.request, root, splitRoot, ext)
@@ -409,5 +408,8 @@ class RequestHandler:
                     if hasattr(settings, 'file404'):
                         file404 = getattr(settings, 'file404')
 
-                    page = renderTemplate(file404)
-                    return HTTPResponse(None, page, status=404)
+                        page = renderTemplate(file404)
+                        return HTTPResponse(None, page, status=404)
+                    else:
+                        return HTTPResponse(None, '404 The requested file could not be found.')
+                

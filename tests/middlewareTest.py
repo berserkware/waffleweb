@@ -13,7 +13,7 @@ class ProjectMiddlewareTest(unittest.TestCase):
 
 class AppMiddlewareTest(unittest.TestCase):
     def test_beforeResponse(self):
-        res = requests.get('http://localhost:8080/testBefore')
+        res = requests.post('http://localhost:8080/testBefore/', data = {'test1': 'test2'})
         self.assertEqual(res.content, b'{}')
 
     def test_afterResponse(self):

@@ -26,10 +26,10 @@ class WaffleApp():
         It takes two arguments path and name. The path argument is the reletive URL to your 
         view and the name argument is the name of your view.
 
-        the name argument is defualted to the name of your view function. it is used to reference 
+        the name argument is defaulted to the name of your view function. it is used to reference 
         the view in templates and redirects, it looks like this: appName:name
 
-        You can add varibles to your url by puting <argumentName:valueType>
+        You can add variables to your url by puting <argumentName:valueType>
         you then add the argumentName to your views arguments.
 
         You can make a view only allowed certain methods by adding a list to your view decorator.

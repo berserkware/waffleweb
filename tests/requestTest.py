@@ -41,11 +41,10 @@ class RequestHeaderTest(unittest.TestCase):
         self.assertEqual(self.testRequest.IP, '101.98.137.19')
 
     def test_FILES(self):
-        file = open('tests/test.html')
-        files = {'test': file}
-        res = requests.post('http://localhost:8080/filesPostTest/', files=files)
-        self.assertEqual(b'<h1>Testing Testing 123</h1>', res.content)
-        file.close()
+        with open('tests/test.html') as f:
+            files = {'test': f}
+            res = requests.post('http://localhost:8080/filesPostTest/', files=files)
+            self.assertEqual(b'<h1>Testing Testing 123</h1>', res.content)
 
 class RequestHandlerTest(unittest.TestCase):
     def test_splitURL(self):
@@ -70,7 +69,7 @@ class RequestHandlerTest(unittest.TestCase):
         self.assertEqual(handler._splitURL(), ('/page1/10/index', ['page1', '10', 'index'], ''))
 
     def test_methodNotAllowed(self):
-        response = requests.get('http://localhost:8080/math/postTest')
+        response = requests.get('http://localhost:8080/math/postTest/')
         self.assertEqual(response.status_code, 405)
 
     def test_methodAllowed(self):

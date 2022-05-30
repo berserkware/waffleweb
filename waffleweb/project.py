@@ -14,7 +14,7 @@ from waffleweb.response import HTTPResponse, HTTP404
 from waffleweb.request import Request, RequestHandler
 from waffleweb.template import renderErrorPage, renderTemplate
 from waffleweb.middleware import MiddlewareHandler
-from waffleweb.wsgi import WsgiRequestHandler
+from waffleweb.wsgi import WsgiHandler
 
 class AppNotFoundError(Exception):
     pass
@@ -122,7 +122,7 @@ class WaffleProject():
                         appMiddlewareHandler = None
 
                         try:
-                            #Get the app from the view and runs the apps middleware on the request
+                            #Get the views middleware handler
                             view = handler._getView()[0]
                             for app in self.apps:
                                 app = app['app']
@@ -132,6 +132,8 @@ class WaffleProject():
                                         request = appMiddlewareHandler.runRequestMiddleware(request)
                         except HTTP404:
                             pass
+
+                        handler.request = request
 
                         #gets the response
                         response = handler.getResponse()
@@ -180,4 +182,12 @@ class WaffleProject():
                 return
 
     def wsgiApplication(self, environ, startResponse):
-        handler = WsgiRequestHandler(environ, startResponse)
+        handler = WsgiHandler(environ, self.apps, self.middlewareHandler)
+
+        #Gets the data
+        content = handler.getResponseContent()
+        headers = handler.getResponseHeaders()
+        status = handler.getResponseStatus()
+
+        startResponse(status, headers)
+        return iter([content])

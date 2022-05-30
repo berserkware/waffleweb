@@ -23,8 +23,9 @@ def _getEnviromentFile() -> Environment:
 
 def renderTemplate(filePath: str, context: dict={}) -> str:
     '''
-    renders a template using jinja2, takes three arguments:
+    renders a template using jinja2, takes three arguments::
         filepath - required - the file path to the template
+
         context - the variables for the template
     '''
 
@@ -44,9 +45,11 @@ def renderTemplate(filePath: str, context: dict={}) -> str:
     
 def renderErrorPage(mainMessage: str, subMessage: str=None, traceback: str=None) -> str:
     '''
-    Renders and error page for debug, it takes 3 arguments:
+    Renders and error page for debug, it takes 3 arguments::
         mainMessage
+
         subMessage - optional
+
         traceback - optional
     '''
 

@@ -212,16 +212,30 @@ class HTTPResponsePermenentRedirect(HTTPResponseRedirectBase):
 
 def render(request=None, filePath: str=None, context: dict={}, headers=None, charset=None, status=None, reason=None):
     '''
-    Returns a HTTPResponse with the rendered template, this uses jinja2.\n
-    it takes 7 arguments:\n
-        request - A Request object\n
-        filePath - The file path to the template\n
-        context - A dict with all the varibles for the template\n
-        headers - Add headers to the response\n
-        charset - The charset for the response\n
-        status - The status code for the response\n
-        reason - The status reason for the response\n
+    Returns a HTTPResponse with the rendered template, this uses jinja2 as it's defualt.
+    it takes 7 arguments::
+        request - A Request object. 
+
+        filePath - The file path to the template. 
+
+        context - A dict with all the varibles for the template. 
+
+        headers - Add headers to the response. 
+
+        charset - The charset for the response. 
+
+        status - The status code for the response. 
+
+        reason - The status reason for the response. 
     '''
     templateRender = renderTemplate(filePath=filePath, context=context)
     return HTTPResponse(request, templateRender, headers=headers, charset=charset, status=status, reason=reason)
 
+def redirect(redirectTo: str, permanent: bool=False):
+    """
+    A Http redirect, takes 3 arguments::
+        redirectTo - the place that you want to redirect to. 
+
+        permentent - if the redirect is permanent. 
+    """
+    return (HTTPResponseRedirect(redirectTo) if permanent == False else HTTPResponsePermenentRedirect(redirectTo))
