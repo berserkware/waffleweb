@@ -2,28 +2,22 @@ from waffleweb.request import RequestHandler, Request
 from waffleweb.response import HTTP404
 
 class WsgiHandler:
-    def __init__(self, environ, apps: list, middlewareHandler):
+    def __init__(self, environ, apps, middlewareHandler):
         self.apps = apps
         self.middlewareHandler = middlewareHandler
 
         #Makes the Request object
         request = Request(environ, environ.get('REMOTE_ADDR'), True)
-        #Runs the request middleware
-        request = self.middlewareHandler.runRequestMiddleware(request)
 
         self.requestHandler = RequestHandler(request)
 
-        appMiddlewareHandler = None
+        view = None
 
         try:
-            #Get the app from the view and runs the apps middleware on the request
+            #Runs the request middleware
             view = self.requestHandler._getView()[0]
-            for app in self.apps:
-                app = app['app']
-                for appView in app.views:
-                    if appView == view:
-                        appMiddlewareHandler = appView['middlewareHandler']
-                        request = appMiddlewareHandler.runRequestMiddleware(request)
+
+            request = self.middlewareHandler.runRequestMiddleware(request, view)
         except HTTP404:
             pass
 
@@ -31,11 +25,9 @@ class WsgiHandler:
 
         response = self.requestHandler.getResponse()
 
-        #Run middleware on response
-        response = self.middlewareHandler.runResponseMiddleware(response)
-
-        if appMiddlewareHandler is not None:
-            response = appMiddlewareHandler.runResponseMiddleware(response)
+        if view is not None:
+            #Run middleware on response
+            response = self.middlewareHandler.runResponseMiddleware(response, view)
 
         self.response = response
 

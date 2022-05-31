@@ -36,7 +36,7 @@ class WaffleProject():
     def __init__(self, apps: list[str], middleware: list[str]=[]):
         self.apps = self.loadApps(apps)
         waffleweb.defaults.APPS = self.apps
-        self.middlewareHandler = MiddlewareHandler(middleware)
+        self.middlewareHandler = MiddlewareHandler(middleware, self.apps)
 
     def loadApps(self, apps) -> list:
         '''
@@ -114,35 +114,17 @@ class WaffleProject():
                         request = Request(conn.recv(1024).decode(), addr)
 
                         #Run middleware on Request
-                        request = self.middlewareHandler.runRequestMiddleware(request)
+                        view = handler._getView()[0]
+                        request = self.middlewareHandler.runRequestMiddleware(request, view)
 
                         #Creates a RequestHandler object.
                         handler = RequestHandler(request, debug)
-
-                        appMiddlewareHandler = None
-
-                        try:
-                            #Get the views middleware handler
-                            view = handler._getView()[0]
-                            for app in self.apps:
-                                app = app['app']
-                                for appView in app.views:
-                                    if appView == view:
-                                        appMiddlewareHandler = appView['middlewareHandler']
-                                        request = appMiddlewareHandler.runRequestMiddleware(request)
-                        except HTTP404:
-                            pass
-
-                        handler.request = request
 
                         #gets the response
                         response = handler.getResponse()
 
                         #Run middleware on response
-                        response = self.middlewareHandler.runResponseMiddleware(response)
-
-                        if appMiddlewareHandler is not None:
-                            response = appMiddlewareHandler.runResponseMiddleware(response)
+                        response = self.middlewareHandler.runResponseMiddleware(response, view)
 
                         #sends the response
                         conn.sendall(bytes(response))

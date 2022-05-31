@@ -13,7 +13,7 @@ class WaffleApp():
 
     def __init__(self, appName: str, middleware: list[str]=[]):
         self.appName = appName
-        self.middlewareHandler = MiddlewareHandler(middleware)
+        self.middleware = middleware
         self._views = []
 
     @property
@@ -78,7 +78,7 @@ class WaffleApp():
                     'name': view.__name__ if name == None else name, 
                     'view': view,
                     'allowedMethods': methods,
-                    'middlewareHandler': self.middlewareHandler,
+                    'app': self
                     })
 
                 def wrapper(*args, **kwargs):

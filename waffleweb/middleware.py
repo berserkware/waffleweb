@@ -10,8 +10,16 @@ class MiddlewareImportError(Exception):
     pass
 
 class MiddlewareHandler():
-    def __init__(self, middleware: list[str]):
-        self.middleware = self.loadMiddleware(middleware)
+    def __init__(self, middleware: list[str], apps: list):
+        self.middleware = {}
+        self.apps = apps
+        #Gets the global middleware
+        self.middleware['global'] = self.loadMiddleware(middleware)
+
+        #Gets the app specific middleware
+        for app in apps:
+            app = app['app']
+            self.middleware[app] = self.loadMiddleware(app.middleware)
 
     def loadMiddleware(self, middleware: list[str]) -> list:
         '''
@@ -47,10 +55,10 @@ class MiddlewareHandler():
 
         return loadedMiddleware
 
-    def runRequestMiddleware(self, request: Request) -> Request:
+    def runRequestMiddleware(self, request: Request, appView) -> Request:
         '''Runs all the middleware on the request'''
 
-        for ware in self.middleware:
+        for ware in self.middleware['global']:
             ware = ware['middleware']
 
             #Trys to run the middleware's before function
@@ -60,17 +68,26 @@ class MiddlewareHandler():
                 #Makes sure middleware returns Request object.
                 if type(newRequest) == Request:
                     request = newRequest
-                else:
-                    print(f'Middleware "{ware.__name__}" did not return a Request object, skipping.')
             except AttributeError:
+                pass
+        
+        #Runs the app specific middleware
+        newRew = request
+        for ware in self.middleware[appView['app']]:
+            try:
+                newRew = ware['middleware'].before(request)
+
+                if type(newRew) == Request:
+                    request = newRew
+            except (IndexError, AttributeError):
                 pass
 
         return request
 
-    def runResponseMiddleware(self, response):
+    def runResponseMiddleware(self, response, appView):
         '''Runs all the middleware on the response'''
         
-        for ware in self.middleware:
+        for ware in self.middleware['global']:
             ware = ware['middleware']
 
             #Trys to run the middleware's after function
@@ -78,5 +95,12 @@ class MiddlewareHandler():
                 response = ware.after(response)
             except AttributeError:
                 pass
+
+        #Runs the app specific middleware
+        try:
+            for ware in self.middleware[appView['app']]:
+                response = ware['middleware'].after(response)
+        except (IndexError, AttributeError):
+            pass
 
         return response
