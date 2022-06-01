@@ -3,6 +3,26 @@ import re
 from waffleweb.middleware import MiddlewareHandler
 from waffleweb.request import Request
 
+class View:
+    '''A view.'''
+    def __init__(
+        self,
+        unstripedPath,
+        path,
+        splitPath,
+        name,
+        view,
+        allowedMethods,
+        app
+        ):
+        self.unstripedPath = unstripedPath
+        self.path = path
+        self.splitPath = splitPath
+        self.name = name
+        self.view = view
+        self.allowedMethods = allowedMethods
+        self.app = app
+
 class WaffleApp():
     '''
     The WaffleApp() class is the centre of all the apps for your project.
@@ -71,15 +91,15 @@ class WaffleApp():
                             splitPathWithArgs.append(part)
 
                 #adds function to view registry
-                self._views.append({
-                    'unstripedPath': path,
-                    'path': path.strip('/'),
-                    'splitPath': splitPathWithArgs, 
-                    'name': view.__name__ if name == None else name, 
-                    'view': view,
-                    'allowedMethods': methods,
-                    'app': self
-                    })
+                self._views.append(View(
+                    unstripedPath=path,
+                    path=path.strip('/'),
+                    splitPath=splitPathWithArgs,
+                    name=(view.__name__ if name == None else name),
+                    view=view,
+                    allowedMethods=methods,
+                    app=self
+                    ))
 
                 def wrapper(*args, **kwargs):
                     return view(*args, **kwargs)

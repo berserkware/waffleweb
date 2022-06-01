@@ -73,7 +73,7 @@ class MiddlewareHandler():
         
         #Runs the app specific middleware
         newRew = request
-        for ware in self.middleware[appView['app']]:
+        for ware in self.middleware[appView.app]:
             try:
                 newRew = ware['middleware'].before(request)
 
@@ -98,7 +98,7 @@ class MiddlewareHandler():
 
         #Runs the app specific middleware
         try:
-            for ware in self.middleware[appView['app']]:
+            for ware in self.middleware[appView.app]:
                 response = ware['middleware'].after(response)
         except (IndexError, AttributeError):
             pass

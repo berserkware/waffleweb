@@ -214,12 +214,12 @@ class RequestHandler:
             for view in app.views:
                 urlMatches = True
                 viewKwargs = {}
-                if view['path'] == self.root:
+                if view.path == self.root:
                     return (view, {})
 
                 #checks if length of the view's split path is equal to the length of the split request request path
-                if len(view['splitPath']) == len(self.splitRoot) and view['splitPath'] != ['']:
-                    for index, part in enumerate(view['splitPath']):
+                if len(view.splitPath) == len(self.splitRoot) and view.splitPath != ['']:
+                    for index, part in enumerate(view.splitPath):
                         #checks if path part is equal to the split request path part at the same index
                         if part != self.splitRoot[index] and type(part) == str:
                             urlMatches = False
@@ -239,19 +239,19 @@ class RequestHandler:
 
 
     def _handleGet(self, view, kwargs):
-        if 'GET' not in view['allowedMethods']:
+        if 'GET' not in view.allowedMethods:
             #Returns 405 response if request method is not in the view's allowed methods
-            return self._405MethodNotAllowed(view['allowedMethods'])
+            return self._405MethodNotAllowed(view.allowedMethods)
 
-        return view['view'](self.request, **kwargs)
+        return view.view(self.request, **kwargs)
 
     def _handleHead(self, view, kwargs):
         #Checks if GET or HEAD is in allowed methods
-        if 'GET' not in view['allowedMethods'] and 'HEAD' not in view['allowedMethods']:
+        if 'GET' not in view.allowedMethods and 'HEAD' not in view.allowedMethods:
             #Returns 405 response if request method is not in the view's allowed methods
-            return self._405MethodNotAllowed(view['allowedMethods'])
+            return self._405MethodNotAllowed(view.allowedMethods)
 
-        newView = view['view'](self.request, **kwargs)
+        newView = view.view(self.request, **kwargs)
 
         if type(newView) == HTTPResponse:
             newView.content = None
@@ -263,59 +263,59 @@ class RequestHandler:
         return newView
 
     def _handlePost(self, view, kwargs):
-        if 'POST' not in view['allowedMethods']:
+        if 'POST' not in view.allowedMethods:
             #Returns 405 response if request method is not in the view's allowed methods
-            return self._405MethodNotAllowed(view['allowedMethods'])
+            return self._405MethodNotAllowed(view.allowedMethods)
 
-        return view['view'](self.request, **kwargs)
+        return view.view(self.request, **kwargs)
 
     def _handlePut(self, view, kwargs):
-        if 'PUT' not in view['allowedMethods']:
+        if 'PUT' not in view.allowedMethods:
             #Returns 405 response if request method is not in the view's allowed methods
-            return self._405MethodNotAllowed(view['allowedMethods'])
+            return self._405MethodNotAllowed(view.allowedMethods)
 
-        return view['view'](self.request, **kwargs)
+        return view.view(self.request, **kwargs)
 
     def _handleDelete(self, view, kwargs):
-        if 'DELETE' not in view['allowedMethods']:
+        if 'DELETE' not in view.allowedMethods:
             #Returns 405 response if request method is not in the view's allowed methods
-            return self._405MethodNotAllowed(view['allowedMethods'])
+            return self._405MethodNotAllowed(view.allowedMethods)
 
-        return view['view'](self.request, **kwargs)
+        return view.view(self.request, **kwargs)
 
     def _handleConnect(self, view, kwargs):
-        if 'CONNECT' not in view['allowedMethods']:
+        if 'CONNECT' not in view.allowedMethods:
             #Returns 405 response if request method is not in the view's allowed methods
-            return self._405MethodNotAllowed(view['allowedMethods'])
+            return self._405MethodNotAllowed(view.allowedMethods)
 
-        return view['view'](self.request, **kwargs)
+        return view.view(self.request, **kwargs)
 
     def _handleOptions(self, view, kwargs):
         #Checks if GET or OPTIONS is in allowed methods
-        if 'GET' not in view['allowedMethods'] and 'OPTIONS' not in view['allowedMethods']:
+        if 'GET' not in view.allowedMethods and 'OPTIONS' not in view.allowedMethods:
             #Returns 405 response if request method is not in the view's allowed methods
-            return self._405MethodNotAllowed(view['allowedMethods'])
+            return self._405MethodNotAllowed(view.allowedMethods)
 
         if view is None:
             methods = ', '.join(['OPTIONS', 'GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'TRACE', 'CONNECT'])
             return HTTPResponse(status=204, headers=f'Allow: {methods}') 
 
-        methods = ', '.join(view['allowedMethods'])
+        methods = ', '.join(view.allowedMethods)
         return HTTPResponse(status=204, headers=f'Allow: {methods}') 
 
     def _handleTrace(self, view, kwargs):
-        if 'TRACE' not in view['allowedMethods']:
+        if 'TRACE' not in view.allowedMethods:
             #Returns 405 response if request method is not in the view's allowed methods
-            return self._405MethodNotAllowed(view['allowedMethods'])
+            return self._405MethodNotAllowed(view.allowedMethods)
 
-        return view['view'](self.request, **kwargs)
+        return view.view(self.request, **kwargs)
 
     def _handlePatch(self, view, kwargs):
-        if 'PATCH' not in view['allowedMethods']:
+        if 'PATCH' not in view.allowedMethods:
             #Returns 405 response if request method is not in the view's allowed methods
-            return self._405MethodNotAllowed(view['allowedMethods'])
+            return self._405MethodNotAllowed(view.allowedMethods)
 
-        return view['view'](self.request, **kwargs)
+        return view.view(self.request, **kwargs)
 
 
     def getResponse(self):
@@ -330,10 +330,10 @@ class RequestHandler:
             try:
                 #If the view path ends without a slash and the client goes to that page with a slash raise 404
                 view, kwargs = self._getView()
-                if view['unstripedPath'].endswith('/') == False and root.endswith('/'):
+                if view.unstripedPath.endswith('/') == False and root.endswith('/'):
                     raise HTTP404
                 #if the view path ends with a slash and the client goes to that page without a slash redirect to page without slash
-                elif view['unstripedPath'].endswith('/') and root.endswith('/') == False:
+                elif view.unstripedPath.endswith('/') and root.endswith('/') == False:
                     return HTTPResponsePermenentRedirect(f'{root}/')
 
                 #Gets methods and runs it's handle function
@@ -374,7 +374,7 @@ class RequestHandler:
                     for app in self.apps:
                         app = app['app']
                         for view in app.views:
-                            path = view['unstripedPath']
+                            path = view.unstripedPath
 
                             #turns the arrows into one html cannot render
                             path = path.replace('<', '&lt;')
