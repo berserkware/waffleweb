@@ -53,9 +53,26 @@ def renderErrorPage(mainMessage: str, subMessage: str=None, traceback: str=None)
         traceback - optional
     '''
 
-    return f'''
-        <title>{mainMessage}</title>
-        <h1>{mainMessage}</h1>
-        {(f'<h2>{subMessage}</h2>' if subMessage is not None else '')}
-        {(f'<h3>{traceback}</h3>' if traceback is not None else '')}
-    '''
+    return '''
+        <!DOCTYPE html>
+        <html>
+            <head>
+                <title>{mainMessage}</title>
+            </head>
+            
+            <body style="font-family: Arial, Helvetica, sans-serif; margin:0px; padding:0;">
+                <h1 style="background-color: #f6c486; display: block; margin:0px; padding:15px;">{mainMessage}</h1>
+                {subMessage}
+                {traceback}
+            </body>
+        </html>
+    '''.format(
+        mainMessage=mainMessage,
+        subMessage=(f'<h2 style="color: #7a7a7a; display: block; margin:15px; padding:0px;">{subMessage}</h2>' if subMessage is not None else ''),
+        traceback=(f'''
+        <fieldset style="display: block; margin:15px; padding:0px;">
+            <legend style="margin-left:15px; margin-top:0px margin-bottom:0px padding:0px;"><h2 style="margin:0; padding:0px;">Traceback</h2></legend>
+            <h3 style="margin-left:15px; margin-top:5px; margin-bottom:10px; padding:0px;">{traceback}</h3>
+        </fieldset>
+        ''' if traceback is not None else ''),
+        )

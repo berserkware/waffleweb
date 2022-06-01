@@ -113,18 +113,24 @@ class WaffleProject():
                         #turns the request into a Request object.
                         request = Request(conn.recv(1024).decode(), addr)
 
-                        #Run middleware on Request
-                        view = handler._getView()[0]
-                        request = self.middlewareHandler.runRequestMiddleware(request, view)
-
                         #Creates a RequestHandler object.
                         handler = RequestHandler(request, debug)
+
+                        view = None
+                        try:
+                            #Run middleware on Request
+                            view = handler._getView()[0]
+                            request = self.middlewareHandler.runRequestMiddleware(request, view)
+                            handler.request = request
+                        except HTTP404:
+                            pass
 
                         #gets the response
                         response = handler.getResponse()
 
-                        #Run middleware on response
-                        response = self.middlewareHandler.runResponseMiddleware(response, view)
+                        if view is not None:
+                            #Run middleware on response
+                            response = self.middlewareHandler.runResponseMiddleware(response, view)
 
                         #sends the response
                         conn.sendall(bytes(response))
