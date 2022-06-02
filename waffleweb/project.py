@@ -150,9 +150,30 @@ class WaffleProject():
 
                         #if debug mode is on return a page with the error data else give generic error
                         if debug:
+                            splitTraceback = []
                             #gets the traceback
                             stack = exception.stack.format()
-                            stackStr = '\n'.join([f'<code>{stackLine}</code><br>' for stackLine in stack])
+                            for stackLine in stack:
+                                stackLines = []
+                                
+                                splitStackLine = stackLine.split(', ')
+                                file = splitStackLine[0]
+                                lineNumber = splitStackLine[1]
+                                code = splitStackLine[2]
+                                
+                                #Gets the filePath line
+                                filePath = file.strip().split(' ')[1].strip('"')
+                                stackLines.append(f'{filePath}:')
+
+                                #Gets the code line
+                                lineNumber = lineNumber.split(' ')[1]
+                                code = ' '.join(code.split(' ')[2:])
+                                stackLines.append(f'{lineNumber}: {code}')
+
+                                splitTraceback.append(f'<code>{stackLines[0]}</code><br><div style="width: 100%; background-color: #d1d1d1;"><code style="margin-left: 15px; margin-top: 0px; margin-bottom: 0px;">{stackLines[1]}</code></div><br>')
+
+
+                            stackStr = '\n'.join(splitTraceback)
 
                             context = {
                                 'mainErrorMessage': exception.exc_type.__name__,
