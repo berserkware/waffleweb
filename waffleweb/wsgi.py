@@ -15,7 +15,7 @@ class WsgiHandler:
 
         try:
             #Runs the request middleware
-            view = self.requestHandler._getView()[0]
+            view = self.requestHandler.getView()[0]
 
             request = self.middlewareHandler.runRequestMiddleware(request, view)
         except HTTP404:

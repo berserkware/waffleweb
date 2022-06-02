@@ -21,6 +21,7 @@ class Request:
         self.META = {}
         self.IP = IP
         self.POST = {}
+        self.URL_PARAMS = {}
 
         if self.wsgi == False:
             #Gets all the headers
@@ -34,6 +35,7 @@ class Request:
         else:
             self.META = self.rawRequest
 
+        self._getURLParams()
         self.body = self._getBody()
 
         #adds forms data to the postData variable
@@ -114,6 +116,21 @@ class Request:
                             #adds to postData
                             self.POST[str(name)] = {'value': data[-1].strip('\r'), 'headers': headers}
 
+    def _getURLParams(self):
+        splitPath = self.path.split('?')
+
+        argString = '?'.join(splitPath[1:])
+
+        splitArgs = argString.split('&')
+
+        for arg in splitArgs:
+            try:
+                name, value = arg.split('=')
+                self.URL_PARAMS[str(name)] = str(value)
+            except ValueError:
+                pass
+
+
     def _getBody(self):
         if self.wsgi == False:
             splitContent = []
@@ -161,18 +178,6 @@ class RequestHandler:
         self.apps = waffleweb.defaults.APPS
         self.debug = debug
 
-    def _405MethodNotAllowed(self, allowedMethods) -> HTTPResponse:
-        '''Returns a 405 response'''
-        methods = ', '.join(allowedMethods)
-        if self.debug:
-            render = renderErrorPage(
-                mainMessage='405 Method Not Allowed',
-                subMessage=f'Allowed Methods: {methods}',
-            )
-            return HTTPResponse(None, render, status=405, headers=f'Allow: {methods}') 
-        else:
-            return HTTPResponse(None, '405 Method not Allowed', status=405, headers=f'Allow: {methods}') 
-
     def _getArg(self, index, part) -> tuple:
         '''
         Gets the kwargs and converts them to their type.
@@ -202,7 +207,7 @@ class RequestHandler:
 
         return (root, splitRoot, ext)
 
-    def _getView(self):
+    def getView(self):
         '''Finds a view matching the request url, Returns view and the views kwargs.'''
 
         self.root, self.splitRoot, self.ext = self._splitURL()
@@ -317,6 +322,71 @@ class RequestHandler:
 
         return view.view(self.request, **kwargs)
 
+    def _handle404View(self):
+        if self.debug:
+            #Gets all searched views.
+            searchedViews = []
+            for app in self.apps:
+                app = app['app']
+                for view in app.views:
+                    path = view.unstripedPath
+
+                    #turns the arrows into one html cannot render
+                    path = path.replace('<', '&lt;')
+                    path = path.replace('>', '&gt;')
+                    searchedViews.append(path)
+
+                page = renderErrorPage(
+                    mainMessage='404 Page Not Found', 
+                    subMessage=f'The requested page could not be found',
+                    traceback=f'Views searched:<br>{"<br>".join(searchedViews)}',
+                    )
+                return HTTPResponse(None, page, status=404)
+            else:
+                if hasattr(settings, 'file404'):
+                    file404 = getattr(settings, 'file404')
+
+                    page = renderTemplate(file404)
+                    return HTTPResponse(None, page, status=404)
+                else:
+                    return HTTPResponse(None, '404 The requested page could not be found.')
+
+    def _handle404Static(self):
+        #if debug mode is on show errors
+        if self.debug:
+            page = renderErrorPage(mainMessage='404 File Not Found<br>', subMessage='The requested file could not be found')
+            return HTTPResponse(None, page, status=404)
+        else:
+            if hasattr(settings, 'file404'):
+                file404 = getattr(settings, 'file404')
+
+                page = renderTemplate(file404)
+                return HTTPResponse(None, page, status=404)
+            else:
+                return HTTPResponse(None, '404 The requested file could not be found.')
+
+    def _405MethodNotAllowed(self, allowedMethods) -> HTTPResponse:
+        '''Returns a 405 response'''
+        methods = ', '.join(allowedMethods)
+        if self.debug:
+            render = renderErrorPage(
+                mainMessage='405 Method Not Allowed',
+                subMessage=f'Allowed Methods: {methods}',
+            )
+            return HTTPResponse(None, render, status=405, headers=f'Allow: {methods}') 
+        else:
+            return HTTPResponse(None, '405 Method not Allowed', status=405, headers=f'Allow: {methods}') 
+
+    def _401NotImplementedError(self):
+        if self.debug:
+            render = renderErrorPage(
+                mainMessage='501 Not Implemented Error', 
+                subMessage=f'The requested method is not implemented',
+                traceback=f'Method:{self.request.method}',
+            )
+            return HTTPResponse(None, render, status=501) 
+        else:
+            return HTTPResponse(None, 'Not Implemented Error', status=501) 
 
     def getResponse(self):
         '''Gets a response to a request, retuerns Response.'''
@@ -329,12 +399,15 @@ class RequestHandler:
 
             try:
                 #If the view path ends without a slash and the client goes to that page with a slash raise 404
-                view, kwargs = self._getView()
+                view, kwargs = self.getView()
                 if view.unstripedPath.endswith('/') == False and root.endswith('/'):
                     raise HTTP404
                 #if the view path ends with a slash and the client goes to that page without a slash redirect to page without slash
                 elif view.unstripedPath.endswith('/') and root.endswith('/') == False:
-                    return HTTPResponsePermenentRedirect(f'{root}/')
+                    #Gets the url params and adds them to the redirected url
+                    paramsSplit = self.request.path.split('?')
+                    params = (f'?{"?".join(paramsSplit[1:])}' if len(paramsSplit) >= 2 else '')
+                    return HTTPResponsePermenentRedirect(f'{root}/{params}')
 
                 #Gets methods and runs it's handle function
                 if self.request.method == 'GET':
@@ -358,58 +431,13 @@ class RequestHandler:
                 elif self.request.method == 'PATCH':
                     return self._handlePatch(view, kwargs)
                 else:
-                    if self.debug:
-                        render = renderErrorPage(
-                            mainMessage='501 Not Implemented Error', 
-                            subMessage=f'The requested method is not implemented',
-                            traceback=f'Method:{self.request.method}',
-                            )
-                        return HTTPResponse(None, render, status=501) 
-                    else:
-                        return HTTPResponse(None, 'Not Implemented Error', status=501) 
+                    return self._401NotImplementedError()
             except HTTP404:
-                if self.debug:
-                    #Gets all searched views.
-                    searchedViews = []
-                    for app in self.apps:
-                        app = app['app']
-                        for view in app.views:
-                            path = view.unstripedPath
-
-                            #turns the arrows into one html cannot render
-                            path = path.replace('<', '&lt;')
-                            path = path.replace('>', '&gt;')
-                            searchedViews.append(path)
-
-                    page = renderErrorPage(
-                        mainMessage='404 Page Not Found', 
-                        subMessage=f'The requested page could not be found',
-                        traceback=f'Views searched:<br>{"<br>".join(searchedViews)}',
-                        )
-                    return HTTPResponse(None, page, status=404)
-                else:
-                    if hasattr(settings, 'file404'):
-                        file404 = getattr(settings, 'file404')
-
-                        page = renderTemplate(file404)
-                        return HTTPResponse(None, page, status=404)
-                    else:
-                        return HTTPResponse(None, '404 The requested page could not be found.')
+                return self._handle404View()
         else:
             try:
                 handler = StaticHandler(self.request, root, splitRoot, ext)
                 return handler.findFile()
             except HTTP404:
-                #if debug mode is on show errors
-                if self.debug:
-                    page = renderErrorPage(mainMessage='404 File Not Found<br>', subMessage='The requested file could not be found')
-                    return HTTPResponse(None, page, status=404)
-                else:
-                    if hasattr(settings, 'file404'):
-                        file404 = getattr(settings, 'file404')
-
-                        page = renderTemplate(file404)
-                        return HTTPResponse(None, page, status=404)
-                    else:
-                        return HTTPResponse(None, '404 The requested file could not be found.')
+                return self._handle404Static()
                 

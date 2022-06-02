@@ -1,6 +1,11 @@
 import waffleweb
 import json
 import os
+import importlib
+try:
+    settings = importlib.import_module('settings')
+except ModuleNotFoundError:
+    settings = None
 
 from datetime import datetime
 from pytz import timezone
@@ -77,6 +82,8 @@ class HTTPResponseBase():
         if self._charset is not None:
             return self._charset
 
+        if hasattr(settings, 'CHARSET'):
+            return getattr(settings, 'CHARSET')
         return waffleweb.defaults.DEFAULT_CHARSET
 
     @charset.setter

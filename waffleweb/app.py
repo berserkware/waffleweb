@@ -91,7 +91,8 @@ class WaffleApp():
                             splitPathWithArgs.append(part)
 
                 #adds function to view registry
-                self._views.append(View(
+                self._views.append(
+                    View(
                     unstripedPath=path,
                     path=path.strip('/'),
                     splitPath=splitPathWithArgs,

@@ -119,7 +119,7 @@ class WaffleProject():
                         view = None
                         try:
                             #Run middleware on Request
-                            view = handler._getView()[0]
+                            view = handler.getView()[0]
                             request = self.middlewareHandler.runRequestMiddleware(request, view)
                             handler.request = request
                         except HTTP404:
