@@ -11,7 +11,7 @@ class WsgiHandlerTest(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        with open('tests/test.html', 'rb') as f:
+        with open('tests/static/test.html', 'rb') as f:
             testEnviron = {'wsgi.input': f, 'SERVER_SOFTWARE': 'gunicorn/20.1.0', 'REQUEST_METHOD': 'GET',
             'QUERY_STRING': '', 'RAW_URI': '/', 'SERVER_PROTOCOL': 'HTTP/1.1', 'HTTP_HOST': 'localhost:8000', 
             'HTTP_USER_AGENT': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:100.0) Gecko/20100101 Firefox/100.0', 'HTTP_ACCEPT': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8', 'HTTP_ACCEPT_LANGUAGE': 'en-US,en;q=0.5', 'HTTP_ACCEPT_ENCODING': 'gzip, deflate, br', 

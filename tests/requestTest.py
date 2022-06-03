@@ -32,16 +32,23 @@ class RequestHeaderTest(unittest.TestCase):
         self.testRequest = testRequest
 
     def test_path(self):
-        self.assertEqual(self.testRequest.path, '/')
+        res = requests.get('http://localhost:8080/requestTest').json()
+        self.assertEqual(res['path'], '/requestTest')
 
     def test_method(self):
-        self.assertEqual(self.testRequest.method, 'GET')
+        res = requests.get('http://localhost:8080/requestTest').json()
+        self.assertEqual(res['method'], 'GET')
     
     def test_clientIP(self):
+        res = requests.get('http://localhost:8080/requestTest').json()
         self.assertEqual(self.testRequest.IP, '101.98.137.19')
 
+    def test_body(self):
+        res = requests.post('http://localhost:8080/requestTest', data={'test1': 123}).json()
+        self.assertEqual(res['body'], '\ntest1=123')
+
     def test_FILES(self):
-        with open('tests/test.html') as f:
+        with open('tests/static/test.html') as f:
             files = {'test': f}
             res = requests.post('http://localhost:8080/filesPostTest/', files=files)
             self.assertEqual(b'<h1>Testing Testing 123</h1>', res.content)
@@ -91,10 +98,31 @@ class RequestHandlerTest(unittest.TestCase):
             'Content-Type': 'text/html; charset=utf-8',
             'Date': dateTime,
             'Content-Length': '4',
-            'Set-Cookie': 'addedCookie=32; path=/math/',
+            'Set-Cookie': 'addedCookie=32; path=/math/; ',
             })
 
     def test_handlePost(self):
         data = {'testData1': 15, 'testData2': 30}
         response = requests.post('http://localhost:8080/math/postTest/', data=data)
         self.assertEqual(response.content, b"{'testData1': '15', 'testData2': '30'}")
+
+class ParamsTest(unittest.TestCase):
+    def test_paramsNormal(self):
+        res = requests.get('http://localhost:8080/paramTest/?test=134&test2=31').json()
+        self.assertEqual(res, {'test':'134', 'test2':'31'})
+
+    def test_paramsRedirect(self):
+        res = requests.get('http://localhost:8080/paramTest?test=134&test2=31').json()
+        self.assertEqual(res, {'test':'134', 'test2':'31'})
+
+    def test_paramsNone(self):
+        res = requests.get('http://localhost:8080/paramTest/?').json()
+        self.assertEqual(res, {})
+
+    def test_paramsOneParam(self):
+        res = requests.get('http://localhost:8080/paramTest?test=134').json()
+        self.assertEqual(res, {'test':'134'})
+
+    def test_paramsWithMultipleQuestionMarks(self):
+        res = requests.get('http://localhost:8080/paramTest?te?st=134&test2=3?1').json()
+        self.assertEqual(res, {'te?st':'134', 'test2':'3?1'})

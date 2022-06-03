@@ -50,9 +50,13 @@ class Cookie():
         self.lax = lax
         self.none = none
 
-    def __str__(self):
+    @property
+    def setCookieStr(self):
         #returns str for Set-Cookie header
         return f'{self.name}={self.value}; {f"path={self.path}; " if self.path is not None else ""}{f"Domain={self.domain};" if self.domain is not None else ""}{f"Max-Age={self.maxAge};" if self.maxAge is not None else ""}{f"Secure; " if self.secure == True else ""}{f"HttpOnly; " if self.HTTPOnly == True else ""}{f"SameSite={self.sameSite};" if self.sameSite is not None else ""}{f"Strict; " if self.strict == True else ""}{f"Lax; " if self.lax == True else ""}{f"None; " if self.none == True else ""}'
+
+    def __str__(self):
+        return str(self.value)
 
 class Cookies(dict):
     '''

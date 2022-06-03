@@ -46,7 +46,7 @@ class WsgiHandler:
 
         #Puts all the cookiesToSet into tumples and adds them to the responseHeaders list
         for key in cookiesToSet.keys():
-            responseHeaders.append(('Set-Cookie', str(cookiesToSet[key])))
+            responseHeaders.append(('Set-Cookie', cookiesToSet[key].setCookieStr))
 
         return responseHeaders
 

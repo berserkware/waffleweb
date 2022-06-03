@@ -57,27 +57,5 @@ class basicRouteTest(unittest.TestCase):
         response = requests.get('http://localhost:8080/math/add/12/12').json()
         self.assertEqual(response, {'answer':24})
 
-
-class ParamsTest(unittest.TestCase):
-    def test_paramsNormal(self):
-        res = requests.get('http://localhost:8080/paramTest/?test=134&test2=31').json()
-        self.assertEqual(res, {'test':'134', 'test2':'31'})
-
-    def test_paramsRedirect(self):
-        res = requests.get('http://localhost:8080/paramTest?test=134&test2=31').json()
-        self.assertEqual(res, {'test':'134', 'test2':'31'})
-
-    def test_paramsNone(self):
-        res = requests.get('http://localhost:8080/paramTest/?').json()
-        self.assertEqual(res, {})
-
-    def test_paramsOneParam(self):
-        res = requests.get('http://localhost:8080/paramTest?test=134').json()
-        self.assertEqual(res, {'test':'134'})
-
-    def test_paramsWithMultipleQuestionMarks(self):
-        res = requests.get('http://localhost:8080/paramTest?te?st=134&test2=3?1').json()
-        self.assertEqual(res, {'te?st':'134', 'test2':'3?1'})
-
 if __name__ == '__main__':
     unittest.main()

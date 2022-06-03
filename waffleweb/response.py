@@ -127,7 +127,7 @@ class HTTPResponseBase():
         #Gets the cookies to set
         setCookies = (b'' if str(self.cookiesToSet) == '' else 
             b'\r\n' + b'\r\n'.join([
-                b'Set-Cookie' + b': ' + f'{key}={cookie.value}; path={cookie.path}'.encode(self.charset)
+                b'Set-Cookie' + b': ' + cookie.setCookieStr.encode(self.charset)
                 for key, cookie in self.cookiesToSet.items()
                 ]))
 
