@@ -163,11 +163,13 @@ class WaffleProject():
                                 
                                 #Gets the filePath line
                                 filePath = file.strip().split(' ')[1].strip('"')
-                                stackLines.append(f'{filePath}:')
+                                func = code.split(' ')[1].strip('\n').strip()
+                                stackLines.append(f'{filePath} in {func}():')
 
                                 #Gets the code line
                                 lineNumber = lineNumber.split(' ')[1]
                                 code = ' '.join(code.split(' ')[2:])
+
                                 stackLines.append(f'{lineNumber}: {code}')
 
                                 splitTraceback.append(f'<code>{stackLines[0]}</code><br><div style="width: 100%; background-color: #d1d1d1;"><code style="margin-left: 15px; margin-top: 0px; margin-bottom: 0px;">{stackLines[1]}</code></div><br>')
