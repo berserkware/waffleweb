@@ -5,6 +5,7 @@ import datetime
 import importlib
 import traceback
 import waffleweb
+
 try:
     settings = importlib.import_module('settings')
 except ModuleNotFoundError:
@@ -36,7 +37,7 @@ class WaffleProject():
     def __init__(self, apps: list[str], middleware: list[str]=[]):
         self.apps = self.loadApps(apps)
         waffleweb.defaults.APPS = self.apps
-        self.middlewareHandler = MiddlewareHandler(middleware, self.apps)
+        self.middlewareHandler = MiddlewareHandler(middleware)
 
     def loadApps(self, apps) -> list:
         '''
@@ -183,10 +184,10 @@ class WaffleProject():
                                 'trackbackMessage': stackStr,
                                 }
 
-                            response = HTTPResponse(None, renderErrorPage(context['mainErrorMessage'], context['subErrorMessage'], context['trackbackMessage']))
+                            response = HTTPResponse(content=renderErrorPage(context['mainErrorMessage'], context['subErrorMessage'], context['trackbackMessage']))
                             conn.sendall(bytes(response))
                         else:
-                            conn.sendall(bytes(HTTPResponse(None, '<h1>An error occured!</h1>')))
+                            conn.sendall(bytes(HTTPResponse(content='<h1>An error occured!</h1>')))
 
             except KeyboardInterrupt as e:
                 print('\nKeyboardInterrupt, Closing server')

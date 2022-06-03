@@ -1,4 +1,5 @@
 import importlib
+import waffleweb
 
 from waffleweb.request import Request, RequestHandler
 from waffleweb.response import HTTP404
@@ -10,14 +11,14 @@ class MiddlewareImportError(Exception):
     pass
 
 class MiddlewareHandler():
-    def __init__(self, middleware: list[str], apps: list):
+    def __init__(self, middleware: list[str]):
         self.middleware = {}
-        self.apps = apps
+        self.apps = waffleweb.defaults.APPS
         #Gets the global middleware
         self.middleware['global'] = self.loadMiddleware(middleware)
 
         #Gets the app specific middleware
-        for app in apps:
+        for app in self.apps:
             app = app['app']
             self.middleware[app] = self.loadMiddleware(app.middleware)
 

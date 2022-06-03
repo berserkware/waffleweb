@@ -266,29 +266,29 @@ class RequestHandler:
                     subMessage=f'The requested page could not be found',
                     traceback=f'Views searched:<br>{"<br>".join(searchedViews)}',
                     )
-                return HTTPResponse(None, page, status=404)
+                return HTTPResponse(content=page, status=404)
             else:
                 if hasattr(settings, 'file404'):
                     file404 = getattr(settings, 'file404')
 
                     page = renderTemplate(file404)
-                    return HTTPResponse(None, page, status=404)
+                    return HTTPResponse(content=page, status=404)
                 else:
-                    return HTTPResponse(None, '404 The requested page could not be found.')
+                    return HTTPResponse(content='404 The requested page could not be found.')
 
     def _handle404Static(self):
         #if debug mode is on show errors
         if self.debug:
             page = renderErrorPage(mainMessage='404 File Not Found<br>', subMessage='The requested file could not be found')
-            return HTTPResponse(None, page, status=404)
+            return HTTPResponse(content=page, status=404)
         else:
             if hasattr(settings, 'file404'):
                 file404 = getattr(settings, 'file404')
 
                 page = renderTemplate(file404)
-                return HTTPResponse(None, page, status=404)
+                return HTTPResponse(content=page, status=404)
             else:
-                return HTTPResponse(None, '404 The requested file could not be found.')
+                return HTTPResponse(content='404 The requested file could not be found.')
 
     def _405MethodNotAllowed(self, allowedMethods) -> HTTPResponse:
         '''Returns a 405 response'''
@@ -298,9 +298,9 @@ class RequestHandler:
                 mainMessage='405 Method Not Allowed',
                 subMessage=f'Allowed Methods: {methods}',
             )
-            return HTTPResponse(None, render, status=405, headers=f'Allow: {methods}') 
+            return HTTPResponse(content=render, status=405, headers=f'Allow: {methods}') 
         else:
-            return HTTPResponse(None, '405 Method not Allowed', status=405, headers=f'Allow: {methods}') 
+            return HTTPResponse(content='405 Method not Allowed', status=405, headers=f'Allow: {methods}') 
 
     def _401NotImplementedError(self):
         if self.debug:
@@ -309,9 +309,9 @@ class RequestHandler:
                 subMessage=f'The requested method is not implemented',
                 traceback=f'Method:{self.request.method}',
             )
-            return HTTPResponse(None, render, status=501) 
+            return HTTPResponse(content=render, status=501) 
         else:
-            return HTTPResponse(None, 'Not Implemented Error', status=501) 
+            return HTTPResponse(content='Not Implemented Error', status=501) 
 
     def getResponse(self):
         '''Gets a response to a request, retuerns Response.'''
