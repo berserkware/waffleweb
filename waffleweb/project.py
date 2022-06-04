@@ -125,14 +125,14 @@ class WaffleProject():
                             handler.request = request
                         except HTTP404:
                             pass
-
+                        
                         #gets the response
                         response = handler.getResponse()
 
                         if view is not None:
                             #Run middleware on response
                             response = self.middlewareHandler.runResponseMiddleware(response, view)
-
+                            
                         #sends the response
                         conn.sendall(bytes(response))
 

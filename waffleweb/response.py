@@ -99,18 +99,15 @@ class HTTPResponseBase():
             domain=None, 
             secure=False, 
             HTTPOnly=False, 
-            sameSite=None, 
-            strict=False, 
-            lax=False, 
-            none=False
+            sameSite='Lax', 
         ):
         '''Sets a cookie to a value, takes two arguments: name and value'''
         if path is not None:
-            self.cookiesToSet.setCookie(name=name, value=value, path=path, maxAge=maxAge, domain=domain, secure=secure, HTTPOnly=HTTPOnly, sameSite=sameSite, strict=strict, lax=lax, none=none)
+            self.cookiesToSet.setCookie(name=name, value=value, path=path, maxAge=maxAge, domain=domain, secure=secure, HTTPOnly=HTTPOnly, sameSite=sameSite)
         elif path is None and self.request is not None:
-            self.cookiesToSet.setCookie(name=name, value=value, path=self.request.path, maxAge=maxAge, domain=domain, secure=secure, HTTPOnly=HTTPOnly, sameSite=sameSite, strict=strict, lax=lax, none=none)
+            self.cookiesToSet.setCookie(name=name, value=value, path=self.request.path, maxAge=maxAge, domain=domain, secure=secure, HTTPOnly=HTTPOnly, sameSite=sameSite)
         else:
-            self.cookiesToSet.setCookie(name=name, value=value, path='/', maxAge=maxAge, domain=domain, secure=secure, HTTPOnly=HTTPOnly, sameSite=sameSite, strict=strict, lax=lax, none=none)  
+            self.cookiesToSet.setCookie(name=name, value=value, path='/', maxAge=maxAge, domain=domain, secure=secure, HTTPOnly=HTTPOnly, sameSite=sameSite)  
 
     def deleteCookie(self, name):
         '''Deletes a cookie if exists, takes one argument: name.'''
@@ -143,6 +140,8 @@ class HTTPResponseBase():
         '''Encodes value and converts it to bytes.'''
         if isinstance(value, str):
             return bytes(value, encoding=self.charset)
+        elif isinstance(value, bytes):
+            return value
 
         return bytes(str(value), encoding=self.charset)
 
@@ -183,7 +182,7 @@ class JSONResponse(HTTPResponse):
     def data(self):
         return self.content
 
-class FileResponse(HTTPResponseBase):
+class FileResponse(HTTPResponse):
     '''Handles the HTTP responses and file.'''
 
     def __init__(self, request=None, fileObj=None, mimeType=None, **kwargs):

@@ -34,7 +34,7 @@ class WsgiHandlerTest(unittest.TestCase):
         self.assertEqual(headers, [('Content-Type', 'text/html; charset=utf-8'),
                                     ('Date', f'{dateTime}'),
                                     ('Content-Length', '12'),
-                                    ('Set-Cookie', 'testCookie=testValue; path=/; ')])
+                                    ('Set-Cookie', 'testCookie=testValue; path=/; SameSite=Lax')])
 
     def test_getResponseStatus(self):
         self.assertEqual(self.wsgiHandler.getResponseStatus(), '200 OK')

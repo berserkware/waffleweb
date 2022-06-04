@@ -63,4 +63,4 @@ class CookiesTest(unittest.TestCase):
         res = HTTPResponse(request, 'test')
         res.setCookie('test1', 'value', HTTPOnly=True)
         cookie = res.cookiesToSet['test1']
-        self.assertEqual(cookie.setCookieStr, 'test1=value; path=/page1/10/index; HttpOnly; ')
+        self.assertEqual(cookie.setCookieStr, 'test1=value; path=/page1/10/index; HttpOnly; SameSite=Lax')

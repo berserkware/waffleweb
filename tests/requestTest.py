@@ -45,7 +45,7 @@ class RequestHeaderTest(unittest.TestCase):
 
     def test_body(self):
         res = requests.post('http://localhost:8080/requestTest', data={'test1': 123}).json()
-        self.assertEqual(res['body'], '\ntest1=123')
+        self.assertEqual(res['body'].strip('\n'), 'test1=123')
 
     def test_FILES(self):
         with open('tests/static/test.html') as f:
@@ -98,7 +98,7 @@ class RequestHandlerTest(unittest.TestCase):
             'Content-Type': 'text/html; charset=utf-8',
             'Date': dateTime,
             'Content-Length': '4',
-            'Set-Cookie': 'addedCookie=32; path=/math/; ',
+            'Set-Cookie': 'addedCookie=32; path=/math/; SameSite=Lax',
             })
 
     def test_handlePost(self):
