@@ -106,7 +106,7 @@ class OptionsTest(unittest.TestCase):
             'Allow': 'OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE, CONNECT',
             'Content-Type': 'text/html; charset=utf-8',
             'Date': dateTime,
-            'Content-Length': '4',
+            'Content-Length': '0',
             'Set-Cookie': 'addedCookie=32; path=/; SameSite=Lax',
             })
 

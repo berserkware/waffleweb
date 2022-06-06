@@ -148,7 +148,7 @@ class HTTPResponseBase():
 class HTTPResponse(HTTPResponseBase):
     '''Handles the HTTP responses and content.'''
 
-    def __init__(self, request=None, content=None, *args, **kwargs):
+    def __init__(self, request=None, content=b'', *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.request = request
 
@@ -170,7 +170,7 @@ class HTTPResponse(HTTPResponseBase):
 class JSONResponse(HTTPResponse):
     '''Handles the HTTP responses and json.'''
 
-    def __init__(self, request=None, data=None, **kwargs):
+    def __init__(self, request=None, data={}, **kwargs):
         super().__init__(**kwargs)
         data = json.dumps(data)
         self.content = data
