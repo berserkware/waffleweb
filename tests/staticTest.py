@@ -1,6 +1,6 @@
 import unittest
 from waffleweb.request import Request
-from waffleweb.static import StaticHandler
+from waffleweb.static import StaticHandler, findStatic
 from waffleweb.response import HTTP404, FileResponse
 
 request = Request("""GET /page1/10/index HTTP/1.1
@@ -36,3 +36,9 @@ class StaticHandlerTest(unittest.TestCase):
         handler = StaticHandler(request, 'unknownmine', ['unknownmine'], '.whateveredoo')
         response = handler.findFile()
         self.assertEqual(response.mimeType, 'application/octet-stream')
+
+class FindStaticTest(unittest.TestCase):
+    def test_findStaticContent(self):
+        with findStatic('test.html', 'r') as f:
+            file = f.read()
+            self.assertEqual(file, '<h1>Testing Testing 123</h1>')

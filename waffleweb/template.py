@@ -7,6 +7,16 @@ except ModuleNotFoundError:
 
 from jinja2 import Environment, FileSystemLoader, ModuleLoader, select_autoescape
 
+def getRelativeUrl(viewStr: str, *args, **kwargs):
+    if len(viewStr.split(':')) != 2:
+        raise ValueError('Your viewStr has to include an app and the view name, example: appName:viewName.')
+
+    appName, viewName = viewStr.split(':')
+    apps = waffleweb.defaults.APPS
+    for app in apps:
+        pass
+    return u'test123'
+
 def _getEnviromentFile() -> Environment:
     '''Gets a jinja Enviroment with the loader being FileSystemLoader.'''
 
@@ -19,6 +29,8 @@ def _getEnviromentFile() -> Environment:
         loader=FileSystemLoader(searchpath=templateDir),
         autoescape=select_autoescape,
     )
+
+    env.globals['getRelativeUrl'] = getRelativeUrl
     return env
 
 def renderTemplate(filePath: str, context: dict={}) -> str:
@@ -70,9 +82,9 @@ def renderErrorPage(mainMessage: str, subMessage: str=None, traceback: str=None)
         mainMessage=mainMessage,
         subMessage=(f'<h2 style="color: #7a7a7a; display: block; margin:15px; padding:0px;">{subMessage}</h2>' if subMessage is not None else ''),
         traceback=(f'''
-        <fieldset style="display: block; margin:15px; padding:0px;">
-            <legend style="margin-left:15px; margin-top:0px margin-bottom:0px padding:0px;"><h2 style="margin:0; padding:0px;">Traceback</h2></legend>
-            <h3 style="margin-left:15px; margin-top:5px; margin-bottom:10px; padding:0px;">{traceback}</h3>
-        </fieldset>
-        ''' if traceback is not None else ''),
+                <fieldset style="display: block; margin:15px; padding:0px;">
+                    <legend style="margin-left:15px; margin-top:0px margin-bottom:0px padding:0px;"><h2 style="margin:0; padding:0px;">Traceback</h2></legend>
+                    <h3 style="margin-left:15px; margin-top:5px; margin-bottom:10px; padding:0px;">{traceback}</h3>
+                </fieldset>
+                ''' if traceback is not None else ''),
         )

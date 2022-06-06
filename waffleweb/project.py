@@ -111,8 +111,10 @@ class WaffleProject():
                         #waits for connection to server
                         conn, addr = sock.accept()
 
+                        req = conn.recv(1024).decode()
                         #turns the request into a Request object.
-                        request = Request(conn.recv(1024).decode(), addr)
+                        request = Request(req, addr)
+                        print(repr(req))
 
                         #Creates a RequestHandler object.
                         handler = RequestHandler(request, debug)
