@@ -1,4 +1,4 @@
-from cgitb import handler
+import os
 import socket
 import ipaddress
 import datetime
@@ -16,12 +16,7 @@ from waffleweb.request import Request, RequestHandler
 from waffleweb.template import renderErrorPage, renderTemplate
 from waffleweb.middleware import MiddlewareHandler
 from waffleweb.wsgi import WsgiHandler
-
-class AppNotFoundError(Exception):
-    pass
-
-class AppImportError(Exception):
-    pass
+from waffleweb.exceptions import AppNotFoundError, AppImportError
 
 class WaffleProject():
     '''

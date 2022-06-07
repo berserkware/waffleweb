@@ -22,7 +22,12 @@ class View:
         self.view = view
         self.allowedMethods = allowedMethods
         self.app = app
-
+        
+    def hasPathHasArgs(self) -> bool:
+        for part in self.splitPath:
+            if type(part) == list:
+                return True
+        return False
 class WaffleApp():
     '''
     The WaffleApp() class is the centre of all the apps for your project.
@@ -43,7 +48,7 @@ class WaffleApp():
     def route(self, path='/', name=None, methods=['OPTIONS', 'GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'TRACE', 'CONNECT']):
         '''
         This is the decorator you put on all your views it gives your view a URL and a name.
-        It takes two arguments path and name. The path argument is the reletive URL to your 
+        It takes two arguments path and name. The path argument is the relative URL to your 
         view and the name argument is the name of your view.
 
         the name argument is defaulted to the name of your view function. it is used to reference 
@@ -64,7 +69,7 @@ class WaffleApp():
 
         def decorator(view):
             #regex from https://stackoverflow.com/questions/31430167/regex-check-if-given-string-is-relative-url
-            #this checks to see if the URL is reletive
+            #this checks to see if the URL is relative
             if re.compile(r'^(?!www\.|(?:http|ftp)s?://|[A-Za-z]:\\|//).*').search(path):
                 splitPathWithArgs = []
                 splitPath = str(path).strip('/').split('/')

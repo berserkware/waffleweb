@@ -1,21 +1,48 @@
 import waffleweb
 import importlib
+
 try:
     settings = importlib.import_module('settings')
 except ModuleNotFoundError:
     settings = None
-
+    
+from waffleweb.exceptions import AppNotFoundError, ViewNotFoundError
 from jinja2 import Environment, FileSystemLoader, ModuleLoader, select_autoescape
 
-def getRelativeUrl(viewStr: str, *args, **kwargs):
+def getRelativeUrl(viewStr: str, **kwargs):
     if len(viewStr.split(':')) != 2:
         raise ValueError('Your viewStr has to include an app and the view name, example: appName:viewName.')
 
     appName, viewName = viewStr.split(':')
     apps = waffleweb.defaults.APPS
+    
     for app in apps:
-        pass
-    return u'test123'
+        app = app['app']
+        
+        if app.appName == appName:
+            for view in app.views:
+                if view.name == viewName:
+                    if view.hasPathHasArgs() == False:
+                        return f'/{view.path}/'
+                    else:
+                        finalPath = []
+                        
+                        for part in view.splitPath:
+                            if type(part) == list:
+                                argName = part[0]
+                                try:
+                                    finalPath.append(kwargs[argName])
+                                except KeyError:
+                                    raise KeyError(f'Value for arg \"{argName}\" not found in kwargs.')
+                            else:
+                                finalPath.append(part)
+                                
+                        return f'/{"/".join(finalPath)}/'
+                                
+            #if cant find view, raise error
+            raise ViewNotFoundError(f'View {viewName} could not be found.')
+    #if cant find app, raise error
+    raise AppNotFoundError(f'App {appName} could not be found.')
 
 def _getEnviromentFile() -> Environment:
     '''Gets a jinja Enviroment with the loader being FileSystemLoader.'''
@@ -29,6 +56,13 @@ def _getEnviromentFile() -> Environment:
         loader=FileSystemLoader(searchpath=templateDir),
         autoescape=select_autoescape,
     )
+
+    if hasattr(settings, 'TEMPLATE_FUNCTIONS'):
+        templateFunctions = getattr(settings, 'TEMPLATE_FUNCTIONS')
+    
+        #Adds user supplied template functions
+        for key, value in templateFunctions:
+            env.globals[key] = value
 
     env.globals['getRelativeUrl'] = getRelativeUrl
     return env

@@ -1,6 +1,7 @@
 import unittest
 from waffleweb.request import Request
-from waffleweb.template import renderErrorPage, renderTemplate
+from waffleweb import WaffleProject
+from waffleweb.template import AppNotFoundError, ViewNotFoundError, getRelativeUrl, renderErrorPage, renderTemplate
 
 request = Request("""GET /page1/10/index HTTP/1.1
                         Host: localhost:8080
@@ -84,3 +85,41 @@ class RenderErrorPageTest(unittest.TestCase):
             </body>
         </html>
     ''')
+    
+class GetRelativeUrlTest(unittest.TestCase):
+    def test_basicTest(self):
+        url = getRelativeUrl('test:BasicTest')
+        self.assertEqual(url, '/BasicTest/')
+    
+    def test_noKwargs(self):
+        with self.assertRaises(KeyError):
+            getRelativeUrl('test:WithArgsTest')
+    
+    def test_kwargsRight(self):
+        url = getRelativeUrl('test:WithArgsTest', testArg1='test1', testArg2='test2')
+        self.assertEqual(url, '/WithArgsTest/test1/test/test2/')
+    
+    def test_notEnoughtKwargs(self):
+        with self.assertRaises(KeyError):
+            getRelativeUrl('test:WithArgsTest', testArg1='test1')
+    
+    def test_appNotFound(self):
+        with self.assertRaises(AppNotFoundError):
+            getRelativeUrl('Existnt:bolony')
+    
+    def test_appFoundViewNotFound(self):
+        with self.assertRaises(ViewNotFoundError):
+            getRelativeUrl('test:bolony')
+            
+    def test_noViewInViewStr(self):
+        with self.assertRaises(ValueError):
+            getRelativeUrl('test')
+            
+    def test_extraPartInViewStr(self):
+        with self.assertRaises(ValueError):
+            getRelativeUrl('test:bolony:foo')
+            
+    def test_inTemplate(self):
+        render = renderTemplate('inTemplateTest.html')
+        self.assertEqual(render, '/BasicTest/')
+    

@@ -3,7 +3,7 @@ import unittest
 from waffleweb import WaffleProject
 from waffleweb.project import AppNotFoundError, AppImportError
 
-class projectAppTest(unittest.TestCase):
+class LoadAppsTest(unittest.TestCase):
     def test_importPyAppValid(self):
         apps = [
             'apps.testApp.app'

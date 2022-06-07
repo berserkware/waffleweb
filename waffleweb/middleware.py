@@ -2,13 +2,7 @@ import importlib
 import waffleweb
 
 from waffleweb.request import Request, RequestHandler
-from waffleweb.response import HTTP404
-
-class MiddlewareNotFoundError(Exception):
-    pass
-
-class MiddlewareImportError(Exception):
-    pass
+from waffleweb.exceptions import MiddlewareNotFoundError, MiddlewareImportError
 
 class MiddlewareHandler():
     def __init__(self, middleware: list[str]):
