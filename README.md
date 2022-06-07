@@ -1,2 +1,2 @@
 # waffleweb
-Django + Flask but without the stuff you don't need.
+Waffleweb is a WSGI Python web framework for making scalable websites easily. Waffleweb is highly customizable and doesn't force any project layout.
