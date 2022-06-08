@@ -156,7 +156,7 @@ class WaffleProject():
                                 splitStackLine = stackLine.split(', ')
                                 file = splitStackLine[0]
                                 lineNumber = splitStackLine[1]
-                                code = splitStackLine[2]
+                                code = splitStackLine[2].strip('\n')
                                 
                                 #Gets the filePath line
                                 filePath = file.strip().split(' ')[1].strip('"')
@@ -165,7 +165,7 @@ class WaffleProject():
 
                                 #Gets the code line
                                 lineNumber = lineNumber.split(' ')[1]
-                                code = ' '.join(code.split(' ')[2:])
+                                code = stackLine.split('\n')[1]
 
                                 stackLines.append(f'{lineNumber}: {code}')
 

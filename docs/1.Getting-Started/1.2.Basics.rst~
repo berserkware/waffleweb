@@ -91,5 +91,3 @@ You can turn on debug mode by adding debug=True to run()::
 .. code-block:: python
 
     yourProject.run(debug=True)
-    
-Example with exception:
