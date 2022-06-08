@@ -113,10 +113,16 @@ class RequestHandler:
 
         if part[1] == 'int':
             kwargName = str(part[0])
-            kwargValue = int(self.splitRoot[index])
+            try:
+                kwargValue = int(self.splitRoot[index])
+            except ValueError:
+                kwargValue = str(self.splitRoot[index])
         elif part[1] == 'float':
             kwargName = str(part[0])
-            kwargValue = float(self.splitRoot[index])
+            try:
+                kwargValue = float(self.splitRoot[index])
+            except ValueError:
+                kwargValue = str(self.splitRoot[index])
         else:
             kwargName = str(part[0])
             kwargValue = str(self.splitRoot[index])
