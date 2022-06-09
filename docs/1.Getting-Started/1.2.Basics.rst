@@ -269,7 +269,7 @@ Renders a template and returns a HTTPResponse. Default templating engine is Jinj
 	
 	@yourApp.route('/nameGetter/<name:string>/')
 	def nameGetter(request, name):
-		return render(request, 'nameGetter.html', context={'name': name})
+	    return render(request, 'nameGetter.html', context={'name': name})
 
 --------------
 ``redirect()``
@@ -282,4 +282,4 @@ Redirects to a page.
 
 	@yourApp.route('/nothing/')
 	def nothing(request, name):
-  	return redirect(request, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', permanent=True)
+  	    return redirect(request, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', permanent=True)
