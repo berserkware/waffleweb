@@ -33,7 +33,7 @@ To create an app create a python file and put a WaffleApp object in it as so.
     yourApp = WaffleApp('appName')
     
 WaffleApp only needs to take one variable for now: the name of your app.
-to register your app all you need to do is add 'appTest1.yourApp' to your project's
+to register your app all you need to do is add 'app.yourApp' to your project's
 app list. your project.py should now look as so.
 
 ``project.py:``
@@ -84,7 +84,7 @@ routed any views. We will add some views later.
 Debug Mode
 ----------
 Debug mode allows you to see extra data about 404 and traceback and error data in the browser.
-You can turn on debug mode by adding debug=True to run().
+You can turn on debug mode by adding debug=True in run().
 
 ``project.py:``
 
