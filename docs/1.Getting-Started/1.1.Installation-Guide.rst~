@@ -8,8 +8,8 @@ Waffleweb has only been tested in Python 3.9, so it is recommended that you use 
 
 Dependincies
 ............
-- `Jinja2 <https://palletsprojects.com/p/jinja/>`__  is used for templating.
-- `pytz <https://pypi.org/project/pytz/>`__  is used for timezones.
+- `Jinja2 <https://palletsprojects.com/p/jinja/>`__ Jinja2 is used for templating.
+- `pytz <https://pypi.org/project/pytz/>`__ Pytz is used for timezones.
 
 Installing Waffleweb
 ....................

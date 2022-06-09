@@ -4,7 +4,7 @@ The Basics
 
 Creating a project
 ..................
-To create a project create a python file and put a WaffleProject object in it as so::
+To create a project create a python file and put a WaffleProject object in it as so.
 
 ``project.py:``
  
@@ -122,7 +122,7 @@ All of your view functions have to take a request argument. The request argument
 -------------
 URL Variables
 -------------
-You can add variables to your URL by adding ``<type:variableName>`` to your URL. Your function accesses the variables with a keyword argument. The type part tells waffleweb what type to convert the variable to, if waffleweb can't convert it or type is unknown, it converts to string.
+You can add variables to your URL by adding ``<type:variableName>`` to your URL. Your function accesses the variables with a keyword argument. The type part tells Waffleweb what type to convert the variable to, if Waffleweb can't convert it or type is unknown, it converts to string.
 
 ``app.py:``
 	
@@ -145,3 +145,141 @@ string   converts the variable to a str
 int      converts the variable to a int  
 float    converts the variable to a float      
 =======  ================================
+
+-----------------
+Redirect behavior
+-----------------
+
+``app.py:``
+
+.. code-block:: python
+
+	from waffleweb.response import HTTPResponse
+	
+	@yourApp.route('/index')
+	def index(request):
+		return HTTPResponse(request, 'index page')
+		
+	@yourApp.route('/about/')
+	def about(request):
+		return HTTPResponse(request, 'about page')
+	
+The URL for the index page doesn't end with a slash meaning that if you access the URL ending with a slash you will get shown a 404 page. The URL for the about page has a trailing slash meaning that if you access that page without a trailing slash you will be redirected to the page with a trailing slash.
+
+------------
+HTTP Methods
+------------
+If you only want to allow certain HTTP methods to access your page then you can add a optional parameter called ``methods`` to the ``route()`` function. 
+
+.. code-block:: python
+
+	from waffleweb.response import HTTPResponse
+	
+	@yourApp.route('/form/', methods=['GET', 'POST'])
+	def form(request):
+		if request.method == 'POST':
+			return doFormStuff(request.POST)
+		return HTTPResponse(request, 'form')
+		
+Waffleweb by default allows all HTTP methods. If you have 'GET' in your methods Waffleweb automatically handles the HEAD and OPTIONS methods.
+
+------------
+Static files
+------------
+To add static files to your Waffleweb project all you need to do is make a folder called static and put your files in there. You can change the folder Waffleweb looks in for your static files in a ``settings.py`` file in your project directory. Just add ``STATIC_DIR = 'path/to/static/'`` to ``settings.py``.
+
+To access these static files in your browser just go to ``/folder/file.ext``. Waffleweb hides the static directory path in the URL to remove complexity. For example, if your project directory looks like the example bellow then to access ``test.css`` you would need to go to ``/css/index.css`` NOT ``/static/css/index.css``.
+
+.. code-block::
+	
+		yourProj/
+			--project.py
+			--app.py
+			--static/
+				--css/
+					--index.css
+
+To access a static file from your app you can use ``open()`` or ``openStatic()``. The difference between ``open()`` and ``openStatic()`` is that ``openStatic()`` searches in your static directory and it's mode is defaulted to 'rb'.
+
+.. code-block:: python
+
+	from waffleweb.static import openStatic
+	from waffleweb.response import FileResponse
+	
+	@yourApp.route('/getImage/<imageName:str>')
+	def index(request, imageName):
+		with openStatic(f'/images/{imageName}.jpg') as f:
+			return FileResponse(request, f)
+
+Responses
+.........
+
+------------------
+``HTTPResponse()``
+------------------
+
+Just a basic HTTP response.
+
+.. code-block:: python
+
+	from waffleweb.response import HTTPResponse
+	
+	@yourApp.route('/index/')
+	def index(request):
+		return HTTPResponse(request, 'Index Page.')
+		
+------------------
+``JSONResponse()``
+------------------
+
+A Json response. Sets the Content-Type to application/json.
+
+.. code-block:: python
+
+	from waffleweb.response import JSONResponse
+	
+	@yourApp.route('/getData/<data:string>')
+	def getData(request, string):
+		return JSONResponse(request, {'data': string})
+		
+------------------
+``FileResponse()``
+------------------
+
+A file response. Takes a bytes file object. Sets the Content-Type to whatever the mime of the file is.
+
+.. code-block:: python
+
+	from waffleweb.static import openStatic
+	from waffleweb.response import FileResponse
+	
+	@yourApp.route('/image/')
+	def image(request):
+		with openStatic(f'/images/image.jpg') as f:
+			return FileResponse(request, f)
+	
+------------
+``render()``
+------------
+Renders a template and returns a HTTPResponse. Default templating engine is Jinja2. Default template directory is ``templates/``. You can change the template directory by adding ``TEMPLATE_DIR = '/path/to/templates/'`` to your ``settings.py`` file.
+
+.. code-block:: python
+
+	from waffleweb.response import render
+	
+	@yourApp.route('/nameGetter/<name:string>')
+	def nameGetter(request, name):
+		return render(request, 'nameGetter.html', context={'name': name})
+
+--------------
+``redirect()``
+--------------
+Redirects to a page.
+
+.. code-block:: python
+
+	from waffleweb.response import redirect
+
+	@yourApp.route('/nothing')
+	def nothing(request, name):
+  	return redirect(request, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', permanent=True)
