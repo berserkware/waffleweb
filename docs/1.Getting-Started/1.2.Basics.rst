@@ -13,7 +13,7 @@ To create a project create a python file and put a WaffleProject object in it as
     from waffleweb import WaffleProject
 
     apps = [
-
+		    
     ]
 
     yourProject = WaffleProject(apps)
@@ -111,11 +111,11 @@ To route a URL use the ``route()`` decorator.
 
 	@yourApp.route('/')
 	def index(request):
-		return HTTPResponse(request, 'Welcome to the index page!')
+	    return HTTPResponse(request, 'Welcome to the index page!')
 		
 	@yourApp.route('/about/')
 	def about(request):
-		return HTTPResponse(request, 'About page')
+	    return HTTPResponse(request, 'About page')
 		
 All of your view functions have to take a request argument. The request argument stores all the request data such as post data, cookies and headers. You have to pass the request argument to the HTTPResponse.
 
@@ -128,15 +128,13 @@ You can add variables to your URL by adding ``<type:variableName>`` to your URL.
 	
 .. code-block:: python
 
-	from waffleweb.response import HTTPResponse
-
 	@yourApp.route('/article/<articleName:string>/')
 	def articleView(request, articleName):
-		return HTTPResponse(request, f'Article: {articleName}'
+	    return HTTPResponse(request, f'Article: {articleName}'
 		
 	@yourApp.route('/post/<postId:int>/')
 	def post(request, postId):
-		return HTTPResponse(request, f'Post Number {postId}')
+	    return HTTPResponse(request, f'Post Number {postId}')
 		
 Type options:
 
@@ -154,15 +152,13 @@ Redirect behavior
 
 .. code-block:: python
 
-	from waffleweb.response import HTTPResponse
-	
 	@yourApp.route('/index')
 	def index(request):
-		return HTTPResponse(request, 'index page')
+	    return HTTPResponse(request, 'index page')
 		
 	@yourApp.route('/about/')
 	def about(request):
-		return HTTPResponse(request, 'about page')
+	    return HTTPResponse(request, 'about page')
 	
 The URL for the index page doesn't end with a slash meaning that if you access the URL ending with a slash you will get shown a 404 page. The URL for the about page has a trailing slash meaning that if you access that page without a trailing slash you will be redirected to the page with a trailing slash.
 
@@ -172,14 +168,12 @@ HTTP Methods
 If you only want to allow certain HTTP methods to access your page then you can add a optional parameter called ``methods`` to the ``route()`` function. 
 
 .. code-block:: python
-
-	from waffleweb.response import HTTPResponse
 	
 	@yourApp.route('/form/', methods=['GET', 'POST'])
 	def form(request):
-		if request.method == 'POST':
-			return doFormStuff(request.POST)
-		return HTTPResponse(request, 'form')
+	    if request.method == 'POST':
+			    return doFormStuff(request.POST)
+	    return HTTPResponse(request, 'form')
 		
 Waffleweb by default allows all HTTP methods. If you have 'GET' in your methods Waffleweb automatically handles the HEAD and OPTIONS methods.
 
@@ -208,8 +202,8 @@ To access a static file from your app you can use ``open()`` or ``openStatic()``
 	
 	@yourApp.route('/getImage/<imageName:str>')
 	def index(request, imageName):
-		with openStatic(f'/images/{imageName}.jpg') as f:
-			return FileResponse(request, f)
+	    with openStatic(f'/images/{imageName}.jpg') as f:
+			    return FileResponse(request, f)
 
 Responses
 .........
@@ -226,7 +220,7 @@ Just a basic HTTP response.
 	
 	@yourApp.route('/index/')
 	def index(request):
-		return HTTPResponse(request, 'Index Page.')
+	    return HTTPResponse(request, 'Index Page.')
 		
 ------------------
 ``JSONResponse()``
@@ -240,7 +234,7 @@ A Json response. Sets the Content-Type to application/json.
 	
 	@yourApp.route('/getData/<data:string>')
 	def getData(request, string):
-		return JSONResponse(request, {'data': string})
+	    return JSONResponse(request, {'data': string})
 		
 ------------------
 ``FileResponse()``
@@ -255,8 +249,8 @@ A file response. Takes a bytes file object. Sets the Content-Type to whatever th
 	
 	@yourApp.route('/image/')
 	def image(request):
-		with openStatic(f'/images/image.jpg') as f:
-			return FileResponse(request, f)
+	    with openStatic(f'/images/image.jpg') as f:
+			    return FileResponse(request, f)
 	
 ------------
 ``render()``
@@ -282,4 +276,94 @@ Redirects to a page.
 
 	@yourApp.route('/nothing/')
 	def nothing(request, name):
-  	    return redirect(request, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', permanent=True)
+      return redirect(request, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', permanent=True)
+      
+Accessing request data
+......................
+The Request object holds all the data about the request. It stores stuff like POST data, cookies, headers. For more in-depth information in the `Request </2.How-To-Guides/2.1.The-Request-Object.rst>`_ How-To Guide. The request object is passed into you view as the first arg.
+
+To access the method of the request use the ``method`` attribute. To access form data you can use the ``POST`` attribute.
+
+.. code-block:: python
+
+	@yourApp.route('/form/', methods=['GET', 'POST'])
+	def form(request):
+	    if request.method == 'POST':
+	        name = request.POST['user']
+	        email = request.POST['email']
+	        makeAccount(name, email)
+
+	    return render(request, 'form.html')
+	    
+To access URL parameters for a request you can use the ``URL_PARAMS`` attribute.
+
+.. code-block:: python
+
+	request.URL_PARAMS.get('param1')
+	
+------------
+File Uploads
+------------
+You can access file uploads with the ``FILES`` attribute. The uploaded files are stored in memory. each uploaded file is a ``File`` object. You can access the data of the file with the ``data`` attribute.
+
+.. code-block:: python
+
+	@yourApp.route('/upload/', methods=['GET', 'POST'])
+	def form(request):
+	    if request.method == 'POST':
+	        file = request.FILES.get('file.jpg').data
+	        f = openStatic('file.jpg', 'w')
+	        f.write(file)
+	        f.close()
+
+	    return render(request, 'upload.html')
+	    
+Cookies
+.......
+To access cookies from a request you can use the ``cookies`` attribute. each cookie is a ``Cookie`` object so to access the value use ``str()``. To set a cookie you can use the ``setCookie()`` method of response objects. You can remove a cookie from a response with ``deleteCookie()``.
+
+Getting Cookies:
+
+.. code-block:: python
+
+	@yourApp.route('/index/')
+	def index(request):
+	    cookie = request.COOKIES.get('cookieName')
+	    return HTTPResponse(request, 'Index Page')
+	    
+Adding Cookies:
+
+.. code-block:: python
+
+	@yourApp.route('/index/')
+	def index(request):
+	    res = HTTPResponse(request, 'Index Page')
+	    res.setCookie('cookieName', 'value')
+	    return res
+	    
+Removing Cookies from response:
+
+.. code-block:: python
+
+	@yourApp.route('/index/')
+	def index(request):
+	    res = HTTPResponse(request, 'Index Page')
+	    res.setCookie('cookieName', 'value')
+	    res.deleteCookie('cookieName')
+	    return res
+	    
+Adding Middleware
+.................
+To add middleware to your project you can add a argument to your WaffleProj object in your ``project.py``.
+
+``project.py:``
+
+.. code-block:: python
+
+	middleware = [
+	    'addCookieMiddleware.addCookie'
+	]
+	
+	yourProject = WaffleProject(apps, middleware=middleware)
+	
+For more information go to Middleware
