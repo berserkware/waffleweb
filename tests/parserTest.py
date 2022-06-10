@@ -8,17 +8,17 @@ class ParsePostTest(unittest.TestCase):
     def test_urlencodedDataNormal(self):
         content = 'testData1=1234&testData2=567'
         postData = parsePost(content, 'application/x-www-form-urlencoded')[0]
-        self.assertEqual(postData, {'testData1': {'value': '1234'}, 'testData2': {'value': '567'}})
+        self.assertEqual(postData, {'testData1': '1234', 'testData2': '567'})
     
     def test_urlencodedDataOneValue(self):
         content = 'testData1=1234'
         postData = parsePost(content, 'application/x-www-form-urlencoded')[0]
-        self.assertEqual(postData, {'testData1': {'value': '1234'}})
+        self.assertEqual(postData, {'testData1': '1234'})
     
     def test_formData(self):
         content = '----------------------------301008406445698181922656\r\nContent-Disposition: form-data; name="testData1"\r\n\r\n123\r\n----------------------------301008406445698181922656\r\nContent-Disposition: form-data; name="testData2"\r\n\r\n5678\r\n----------------------------301008406445698181922656--\r\n'
         postData = parsePost(content, 'multipart/form-data; boundary=--------------------------301008406445698181922656')[0]
-        self.assertEqual(postData, {'testData1': {'value': '123', 'headers': {'CONTENT_DISPOSITION': 'form-data; ''name="testData1"\r'}}, 'testData2': {'value': '5678', 'headers': {'CONTENT_DISPOSITION': 'form-data; ''name="testData2"\r'}}})
+        self.assertEqual(postData, {'testData1': '123', 'testData2': '5678'})
         
     def test_formDataWithFiles(self):
         content = '--12f2be4c4dbc55b5cfd9e23a63efe76e\r\nContent-Disposition: form-data; name="test"; filename="testFile.txt"\r\n\r\nTest Data lol\r\n--12f2be4c4dbc55b5cfd9e23a63efe76e--\r\n'

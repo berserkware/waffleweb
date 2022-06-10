@@ -33,7 +33,7 @@ class Request:
         self.body = self._getBody()
 
         #adds forms data to the postData variable
-        if self.method == 'POST':
+        if self.method == 'POST' or self.method == 'PUT':
             self._getPostData()
 
         if 'COOKIE' in self.META.keys():

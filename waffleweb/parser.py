@@ -14,7 +14,7 @@ def parsePost(body, contentType) -> dict:
         for value in formValues:
             try:
                 key, value = value.split('=')
-                postData[str(key.strip('\n'))] = {'value': str(value.strip('\n'))}
+                postData[str(key.strip('\n'))] = str(value.strip('\n'))
             except ValueError:
                 pass
 
@@ -63,7 +63,7 @@ def parsePost(body, contentType) -> dict:
 
                 if isFile == False:
                     #adds to postData
-                    postData[str(name)] = {'value': data[-1].strip('\r'), 'headers': headers}
+                    postData[str(name)] = data[-1].strip('\r')
 
     return (postData, files)
 
