@@ -253,6 +253,22 @@ class RequestHandler:
 
         return view.view(self.request, **kwargs)
 
+    def getErrorHandler(self, response=None, statusCode=None):
+        #Goes through all the apps errorHandlers
+        for app in self.apps:
+            app = app['app']
+            for handler in app.errorHandlers:
+                try:
+                    #Checks to see if the handlers code is the same as the status Code
+                    if handler.statusCode == statusCode:
+                        return handler.view(self.request)
+                    #Checks to see the the response's status code is equal to the handlers code
+                    elif response.statusCode == handler.statusCode:
+                        return handler.view(self.request)
+                except AttributeError:
+                    pass
+        return response
+
     def _handle404View(self):
         if self.debug:
             #Gets all searched views.
@@ -273,28 +289,13 @@ class RequestHandler:
                     traceback=f'Views searched:<br>{"<br>".join(searchedViews)}',
                     )
                 return HTTPResponse(content=page, status=404)
-            else:
-                if hasattr(settings, 'file404'):
-                    file404 = getattr(settings, 'file404')
-
-                    page = renderTemplate(file404)
-                    return HTTPResponse(content=page, status=404)
-                else:
-                    return HTTPResponse(content='404 The requested page could not be found.')
-
-    def _handle404Static(self):
-        #if debug mode is on show errors
-        if self.debug:
-            page = renderErrorPage(mainMessage='404 File Not Found<br>', subMessage='The requested file could not be found')
-            return HTTPResponse(content=page, status=404)
         else:
-            if hasattr(settings, 'file404'):
-                file404 = getattr(settings, 'file404')
+            response = self.getErrorHandler(statusCode=404)
 
-                page = renderTemplate(file404)
-                return HTTPResponse(content=page, status=404)
+            if response is None:
+                return HTTPResponse(content='404 The requested page could not be found.')
             else:
-                return HTTPResponse(content='404 The requested file could not be found.')
+                return response
 
     def _405MethodNotAllowed(self, allowedMethods) -> HTTPResponse:
         '''Returns a 405 response'''
@@ -306,9 +307,13 @@ class RequestHandler:
             )
             return HTTPResponse(content=render, status=405, headers=f'Allow: {methods}') 
         else:
-            return HTTPResponse(content='405 Method not Allowed', status=405, headers=f'Allow: {methods}') 
+            response = self.getErrorHandler(statusCode=405)
+            if response == None:
+                return HTTPResponse(content='405 Method not Allowed', status=405, headers=f'Allow: {methods}') 
+            else:
+                return response
 
-    def _401NotImplementedError(self):
+    def _501NotImplementedError(self):
         if self.debug:
             render = renderErrorPage(
                 mainMessage='501 Not Implemented Error', 
@@ -317,7 +322,11 @@ class RequestHandler:
             )
             return HTTPResponse(content=render, status=501) 
         else:
-            return HTTPResponse(content='Not Implemented Error', status=501) 
+            response = self.getErrorHandler(statusCode=501)
+            if response == None:
+                return HTTPResponse(content='Not Implemented Error', status=501)
+            else:
+                return response
 
     def getResponse(self):
         '''Gets a response to a request, retuerns Response.'''
@@ -342,27 +351,31 @@ class RequestHandler:
 
                 #Gets methods and runs it's handle function
                 if self.request.method == 'GET':
-                    return self._handleGet(view, kwargs)
+                    response = self._handleGet(view, kwargs)
                 elif self.request.method == 'HEAD':
-                    return self._handleHead(view, kwargs)
+                    response = self._handleHead(view, kwargs)
                 elif self.request.method == 'POST':
-                    return self._handlePost(view, kwargs)
+                    response = self._handlePost(view, kwargs)
                 elif self.request.method == 'PUT':
-                    return self._handlePut(view, kwargs)
+                    response = self._handlePut(view, kwargs)
                 elif self.request.method == 'DELETE':
-                    return self._handleDelete(view, kwargs)
+                    response = self._handleDelete(view, kwargs)
                 elif self.request.method == 'CONNECT':
-                    return self._handleConnect(view, kwargs)
+                    response = self._handleConnect(view, kwargs)
                 elif self.request.method == 'POST':
-                    return self._handlePost(view, kwargs)
+                    response = self._handlePost(view, kwargs)
                 elif self.request.method == 'OPTIONS':
-                    return self._handleOptions(view, kwargs)
+                    response = self._handleOptions(view, kwargs)
                 elif self.request.method == 'TRACE':
-                    return self._handleTrace(view, kwargs)
+                    response = self._handleTrace(view, kwargs)
                 elif self.request.method == 'PATCH':
-                    return self._handlePatch(view, kwargs)
+                    response = self._handlePatch(view, kwargs)
                 else:
-                    return self._401NotImplementedError()
+                    response = self._501NotImplementedError()
+                    
+                response = self.getErrorHandler(response)
+                return response
+                
             except HTTP404:
                 return self._handle404View()
         else:
@@ -370,5 +383,5 @@ class RequestHandler:
                 handler = StaticHandler(self.request, root, splitRoot, ext)
                 return handler.findFile()
             except HTTP404:
-                return self._handle404Static()
+                return self._handle404View()
                 

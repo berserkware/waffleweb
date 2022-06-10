@@ -3,7 +3,7 @@ import requests
 
 from waffleweb import WaffleApp
 
-class basicRouteTest(unittest.TestCase):
+class BasicRouteTest(unittest.TestCase):
     def test_pathInvalidRelitiveURL(self):
         app = WaffleApp('test')
 
@@ -56,6 +56,3 @@ class basicRouteTest(unittest.TestCase):
     def test_arguments(self):
         response = requests.get('http://localhost:8080/math/add/12/12').json()
         self.assertEqual(response, {'answer':24})
-
-if __name__ == '__main__':
-    unittest.main()

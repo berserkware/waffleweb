@@ -7,13 +7,13 @@ class View:
     '''A view.'''
     def __init__(
         self,
-        unstripedPath,
-        path,
-        splitPath,
-        name,
-        view,
-        allowedMethods,
-        app
+        unstripedPath=None,
+        path=None,
+        splitPath=None,
+        name=None,
+        view=None,
+        allowedMethods=None,
+        app=None
         ):
         self.unstripedPath = unstripedPath
         self.path = path
@@ -28,6 +28,18 @@ class View:
             if type(part) == list:
                 return True
         return False
+        
+class ErrorHandler:
+    def __init__(
+        self,
+        statusCode,
+        view,
+        app
+        ):
+        self.statusCode = statusCode
+        self.view = view
+        self.app = app
+
 class WaffleApp():
     '''
     The WaffleApp() class is the centre of all the apps for your project.
@@ -39,11 +51,8 @@ class WaffleApp():
     def __init__(self, appName: str, middleware: list[str]=[]):
         self.appName = appName
         self.middleware = middleware
-        self._views = []
-
-    @property
-    def views(self):
-        return self._views
+        self.views = []
+        self.errorHandlers = []
 
     def route(self, path='/', name=None, methods=['OPTIONS', 'GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'TRACE', 'CONNECT']):
         '''
@@ -96,7 +105,7 @@ class WaffleApp():
                             splitPathWithArgs.append(part)
 
                 #adds function to view registry
-                self._views.append(
+                self.views.append(
                     View(
                     unstripedPath=path,
                     path=path.strip('/'),
@@ -113,4 +122,15 @@ class WaffleApp():
                 return wrapper
             else:
                 raise ValueError('Your path has to be a valid relative URL pattern.')
+        return decorator
+        
+    def errorHandler(self, statusCode):
+        def decorator(view):
+            self.errorHandlers.append(
+                ErrorHandler(statusCode, view, self)
+            )
+            def wrapper(*args, **kwargs):
+                return view(*args, **kwargs)
+                
+            return wrapper
         return decorator

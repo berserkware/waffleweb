@@ -4,6 +4,7 @@ from datetime import datetime
 from pytz import timezone
 
 from waffleweb.request import Request, RequestHandler
+from waffleweb.response import HTTPResponse
 
 class ParamsTest(unittest.TestCase):
     def test_paramsNormal(self):
@@ -79,6 +80,13 @@ class HeadTest(unittest.TestCase):
         now = datetime.now(timezone('GMT'))
         dateTime = now.strftime("%a, %d %b %Y %X %Z")
 
+        headers = response.headers
+        try:
+            del headers['Server']
+            del headers['Connection']
+        except:
+            pass
+
         self.assertEqual(response.headers, {
             'Content-Type': 'text/html; charset=utf-8',
             'Date': dateTime,
@@ -102,6 +110,13 @@ class OptionsTest(unittest.TestCase):
         now = datetime.now(timezone('GMT'))
         dateTime = now.strftime("%a, %d %b %Y %X %Z")
 
+        headers = response.headers
+        try:
+            del headers['Server']
+            del headers['Connection']
+        except:
+            pass
+
         self.assertEqual(response.headers, {
             'Allow': 'OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE, CONNECT',
             'Content-Type': 'text/html; charset=utf-8',
@@ -118,3 +133,81 @@ class MethodTest(unittest.TestCase):
     def test_methodAllowed(self):
         response = requests.get('http://localhost:8080/math/add/1/1')
         self.assertEqual(response.status_code, 200)
+        
+class ErrorHandlerTest(unittest.TestCase):
+    def test_404Custom(self):
+        request = Request(
+            'GET /testing404Page HTTP/1.1\r\nUser-Agent: PostmanRuntime/7.29.0\r\nAccept: */*\r\nHost: localhost:8080\r\nAccept-Encoding: gzip, deflate, br\r\nConnection: keep-alive\r\n\r\n', 
+            '101.98.137.19'
+            )
+
+        handler = RequestHandler(request, [])
+        
+        response = handler.getResponse()
+        self.assertEqual(response.content, b'404 Page Handler')
+        
+    def test_customErrorCode(self):
+        request = Request(
+            'GET /randomStatus HTTP/1.1\r\nUser-Agent: PostmanRuntime/7.29.0\r\nAccept: */*\r\nHost: localhost:8080\r\nAccept-Encoding: gzip, deflate, br\r\nConnection: keep-alive\r\n\r\n', 
+            '101.98.137.19'
+            )
+
+        handler = RequestHandler(request, [])
+        
+        response = handler.getResponse()
+        self.assertEqual(response.content, b'220 Page')
+        
+    def test_noErrorCodeHandler(self):
+        request = Request(
+            'GET /statusNoHandler HTTP/1.1\r\nUser-Agent: PostmanRuntime/7.29.0\r\nAccept: */*\r\nHost: localhost:8080\r\nAccept-Encoding: gzip, deflate, br\r\nConnection: keep-alive\r\n\r\n', 
+            '101.98.137.19'
+            )
+
+        handler = RequestHandler(request, [])
+        
+        response = handler.getResponse()
+        self.assertEqual(response.content, b'status but no handler.')
+        
+    def test_getErrorHandlerByResponse(self):
+        request = Request(
+            'GET /statusNoHandler HTTP/1.1\r\nUser-Agent: PostmanRuntime/7.29.0\r\nAccept: */*\r\nHost: localhost:8080\r\nAccept-Encoding: gzip, deflate, br\r\nConnection: keep-alive\r\n\r\n', 
+            '101.98.137.19'
+            )
+
+        handler = RequestHandler(request, [])
+        res = handler.getErrorHandler(response=HTTPResponse(request, 'test', status=220))
+        
+        self.assertEqual(res.content, b'220 Page')
+        
+    def test_getErrorHandlerByStatus(self):
+        request = Request(
+            'GET /statusNoHandler HTTP/1.1\r\nUser-Agent: PostmanRuntime/7.29.0\r\nAccept: */*\r\nHost: localhost:8080\r\nAccept-Encoding: gzip, deflate, br\r\nConnection: keep-alive\r\n\r\n', 
+            '101.98.137.19'
+            )
+
+        handler = RequestHandler(request, [])
+        res = handler.getErrorHandler(statusCode=220)
+        
+        self.assertEqual(res.content, b'220 Page')
+        
+    def test_getErrorHandlerStatusNoHandler(self):
+        request = Request(
+            'GET /statusNoHandler HTTP/1.1\r\nUser-Agent: PostmanRuntime/7.29.0\r\nAccept: */*\r\nHost: localhost:8080\r\nAccept-Encoding: gzip, deflate, br\r\nConnection: keep-alive\r\n\r\n', 
+            '101.98.137.19'
+            )
+
+        handler = RequestHandler(request, [])
+        res = handler.getErrorHandler(statusCode=223)
+        
+        self.assertEqual(res, None)
+        
+    def test_getErrorHandlerByResponseNoHandler(self):
+        request = Request(
+            'GET /statusNoHandler HTTP/1.1\r\nUser-Agent: PostmanRuntime/7.29.0\r\nAccept: */*\r\nHost: localhost:8080\r\nAccept-Encoding: gzip, deflate, br\r\nConnection: keep-alive\r\n\r\n', 
+            '101.98.137.19'
+            )
+        res = HTTPResponse(request, 'test', status=223)
+        handler = RequestHandler(request, [])
+        errorHandler = handler.getErrorHandler(response=res)
+        
+        self.assertEqual(errorHandler.content, res.content)
