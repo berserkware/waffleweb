@@ -276,7 +276,7 @@ Redirects to a page.
 
 	@yourApp.route('/nothing/')
 	def nothing(request, name):
-      return redirect(request, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', permanent=True)
+            return redirect(request, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', permanent=True)
       
 Custom Error Pages
 ..................
