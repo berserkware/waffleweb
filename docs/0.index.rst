@@ -3,8 +3,7 @@ Waffleweb Documentation
 =======================
 
 Welcome to the Waffleweb docs! Waffleweb is a python web framework for making scalable websites easily. 
-To get started you should go to `Getting Started <1.Getting-Started/1.0.Index.rst>`_. For How-to guides you can go to 
-`How-to Guides <2.How-To-Guides/2.0.Index.rst>`_. If you are looking for something specific you can go to the 
+To get started you should go to `Getting Started <1.Getting-Started/1.0.Index.rst>`_. For How-to guides you can go to `How-to Guides <2.How-To-Guides/2.0.Index.rst>`_. If you are looking for something specific you can go to the 
 `API Reference <3.Reference/3.0.Index.rst>`_.
 
 Contents
