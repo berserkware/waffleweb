@@ -20,11 +20,11 @@ Contents
 	| 2.4. `Forms <How-To-Guides/Forms.rst>`_
 	| 2.5. `Static Files <How-To-Guides/Static-Files.rst>`_
 	| 2.6. `Templating <How-To-Guides/Templating.rst>`_
-	| 2.7. `Cus <How-To-Guides/Responses.rst>`_
-	| 2.8. `Responses <How-To-Guides/Responses.rst>`_
-	| 2.9. `Responses <How-To-Guides/Responses.rst>`_
-	| 2.10. `Responses <How-To-Guides/Responses.rst>`_
-	| 2.11. `Responses <How-To-Guides/Responses.rst>`_
+	| 2.7. `Custom Error Pages <How-To-Guides/Custom-Error-Pages.rst>`_
+	| 2.8. `Uploaded Files <How-To-Guides/Uploaded-Files.rst>`_
+	| 2.9. `Cookies <How-To-Guides/Cookies.rst>`_
+	| 2.10. `Middleware <How-To-Guides/Middleware.rst>`_
+	| 2.11. `Deploying Your Project <How-To-Guides/Deploying-Your-Project.rst>`_
 3. `API Reference <Reference/Index.rst>`_
 	| 3.1. `project.py <Reference/project.py.rst>`_
 	| 3.2. `app.py <Reference/app.py.rst>`_
