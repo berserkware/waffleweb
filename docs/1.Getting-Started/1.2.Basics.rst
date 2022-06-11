@@ -278,6 +278,18 @@ Redirects to a page.
 	def nothing(request, name):
       return redirect(request, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', permanent=True)
       
+Custom Error Pages
+..................
+To add custom error pages for status code you can use the ``errorhandler()`` decorator. By default waffleweb shows a generic error page.  
+
+.. code-block:: python
+
+	@yourApp.errorHandler(404)
+	def page404(request):
+	    return HTTPResponse(request, '404 Page', status=404)     
+	    
+You have to set the status code or it will automatically default to 200.
+
 Accessing request data
 ......................
 The Request object holds all the data about the request. It stores stuff like POST data, cookies, headers. For more in-depth information in the `Request </2.How-To-Guides/2.1.The-Request-Object.rst>`_ How-To Guide. The request object is passed into you view as the first arg.

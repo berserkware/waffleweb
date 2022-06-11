@@ -1,0 +1,22 @@
+=============
+API Reference
+=============
+
+This part of the documentation cover the Code and Internals of Waffleweb.
+
+
+Contents
+........
+1. `project.py <3.1.project.py.rst>`_
+2. `app.py <3.2.app.py.rst>`_
+3. `response.py <3.3.response.py.rst>`_
+4. `request.py <3.4.request.py.rst>`_
+5. `static.py <3.5.static.py.rst>`_
+6. `template.py <3.6.template.py.rst>`_
+7. `middleware.py <3.7.middleware.py.rst>`_
+8. `wsgi.py <3.8.wsgi.py.rst>`_
+9. `cookie.py <3.9.cookie.py.rst>`_
+10. `files.py <3.10.files.py.rst>`_
+11. `parser.py <3.11.parser.py.rst>`_
+12. `defaults.py <3.12.defaults.py.rst>`_
+13. `exceptions.py <3.13.exceptions.py.rst>`_
