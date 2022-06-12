@@ -187,11 +187,11 @@ To access these static files in your browser just go to ``/folder/file.ext``. Wa
 .. code-block::
 	
 		yourProj/
-		    --project.py
-		    --app.py
-		    --static/
-		        --css/
-			        --index.css
+			--project.py
+			--app.py
+			--static/
+				--css/
+					--index.css
 
 To access a static file from your app you can use ``open()`` or ``openStatic()``. The difference between ``open()`` and ``openStatic()`` is that ``openStatic()`` searches in your static directory and it's mode is defaulted to 'rb'.
 
@@ -203,7 +203,7 @@ To access a static file from your app you can use ``open()`` or ``openStatic()``
 	@yourApp.route('/getImage/<imageName:str>')
 	def index(request, imageName):
 	    with openStatic(f'/images/{imageName}.jpg') as f:
-	        return FileResponse(request, f)
+			    return FileResponse(request, f)
 
 Responses
 .........
@@ -250,7 +250,7 @@ A file response. Takes a bytes file object. Sets the Content-Type to whatever th
 	@yourApp.route('/image/')
 	def image(request):
 	    with openStatic(f'/images/image.jpg') as f:
-	        return FileResponse(request, f)
+			    return FileResponse(request, f)
 	
 ------------
 ``render()``
@@ -276,7 +276,7 @@ Redirects to a page.
 
 	@yourApp.route('/nothing/')
 	def nothing(request, name):
-      return redirect(request, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', permanent=True)
+            return redirect(request, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', permanent=True)
       
 Custom Error Pages
 ..................
