@@ -177,9 +177,10 @@ If you only want to allow certain HTTP methods to access your page then you can 
 		
 Waffleweb by default allows all HTTP methods. If you have 'GET' in your methods Waffleweb automatically handles the HEAD and OPTIONS methods.
 
-------------
+For more information you can go to `Routing </How-To-Guides/Routing.rst>`_.
+
 Static files
-------------
+............
 To add static files to your Waffleweb project all you need to do is make a folder called static and put your files in there. You can change the folder Waffleweb looks in for your static files in a ``settings.py`` file in your project directory. Just add ``STATIC_DIR = 'path/to/static/'`` to ``settings.py``.
 
 To access these static files in your browser just go to ``/folder/file.ext``. Waffleweb hides the static directory path in the URL to remove complexity. For example, if your project directory looks like the example bellow then to access ``test.css`` you would need to go to ``/css/index.css`` NOT ``/static/css/index.css``.
@@ -204,6 +205,8 @@ To access a static file from your app you can use ``open()`` or ``openStatic()``
 	def index(request, imageName):
 	    with openStatic(f'/images/{imageName}.jpg') as f:
 	        return FileResponse(request, f)
+
+For more information you can go to `Static Files </How-To-Guides/Static-Files.rst>`_.
 
 Responses
 .........
@@ -278,6 +281,8 @@ Redirects to a page.
 	def nothing(request, name):
       return redirect(request, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', permanent=True)
       
+For more information you can go to `Responses </How-To-Guides/Responses.rst>`_.
+      
 Custom Error Pages
 ..................
 To add custom error pages for status code you can use the ``errorhandler()`` decorator. By default waffleweb shows a generic error page.  
@@ -289,6 +294,8 @@ To add custom error pages for status code you can use the ``errorhandler()`` dec
 	    return HTTPResponse(request, '404 Page', status=404)     
 	    
 You have to set the status code or it will automatically default to 200.
+
+For more information you can go to `Custom Error Pages </How-To-Guides/Custom-Error-Pages.rst>`_.
 
 Accessing request data
 ......................
@@ -313,6 +320,8 @@ To access URL parameters for a request you can use the ``URL_PARAMS`` attribute.
 
 	request.URL_PARAMS.get('param1')
 	
+For more information you can go to `The Request Object </How-To-Guides/The-Request-Object.rst>`_.
+	
 ------------
 File Uploads
 ------------
@@ -329,6 +338,8 @@ You can access file uploads with the ``FILES`` attribute. The uploaded files are
 	        f.close()
 
 	    return render(request, 'upload.html')
+	    
+For more information you can go to `Uploaded Files </How-To-Guides/Uploaded-Files.rst>`_.
 	    
 Cookies
 .......
@@ -364,6 +375,8 @@ Removing Cookies from response:
 	    res.deleteCookie('cookieName')
 	    return res
 	    
+For more information you can go to `Cookies </How-To-Guides/Cookies.rst>`_.
+	    
 Adding Middleware
 .................
 To add middleware to your project you can add a argument to your WaffleProj object in your ``project.py``.
@@ -378,4 +391,4 @@ To add middleware to your project you can add a argument to your WaffleProj obje
 	
 	yourProject = WaffleProject(apps, middleware=middleware)
 	
-For more information go to Middleware
+For more information you can go to `Middleware </How-To-Guides/Middleware.rst>`_.

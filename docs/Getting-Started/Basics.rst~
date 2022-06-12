@@ -187,11 +187,11 @@ To access these static files in your browser just go to ``/folder/file.ext``. Wa
 .. code-block::
 	
 		yourProj/
-			--project.py
-			--app.py
-			--static/
-				--css/
-					--index.css
+		    --project.py
+		    --app.py
+		    --static/
+		        --css/
+			        --index.css
 
 To access a static file from your app you can use ``open()`` or ``openStatic()``. The difference between ``open()`` and ``openStatic()`` is that ``openStatic()`` searches in your static directory and it's mode is defaulted to 'rb'.
 
@@ -203,7 +203,9 @@ To access a static file from your app you can use ``open()`` or ``openStatic()``
 	@yourApp.route('/getImage/<imageName:str>')
 	def index(request, imageName):
 	    with openStatic(f'/images/{imageName}.jpg') as f:
-			    return FileResponse(request, f)
+	        return FileResponse(request, f)
+
+For more information you can go to `Static Files </How-To-Guides/Static-Files.rst>`_
 
 Responses
 .........
@@ -250,7 +252,7 @@ A file response. Takes a bytes file object. Sets the Content-Type to whatever th
 	@yourApp.route('/image/')
 	def image(request):
 	    with openStatic(f'/images/image.jpg') as f:
-			    return FileResponse(request, f)
+	        return FileResponse(request, f)
 	
 ------------
 ``render()``
@@ -276,7 +278,9 @@ Redirects to a page.
 
 	@yourApp.route('/nothing/')
 	def nothing(request, name):
-            return redirect(request, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', permanent=True)
+      return redirect(request, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', permanent=True)
+      
+For more information you can go to `Responses </How-To-Guides/Responses.rst>`_.
       
 Custom Error Pages
 ..................
@@ -289,6 +293,8 @@ To add custom error pages for status code you can use the ``errorhandler()`` dec
 	    return HTTPResponse(request, '404 Page', status=404)     
 	    
 You have to set the status code or it will automatically default to 200.
+
+For more information you can go to `Custom Error Pages </How-To-Guides/Custom-Error-Pages.rst>`_.
 
 Accessing request data
 ......................
@@ -313,6 +319,8 @@ To access URL parameters for a request you can use the ``URL_PARAMS`` attribute.
 
 	request.URL_PARAMS.get('param1')
 	
+For more information you can go to `The Request Object </How-To-Guides/The-Request-Object.rst>`_.
+	
 ------------
 File Uploads
 ------------
@@ -329,6 +337,8 @@ You can access file uploads with the ``FILES`` attribute. The uploaded files are
 	        f.close()
 
 	    return render(request, 'upload.html')
+	    
+For more information you can go to `Uploaded Files </How-To-Guides/Uploaded-Files.rst>`_.
 	    
 Cookies
 .......
@@ -364,6 +374,8 @@ Removing Cookies from response:
 	    res.deleteCookie('cookieName')
 	    return res
 	    
+For more information you can go to `Cookies </How-To-Guides/Cookies.rst>`_.
+	    
 Adding Middleware
 .................
 To add middleware to your project you can add a argument to your WaffleProj object in your ``project.py``.
@@ -378,4 +390,4 @@ To add middleware to your project you can add a argument to your WaffleProj obje
 	
 	yourProject = WaffleProject(apps, middleware=middleware)
 	
-For more information go to Middleware
+For more information you can go to `Middleware </How-To-Guides/Middleware.rst>`_.
