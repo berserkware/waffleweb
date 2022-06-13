@@ -2,8 +2,8 @@
 project.py
 ==========
 
-Project object
-..............
+Project object:
+.................
 ``class waffleweb.WafflewebProject(apps, middleware=[])``
 .........................................................
 

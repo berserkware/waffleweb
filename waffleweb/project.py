@@ -34,7 +34,7 @@ class WaffleProject():
         waffleweb.defaults.APPS = self.apps
         self.middlewareHandler = MiddlewareHandler(middleware)
 
-    def loadApps(self, apps) -> list:
+    def loadApps(self, apps: list[str]) -> list:
         '''
         This function looks for and imports all the apps and adds them to a 
         dictionary then adds it to a list then returns the list.

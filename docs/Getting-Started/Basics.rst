@@ -379,7 +379,7 @@ For more information you can go to `Cookies </How-To-Guides/Cookies.rst>`_.
 	    
 Adding Middleware
 .................
-To add middleware to your project you can add a argument to your WaffleProj object in your ``project.py``.
+To add middleware to your project you can add a argument to your WaffleProject object in your ``project.py``.
 
 ``project.py:``
 
