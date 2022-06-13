@@ -124,7 +124,7 @@ class WaffleApp():
                 raise ValueError('Your path has to be a valid relative URL pattern.')
         return decorator
         
-    def errorHandler(self, statusCode):
+    def errorHandler(self, statusCode: int):
         def decorator(view):
             self.errorHandlers.append(
                 ErrorHandler(statusCode, view, self)

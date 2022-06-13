@@ -34,6 +34,8 @@ Runs a test server. Shouldn't be used in production.
  - **port** (optional) (``int``) - The port of your website.
  - **debug** (optional) (``bool``) - If your server is in debug mode.
 
+**Returns:** ``None``
+
 -------------------------------------------
 ``wsgiApplication(environ, startResponse)``
 -------------------------------------------
@@ -44,3 +46,5 @@ A WSGI application. As outlined in `PEP 3333 <https://peps.python.org/pep-3333/>
  - **environ** (``dict``) - For your wsgi server gateway. As outlined in `PEP 3333 <https://peps.python.org/pep-3333/>`_.
  
  - **startResponse** (``func``) - For your wsgi server gateway. As outlined in `PEP 3333 <https://peps.python.org/pep-3333/>`_.
+ 
+**Returns:** ``iter()``

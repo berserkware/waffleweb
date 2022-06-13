@@ -32,7 +32,7 @@ To create an app create a python file and put a WaffleApp object in it as so.
 
     yourApp = WaffleApp('appName')
     
-WaffleApp only needs to take one variable for now: the name of your app.
+WaffleApp only needs to take one variable for now: the name of your app. The name of your app is for some functions to identify your app.
 to register your app all you need to do is add 'app.yourApp' to your project's
 app list. your project.py should now look as so.
 
@@ -47,7 +47,6 @@ app list. your project.py should now look as so.
     ]
 
     yourProject = WaffleProject(apps)
-    ``
 
 Running your project
 ....................
@@ -279,7 +278,7 @@ Redirects to a page.
 
 	@yourApp.route('/nothing/')
 	def nothing(request, name):
-      return redirect(request, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', permanent=True)
+	    return redirect(request, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', permanent=True)
       
 For more information you can go to `Responses </How-To-Guides/Responses.rst>`_.
       

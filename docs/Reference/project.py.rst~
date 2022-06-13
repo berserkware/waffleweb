@@ -2,10 +2,9 @@
 project.py
 ==========
 
-Project object
-..............
+=========================================================
 ``class waffleweb.WafflewebProject(apps, middleware=[])``
-.........................................................
+=========================================================
 
 The WafflewebProject object is where you can access the wsgi app and a test server. It is also a central point for your project.
 
@@ -34,6 +33,8 @@ Runs a test server. Shouldn't be used in production.
  - **host** (optional) (``str``) - The host of your website.
  - **port** (optional) (``int``) - The port of your website.
  - **debug** (optional) (``bool``) - If your server is in debug mode.
+
+**Returns:** ``None``
 
 -------------------------------------------
 ``wsgiApplication(environ, startResponse)``

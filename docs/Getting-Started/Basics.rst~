@@ -32,7 +32,7 @@ To create an app create a python file and put a WaffleApp object in it as so.
 
     yourApp = WaffleApp('appName')
     
-WaffleApp only needs to take one variable for now: the name of your app.
+WaffleApp only needs to take one variable for now: the name of your app. The name of your app is for some functions to identify your app.
 to register your app all you need to do is add 'app.yourApp' to your project's
 app list. your project.py should now look as so.
 
@@ -177,9 +177,10 @@ If you only want to allow certain HTTP methods to access your page then you can 
 		
 Waffleweb by default allows all HTTP methods. If you have 'GET' in your methods Waffleweb automatically handles the HEAD and OPTIONS methods.
 
-------------
+For more information you can go to `Routing </How-To-Guides/Routing.rst>`_.
+
 Static files
-------------
+............
 To add static files to your Waffleweb project all you need to do is make a folder called static and put your files in there. You can change the folder Waffleweb looks in for your static files in a ``settings.py`` file in your project directory. Just add ``STATIC_DIR = 'path/to/static/'`` to ``settings.py``.
 
 To access these static files in your browser just go to ``/folder/file.ext``. Waffleweb hides the static directory path in the URL to remove complexity. For example, if your project directory looks like the example bellow then to access ``test.css`` you would need to go to ``/css/index.css`` NOT ``/static/css/index.css``.
@@ -205,7 +206,7 @@ To access a static file from your app you can use ``open()`` or ``openStatic()``
 	    with openStatic(f'/images/{imageName}.jpg') as f:
 	        return FileResponse(request, f)
 
-For more information you can go to `Static Files </How-To-Guides/Static-Files.rst>`_
+For more information you can go to `Static Files </How-To-Guides/Static-Files.rst>`_.
 
 Responses
 .........
@@ -378,7 +379,7 @@ For more information you can go to `Cookies </How-To-Guides/Cookies.rst>`_.
 	    
 Adding Middleware
 .................
-To add middleware to your project you can add a argument to your WaffleProj object in your ``project.py``.
+To add middleware to your project you can add a argument to your WaffleProject object in your ``project.py``.
 
 ``project.py:``
 
