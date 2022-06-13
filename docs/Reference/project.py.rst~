@@ -28,12 +28,12 @@ Loads all the apps into a list.
 ``run(host='127.0.0.1', port=8000, debug=False)``
 -------------------------------------------------
 
-	Runs a test server. Shouldn't be used in production.
+Runs a test server. Shouldn't be used in production.
 
-	**Parameters:**
-	 - **host** (optional) (``str``) - The host of your website.
-	 - **port** (optional) (``int``) - The port of your website.
-	 - **debug** (optional) (``bool``) - If your server is in debug mode.
+**Parameters:**
+ - **host** (optional) (``str``) - The host of your website.
+ - **port** (optional) (``int``) - The port of your website.
+ - **debug** (optional) (``bool``) - If your server is in debug mode.
 
 -------------------------------------------
 ``wsgiApplication(environ, startResponse)``

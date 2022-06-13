@@ -2,10 +2,9 @@
 project.py
 ==========
 
-Project object
-..............
+=========================================================
 ``class waffleweb.WafflewebProject(apps, middleware=[])``
-.........................................................
+=========================================================
 
 The WafflewebProject object is where you can access the wsgi app and a test server. It is also a central point for your project.
 
