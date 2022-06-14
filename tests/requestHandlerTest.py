@@ -90,7 +90,7 @@ class HeadTest(unittest.TestCase):
         self.assertEqual(response.headers, {
             'Content-Type': 'text/html; charset=utf-8',
             'Date': dateTime,
-            'Content-Length': '4',
+            'Content-Length': '0',
             'Set-Cookie': 'addedCookie=32; path=/math/; SameSite=Lax',
             })
 

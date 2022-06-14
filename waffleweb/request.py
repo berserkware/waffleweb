@@ -190,9 +190,9 @@ class RequestHandler:
         newView = view.view(self.request, **kwargs)
 
         if type(newView) == HTTPResponse:
-            newView.content = None
+            newView.content = ''
         elif newView == JSONResponse:
-            newView.json = None
+            newView.json = {}
         elif newView == FileResponse:
             newView.fileObj = None
 
@@ -234,10 +234,10 @@ class RequestHandler:
 
         if view is None:
             methods = ', '.join(['OPTIONS', 'GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'TRACE', 'CONNECT'])
-            return HTTPResponse(status=204, headers=f'Allow: {methods}') 
+            return HTTPResponse(status=204, headers={'Allow': methods}) 
 
         methods = ', '.join(view.allowedMethods)
-        return HTTPResponse(status=204, headers=f'Allow: {methods}') 
+        return HTTPResponse(status=204, headers={'Allow': methods}) 
 
     def _handleTrace(self, view, kwargs):
         if 'TRACE' not in view.allowedMethods:
@@ -305,11 +305,11 @@ class RequestHandler:
                 mainMessage='405 Method Not Allowed',
                 subMessage=f'Allowed Methods: {methods}',
             )
-            return HTTPResponse(content=render, status=405, headers=f'Allow: {methods}') 
+            return HTTPResponse(content=render, status=405, headers={'Allow': methods}) 
         else:
             response = self.getErrorHandler(statusCode=405)
             if response == None:
-                return HTTPResponse(content='405 Method not Allowed', status=405, headers=f'Allow: {methods}') 
+                return HTTPResponse(content='405 Method not Allowed', status=405, headers={'Allow': methods}) 
             else:
                 return response
 

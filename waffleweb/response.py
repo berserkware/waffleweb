@@ -18,14 +18,8 @@ class HTTP404(Exception):
     pass
 
 class ResponseHeaders(dict):
-    def __init__(self, data: str, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        #splits data into the seporate headers
-        if data:
-            for header in data.split('\n'):
-                splitHeader = header.strip().split(' ')
-                self[splitHeader[0][:(len(splitHeader[0]) - 1)]] = ' '.join(splitHeader[1:])
+    def __init__(self, *args, **kwargs):
+        super(ResponseHeaders, self).__init__(*args, *kwargs)
 
 class HTTPResponseBase():
     '''Handles the HTTP responses only.'''
@@ -35,7 +29,10 @@ class HTTPResponseBase():
     def __init__(
         self, headers=None, contentType=None, charset=None, status=None, reason=None
     ):
-        self.headers = ResponseHeaders(headers)
+        if headers:
+            self.headers = ResponseHeaders(headers)
+        else:
+            self.headers = ResponseHeaders({})
         self._charset = charset
         self.cookiesToSet = Cookies()
 

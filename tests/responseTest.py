@@ -23,11 +23,10 @@ class ResponseHeadersTest(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super(ResponseHeadersTest, self).__init__(*args, **kwargs)
 
-        self.response = responses.ResponseHeaders("""
-                                            200 OK
-                                            Content-Type: text/html; charset=utf-8
-                                            Content-Encoding: gzip
-                                            """)
+        self.response = responses.ResponseHeaders({
+                                            'Content-Type': 'text/html; charset=utf-8',
+                                            'Content-Encoding': 'gzip',
+                                            })
 
     def test_contentType(self):
         self.assertEqual(self.response['Content-Type'], 'text/html; charset=utf-8')
@@ -44,11 +43,11 @@ class HTTPResponseBaseTest(unittest.TestCase):
 
     def test_contentTypeInHeaders(self):
         with self.assertRaises(ValueError):
-            base = responses.HTTPResponseBase(headers='Content-Type: text/html; charset=utf-8', contentType='text/html; charset=utf-8')
+            base = responses.HTTPResponseBase(headers={'Content-Type': 'text/html; charset=utf-8'}, contentType='text/html; charset=utf-8')
 
     def test_NoContentTypeButInHeaders(self):
         try:
-            base = responses.HTTPResponseBase(headers='Content-Type: text/html; charset=utf-8')
+            base = responses.HTTPResponseBase(headers={'Content-Type': 'text/html; charset=utf-8'})
         except ValueError:
             self.fail('A value error was raised when initializing the HTTPResponseBase class')
 
