@@ -234,10 +234,14 @@ class RequestHandler:
 
         if view is None:
             methods = ', '.join(['OPTIONS', 'GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'TRACE', 'CONNECT'])
-            return HTTPResponse(status=204, headers={'Allow': methods}) 
+            res = HTTPResponse(status=204) 
+            res.headers['Allow'] = methods
+            return res
 
         methods = ', '.join(view.allowedMethods)
-        return HTTPResponse(status=204, headers={'Allow': methods}) 
+        res = HTTPResponse(status=204) 
+        res.headers['Allow'] = methods
+        return res
 
     def _handleTrace(self, view, kwargs):
         if 'TRACE' not in view.allowedMethods:
@@ -305,11 +309,15 @@ class RequestHandler:
                 mainMessage='405 Method Not Allowed',
                 subMessage=f'Allowed Methods: {methods}',
             )
-            return HTTPResponse(content=render, status=405, headers={'Allow': methods}) 
+            res = HTTPResponse(content=render, status=405) 
+            res.headers['Allow'] = methods
+            return res
         else:
             response = self.getErrorHandler(statusCode=405)
             if response == None:
-                return HTTPResponse(content='405 Method not Allowed', status=405, headers={'Allow': methods}) 
+                res = HTTPResponse(content='405 Method not Allowed', status=405) 
+                res.headers['Allow'] = methods
+                return res
             else:
                 return response
 

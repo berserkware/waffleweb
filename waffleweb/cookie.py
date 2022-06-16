@@ -44,13 +44,12 @@ class Cookie():
         self.HTTPOnly = HTTPOnly
         self.sameSite = sameSite
 
-    @property
-    def setCookieStr(self):
-        #returns str for Set-Cookie header
-        return f'{self.name}={self.value}{f"; path={self.path}" if self.path is not None else ""}{f"; Domain={self.domain}" if self.domain is not None else ""}{f"; Max-Age={self.maxAge}" if self.maxAge is not None else ""}{f"; Secure" if self.secure == True else ""}{f"; HttpOnly" if self.HTTPOnly == True else ""}{f"; SameSite={self.sameSite}" if self.sameSite is not None else ""}'
+    def __repr__(self):
+        return repr(self.value)
 
     def __str__(self):
-        return str(self.value)
+        #returns str for Set-Cookie header
+        return f'{self.name}={self.value}{f"; path={self.path}" if self.path is not None else ""}{f"; Domain={self.domain}" if self.domain is not None else ""}{f"; Max-Age={self.maxAge}" if self.maxAge is not None else ""}{f"; Secure" if self.secure == True else ""}{f"; HttpOnly" if self.HTTPOnly == True else ""}{f"; SameSite={self.sameSite}" if self.sameSite is not None else ""}'
 
 class Cookies(dict):
     '''
@@ -76,24 +75,3 @@ class Cookies(dict):
         joinedCookies = '; '.join(cookies)
 
         return joinedCookies
-
-    def setCookie(
-            self, 
-            name, 
-            value, 
-            path=None, 
-            maxAge=None, 
-            domain=None, 
-            secure=False, 
-            HTTPOnly=False, 
-            sameSite='Lax', 
-        ):
-        '''Sets a cookie to a value, takes two arguments: name and value.'''
-        self[str(name)] = Cookie(name=name, value=value, path=path, maxAge=maxAge, domain=domain, secure=secure, HTTPOnly=HTTPOnly, sameSite=sameSite)
-
-    def removeCookie(self, name):
-        '''Deletes a cookie if exists, takes one argument: name.'''
-        if str(name) in self.keys():
-            del self[str(name)]
-        else:
-            raise ValueError('You can\'t remove a cookie that doesn\'t exist!')

@@ -4,6 +4,7 @@ import requests
 
 from waffleweb.request import Request
 import waffleweb.response as responses
+from waffleweb.datatypes import MultiValueOneKeyDict
 
 request = Request("""GET /page1/10/index HTTP/1.1
                         Host: localhost:8080
@@ -19,35 +20,10 @@ request = Request("""GET /page1/10/index HTTP/1.1
                         Sec-Fetch-Site: none
                         Sec-Fetch-User: ?1""", '101.98.137.19')
 
-class ResponseHeadersTest(unittest.TestCase):
-    def __init__(self, *args, **kwargs):
-        super(ResponseHeadersTest, self).__init__(*args, **kwargs)
-
-        self.response = responses.ResponseHeaders({
-                                            'Content-Type': 'text/html; charset=utf-8',
-                                            'Content-Encoding': 'gzip',
-                                            })
-
-    def test_contentType(self):
-        self.assertEqual(self.response['Content-Type'], 'text/html; charset=utf-8')
-
-    def test_contentEncoding(self):
-        self.assertEqual(self.response['Content-Encoding'], 'gzip')
-
 class HTTPResponseBaseTest(unittest.TestCase):
     def test_contentTypeNotInHeaders(self):
         try:
             base = responses.HTTPResponseBase(contentType='text/html; charset=utf-8')
-        except ValueError:
-            self.fail('A value error was raised when initializing the HTTPResponseBase class')
-
-    def test_contentTypeInHeaders(self):
-        with self.assertRaises(ValueError):
-            base = responses.HTTPResponseBase(headers={'Content-Type': 'text/html; charset=utf-8'}, contentType='text/html; charset=utf-8')
-
-    def test_NoContentTypeButInHeaders(self):
-        try:
-            base = responses.HTTPResponseBase(headers={'Content-Type': 'text/html; charset=utf-8'})
         except ValueError:
             self.fail('A value error was raised when initializing the HTTPResponseBase class')
 

@@ -38,15 +38,14 @@ class WsgiHandler:
         responseHeaders = []
 
         headers = self.response.headers
-        cookiesToSet = self.response.cookiesToSet
 
-        #Puts all the headers into tuples and adds them to the responseHeaders list
+        #gets the headers
         for key in headers.keys():
-            responseHeaders.append((key, headers[key]))
-
-        #Puts all the cookiesToSet into tumples and adds them to the responseHeaders list
-        for key in cookiesToSet.keys():
-            responseHeaders.append(('Set-Cookie', cookiesToSet[key].setCookieStr))
+            if type(headers[key]) == list:
+                for item in headers[key]:
+                    responseHeaders.append((key, str(item)))
+            else:
+                responseHeaders.append((key, str(headers[key])))
 
         return responseHeaders
 

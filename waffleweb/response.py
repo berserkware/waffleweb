@@ -11,15 +11,12 @@ from datetime import datetime
 from pytz import timezone
 from http.client import responses
 
-from waffleweb.cookie import Cookies
+from waffleweb.cookie import Cookies, Cookie
 from waffleweb.template import renderTemplate
+from waffleweb.datatypes import MultiValueOneKeyDict
 
 class HTTP404(Exception):
     pass
-
-class ResponseHeaders(dict):
-    def __init__(self, *args, **kwargs):
-        super(ResponseHeaders, self).__init__(*args, *kwargs)
 
 class HTTPResponseBase():
     '''Handles the HTTP responses only.'''
@@ -27,20 +24,16 @@ class HTTPResponseBase():
     statusCode = 200
 
     def __init__(
-        self, headers=None, contentType=None, charset=None, status=None, reason=None
+        self, contentType=None, charset=None, status=None, reason=None
     ):
-        if headers:
-            self.headers = ResponseHeaders(headers)
-        else:
-            self.headers = ResponseHeaders({})
+        self.headers = MultiValueOneKeyDict({})
         self._charset = charset
-        self.cookiesToSet = Cookies()
 
         #Checks if content type is in headers if it isn't adds one
         if 'Content-Type' not in self.headers:
             if contentType is None:
                 contentType = f'text/html; charset={self.charset}'
-            self.headers['Content-Type'] = contentType
+            self.headers['Content-Type', None] = contentType
         elif contentType:
             raise ValueError(
                 'You cannot have a contentType provided if you have a Content-Type in your headers.'
@@ -50,7 +43,7 @@ class HTTPResponseBase():
             now = datetime.now(timezone('GMT'))
             dateTime = now.strftime("%a, %d %b %Y %X %Z")
 
-            self.headers['Date'] = dateTime
+            self.headers['Date', None] = dateTime
 
         #Checks if status code is valid.
         if status is not None:
@@ -100,32 +93,44 @@ class HTTPResponseBase():
         ):
         '''Sets a cookie to a value, takes two arguments: name and value'''
         if path is not None:
-            self.cookiesToSet.setCookie(name=name, value=value, path=path, maxAge=maxAge, domain=domain, secure=secure, HTTPOnly=HTTPOnly, sameSite=sameSite)
+            self.headers['Set-Cookie'] = Cookie(name=name, value=value, path=path, maxAge=maxAge, domain=domain, secure=secure, HTTPOnly=HTTPOnly, sameSite=sameSite)
         elif path is None and self.request is not None:
-            self.cookiesToSet.setCookie(name=name, value=value, path=self.request.path, maxAge=maxAge, domain=domain, secure=secure, HTTPOnly=HTTPOnly, sameSite=sameSite)
+            self.headers['Set-Cookie'] = Cookie(name=name, value=value, path=self.request.path, maxAge=maxAge, domain=domain, secure=secure, HTTPOnly=HTTPOnly, sameSite=sameSite)
         else:
-            self.cookiesToSet.setCookie(name=name, value=value, path='/', maxAge=maxAge, domain=domain, secure=secure, HTTPOnly=HTTPOnly, sameSite=sameSite)  
+            self.headers['Set-Cookie'] = Cookie(name=name, value=value, path='/', maxAge=maxAge, domain=domain, secure=secure, HTTPOnly=HTTPOnly, sameSite=sameSite)  
 
     def deleteCookie(self, name):
         '''Deletes a cookie if exists, takes one argument: name.'''
-        self.cookiesToSet.removeCookie(name)
+        if 'Set-Cookie' in self.headers.keys():
+            if type(self.headers['Set-Cookie']) == list:
+                for count, cookie in enumerate(self.headers['Set-Cookie']):
+                    if cookie.name == name:
+                        del self.header['Set-Cookie'][count]
+            else:
+                if self.headers['Set-Cookie'].name == name:
+                    del self.headers['Set-Cookie']
+                else:
+                    raise ValueError('You can\'t remove a cookie that doesn\'t exist!')
+        else:
+            raise ValueError('You can\'t remove a cookie that doesn\'t exist!')
 
     def serializeHeaders(self):
         '''This gets just the headers in a binary string.'''
+        
+        headers = []
+        
         #gets the headers
-        headers = b'\r\n'.join([
-            key.encode(self.charset) + b': ' + value.encode(self.charset)
-            for key, value in self.headers.items()
-        ])
+        for key in self.headers.keys():
+            if type(self.headers[key]) == list:
+                for item in self.headers[key]:
+                    headers.append(key.encode(self.charset) + b': ' + str(item).encode(self.charset))
+            else:
+                headers.append(key.encode(self.charset) + b': ' + str(self.headers[key]).encode(self.charset))
+                
+        #joins the headers
+        headers = b'\r\n'.join(headers)
 
-        #Gets the cookies to set
-        setCookies = (b'' if str(self.cookiesToSet) == '' else 
-            b'\r\n' + b'\r\n'.join([
-                b'Set-Cookie' + b': ' + cookie.setCookieStr.encode(self.charset)
-                for key, cookie in self.cookiesToSet.items()
-                ]))
-
-        return headers + setCookies
+        return headers
 
     __bytes__ = serializeHeaders    
 
@@ -162,7 +167,7 @@ class HTTPResponse(HTTPResponseBase):
     @content.setter
     def content(self, value):
         self._content = [self.convertBytes(value)]
-        self.headers['Content-Length'] = str(len(self.content))
+        self.headers['Content-Length', None] = str(len(self.content))
 
 class JSONResponse(HTTPResponse):
     '''Handles the HTTP responses and json.'''
@@ -173,7 +178,7 @@ class JSONResponse(HTTPResponse):
         self.content = data
 
         self.request = request
-        self.headers['Content-Type'] = f'application/json; charset={self.charset}'
+        self.headers['Content-Type', None] = f'application/json; charset={self.charset}'
 
     @property
     def data(self):
@@ -191,9 +196,9 @@ class FileResponse(HTTPResponse):
 
         #add mimetype to content-type
         if mimeType is not None:
-            self.headers['Content-Type'] = f'{mimeType}; charset={self.charset}'
+            self.headers['Content-Type', None] = f'{mimeType}; charset={self.charset}'
 
-        self.headers['Content-Length'] = str(len(self.fileObj))
+        self.headers['Content-Length', None] = str(len(self.fileObj))
 
     @property
     def fileObj(self):
@@ -213,7 +218,7 @@ class HTTPResponsePermenentRedirect(HTTPResponseRedirectBase):
     '''A Http response permanent redirect, takes one argument: redirectTo'''
     statusCode = 308
 
-def render(request=None, filePath: str=None, context: dict={}, headers=None, charset=None, status=None, reason=None):
+def render(request=None, filePath: str=None, context: dict={}, charset=None, status=None, reason=None):
     '''
     Returns a HTTPResponse with the rendered template, this uses jinja2 as it's defualt.
     it takes 7 arguments::
@@ -223,8 +228,6 @@ def render(request=None, filePath: str=None, context: dict={}, headers=None, cha
 
         context - A dict with all the varibles for the template. 
 
-        headers - Add headers to the response. 
-
         charset - The charset for the response. 
 
         status - The status code for the response. 
@@ -232,7 +235,7 @@ def render(request=None, filePath: str=None, context: dict={}, headers=None, cha
         reason - The status reason for the response. 
     '''
     templateRender = renderTemplate(filePath=filePath, context=context)
-    return HTTPResponse(request, templateRender, headers=headers, charset=charset, status=status, reason=reason)
+    return HTTPResponse(request, templateRender, charset=charset, status=status, reason=reason)
 
 def redirect(redirectTo: str, permanent: bool=False):
     """

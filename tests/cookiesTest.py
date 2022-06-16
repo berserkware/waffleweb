@@ -36,31 +36,3 @@ class CookiesTest(unittest.TestCase):
     def test_strCookie(self):
         cookies = Cookies('testCookie=testValue; testCookie2=testValue2')
         self.assertEqual(str(cookies), 'testCookie=testValue; testCookie2=testValue2')
-
-    def test_setCookie(self):
-        cookies = Cookies('testCookie=testValue')
-        cookies.setCookie('testCookie2', 'testValue2', '/')
-        self.assertEqual(cookies['testCookie2'].value, 'testValue2')
-        self.assertEqual(cookies['testCookie'].value, 'testValue')
-
-    def test_removeCookie(self):
-        cookies = Cookies('testCookie=testValue; testCookie2=testValue2')
-        cookies.removeCookie('testCookie')
-        self.assertEqual(str(cookies), 'testCookie2=testValue2')
-
-    def test_removeCookie(self):
-        cookies = Cookies('testCookie=testValue; testCookie2=testValue2')
-        with self.assertRaises(ValueError):
-            cookies.removeCookie('testCookie3')
-
-    def test_cookiePath(self):
-        res = HTTPResponse(request, 'test')
-        res.setCookie('test1', 'value')
-        cookie = res.cookiesToSet['test1']
-        self.assertEqual(cookie.path, '/page1/10/index')
-
-    def test_cookieAttr(self):
-        res = HTTPResponse(request, 'test')
-        res.setCookie('test1', 'value', HTTPOnly=True)
-        cookie = res.cookiesToSet['test1']
-        self.assertEqual(cookie.setCookieStr, 'test1=value; path=/page1/10/index; HttpOnly; SameSite=Lax')

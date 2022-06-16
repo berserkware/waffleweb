@@ -110,14 +110,14 @@ class OptionsTest(unittest.TestCase):
         now = datetime.now(timezone('GMT'))
         dateTime = now.strftime("%a, %d %b %Y %X %Z")
 
-        headers = response.headers
+        headers = dict(response.headers)
         try:
             del headers['Server']
             del headers['Connection']
         except:
             pass
 
-        self.assertEqual(response.headers, {
+        self.assertEqual(headers, {
             'Allow': 'OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE, CONNECT',
             'Content-Type': 'text/html; charset=utf-8',
             'Date': dateTime,
