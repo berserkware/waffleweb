@@ -35,8 +35,9 @@ Contents
     | 3.6. `template.py <Reference/template.py.rst>`_
     | 3.7. `middleware.py <Reference/middleware.py.rst>`_
     | 3.8. `wsgi.py <Reference/wsgi.py.rst>`_
-    | 3.9. `cookie.py <Reference/cookie.py.rst>`_
-    | 3.10. `files.py <Reference/files.py.rst>`_
-    | 3.11. `parser.py <Reference/parser.py.rst>`_
-    | 3.12. `defaults.py <Reference/defaults.py.rst>`_
-    | 3.13. `exceptions.py <Reference/exceptions.py.rst>`_
+    | 3.9. `datatypes.py <Reference/datatypes.py.rst>`_
+    | 3.10. `cookie.py <Reference/cookie.py.rst>`_
+    | 3.11. `files.py <Reference/files.py.rst>`_
+    | 3.12. `parser.py <Reference/parser.py.rst>`_
+    | 3.13. `defaults.py <Reference/defaults.py.rst>`_
+    | 3.14. `exceptions.py <Reference/exceptions.py.rst>`_

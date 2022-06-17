@@ -20,8 +20,7 @@ The base for the responses.
  
 **Attributes:**
  - **headers** (`MultiValueOneKeyDict </Reference/datatypes.py.rst>`_) - A MultiValueOneKeyDict of all your headers.
- - **statusCode** (``int``) - The status code of the response.
- - **charset** (``str``) - The charset of the response.
+ - **statusCode** (``int``) - The status code of the respon
 
 ---------------------------
 ``property reasonPhrase()``

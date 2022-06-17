@@ -49,7 +49,10 @@ class MultiValueOneKeyDict(dict):
                 if values[1] is not None:
                     self._data[str(values[0])][int(values[1])] = value
                 else:
-                    self._data[str(values[0])] = [value]
+                    if type(value) == list:
+                        self._data[str(values[0])] = value
+                    else:
+                        self._data[str(values[0])] = [value]
             else:
                 raise IndexError('You can\'t have a index if your key doesn\'t exists in the dictionary.')
         else:
@@ -84,9 +87,16 @@ class MultiValueOneKeyDict(dict):
         else:
             del self._data[str(values)]
             
-    def pop(self, keyname, index=0, default=None):
+    def pop(self, keyname, index=None, default=None):
         try:
-            return self[keyname, index]
+            if index is not None:
+                value = str(self[keyname, index])
+                del self[keyname, index]
+                return value
+            else:
+                value = repr(self[keyname, index])
+                del self[keyname]
+                return value
         except KeyError:
             return default
             

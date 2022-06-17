@@ -29,21 +29,15 @@ class HTTPResponseBase():
         self.headers = MultiValueOneKeyDict({})
         self._charset = charset
 
-        #Checks if content type is in headers if it isn't adds one
-        if 'Content-Type' not in self.headers:
-            if contentType is None:
-                contentType = f'text/html; charset={self.charset}'
-            self.headers['Content-Type', None] = contentType
-        elif contentType:
-            raise ValueError(
-                'You cannot have a contentType provided if you have a Content-Type in your headers.'
-            )
+        #Added content type to headers
+        if contentType is None:
+            contentType = f'text/html; charset={self.charset}'
+        self.headers['Content-Type', None] = contentType
 
-        if 'Date' not in self.headers:
-            now = datetime.now(timezone('GMT'))
-            dateTime = now.strftime("%a, %d %b %Y %X %Z")
-
-            self.headers['Date', None] = dateTime
+        #Adds date headers
+        now = datetime.now(timezone('GMT'))
+        dateTime = now.strftime("%a, %d %b %Y %X %Z")
+        self.headers['Date', None] = dateTime
 
         #Checks if status code is valid.
         if status is not None:
