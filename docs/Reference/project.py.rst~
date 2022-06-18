@@ -2,6 +2,8 @@
 project.py
 ==========
 
+.. _WafflewebProject:
+
 =========================================================
 ``class waffleweb.WafflewebProject(apps, middleware=[])``
 =========================================================
@@ -46,3 +48,5 @@ A WSGI application. As outlined in `PEP 3333 <https://peps.python.org/pep-3333/>
  - **environ** (``dict``) - For your wsgi server gateway. As outlined in `PEP 3333 <https://peps.python.org/pep-3333/>`_.
  
  - **startResponse** (``func``) - For your wsgi server gateway. As outlined in `PEP 3333 <https://peps.python.org/pep-3333/>`_.
+ 
+**Returns:** ``iter()``

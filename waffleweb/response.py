@@ -189,8 +189,8 @@ class FileResponse(HTTPResponse):
         self.request = request
 
         #add mimetype to content-type
-        if mimeType is not None:
-            self.headers['Content-Type', None] = f'{mimeType}; charset={self.charset}'
+        if self.mimeType is not None:
+            self.headers['Content-Type', None] = f'{self.mimeType}; charset={self.charset}'
 
         self.headers['Content-Length', None] = str(len(self.fileObj))
 

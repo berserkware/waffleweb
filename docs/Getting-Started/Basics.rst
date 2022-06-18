@@ -257,7 +257,7 @@ A file response. Takes a bytes file object. Sets the Content-Type to whatever th
 ------------
 ``render()``
 ------------
-Renders a template and returns a HTTPResponse. Default templating engine is Jinja2. Default template directory is ``templates/``. You can change the template directory by adding ``TEMPLATE_DIR = '/path/to/templates/'`` to your ``settings.py`` file.
+Renders a template and returns a HTTPResponse. Default templating engine is `Jinja2 <https://palletsprojects.com/p/jinja/>`__. Default template directory is ``templates/``. You can change the template directory by adding ``TEMPLATE_DIR = '/path/to/templates/'`` to your ``settings.py`` file.
 
 .. code-block:: python
 
