@@ -191,7 +191,10 @@ class WaffleProject():
 
     def wsgiApplication(self, environ, startResponse):
         handler = WsgiHandler(environ, self.apps, self.middlewareHandler)
-
+        
+        #Gets the response
+        handler.getResponse()
+        
         #Gets the data
         content = handler.getResponseContent()
         headers = handler.getResponseHeaders()

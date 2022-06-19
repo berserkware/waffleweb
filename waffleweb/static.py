@@ -30,20 +30,17 @@ def openStatic(file, mode='rb', buffering=-1, encoding=None, errors=None, newlin
     
     return staticFinder(file, mode, buffering, encoding, errors, newline, closefd, opener)
 
-class StaticHandler:
-    def __init__(self, request, root, splitRoot, ext):
-        self.request = request
-        self.path = root + ext
-        self.root, self.splitRoot, self.ext = root, splitRoot, ext
-
-    def findFile(self): 
-        '''Finds a static file, returns a FileResponse'''
-        try:
-            with openStatic(self.path, 'rb') as f:
-                mt = mimetypes.guess_type(self.root + self.ext)
-                if mt[0] is not None:
-                    return FileResponse(self.request, f, mimeType=mt[0])
-                else:
-                    return FileResponse(self.request, f, mimeType='application/octet-stream')
-        except FileNotFoundError:
-            raise HTTP404
+def getStaticFileResponse(request, root, ext): 
+    '''Finds a static file, returns a FileResponse'''
+    
+    path = root + ext
+    
+    try:
+        with openStatic(path, 'rb') as f:
+            mt = mimetypes.guess_type(root + ext)
+            if mt[0] is not None:
+                return FileResponse(request, f, mimeType=mt[0])
+            else:
+                return FileResponse(request, f, mimeType='application/octet-stream')
+    except FileNotFoundError:
+        raise HTTP404

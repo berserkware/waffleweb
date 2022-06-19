@@ -30,14 +30,12 @@ Contents
     | 3.1. `project.py <Reference/project.py.rst>`_
     | 3.2. `app.py <Reference/app.py.rst>`_
     | 3.3. `response.py <Reference/response.py.rst>`_
-    | 3.4. `request.py <Reference/request.py.rst>`_
+    | 3.4. `request.py <Reference/request.py.rst>`_ x
     | 3.5. `static.py <Reference/static.py.rst>`_
-    | 3.6. `template.py <Reference/template.py.rst>`_
-    | 3.7. `middleware.py <Reference/middleware.py.rst>`_
+    | 3.6. `template.py <Reference/template.py.rst>`_ x
+    | 3.7. `middleware.py <Reference/middleware.py.rst>`_ 
     | 3.8. `wsgi.py <Reference/wsgi.py.rst>`_
     | 3.9. `datatypes.py <Reference/datatypes.py.rst>`_
     | 3.10. `cookie.py <Reference/cookie.py.rst>`_
     | 3.11. `files.py <Reference/files.py.rst>`_
-    | 3.12. `parser.py <Reference/parser.py.rst>`_
-    | 3.13. `defaults.py <Reference/defaults.py.rst>`_
-    | 3.14. `exceptions.py <Reference/exceptions.py.rst>`_
+    | 3.12. `parser.py <Reference/parser.py.rst>`_ 

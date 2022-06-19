@@ -24,28 +24,28 @@ Usage:
 
 Getting a item from a key with only one value:
 
- .. code-block:: python
+.. code-block:: python
  	
  	>>> dic = MultiValueOneKeyDict({'data': 'value'})
  	>>> dic['data']
  	'value'
- 	
+
 Getting a time from a key with multiple values:
 
- .. code-block:: python
+.. code-block:: python
  
 	>>> dic = MultiValueOneKeyDict({'data': ['value1', 'value2']})
 	>>> dic['data', 1]
 	'value2'
-	
+
 Getting all the values of a key:
 
- .. code-block:: python
+.. code-block:: python
  
 	>>> dic = MultiValueOneKeyDict({'data': ['value1', 'value2']})
 	>>> dic['data']
 	['value1', 'value2']
-	
+
 **Setting:**
 
 Setting a value to a new key:

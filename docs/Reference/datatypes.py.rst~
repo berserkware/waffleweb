@@ -103,7 +103,25 @@ Overwriting a key:
 	{'data': ['newValue']}
 	
 **Deleting:**
- 	
+
+Deleting a key and all it's values:
+
+.. code-block:: python
+
+	>>> dic = MultiValueOneKeyDict({'data': ['value1', 'value2']})
+	>>> del dic['data']
+	>>> dic
+	{}
+	
+Deleting a specific value from a key:
+
+.. code-block:: python
+
+	>>> dic = MultiValueOneKeyDict({'data': ['value1', 'value2']})
+	>>> del dic['data', 1]
+	>>> dic
+	{'data': ['value1']}
+
 ------------------------------------------
 ``get(keyname, index=None, default=None)``
 ------------------------------------------

@@ -4,10 +4,12 @@ from waffleweb.response import HTTP404
 class WsgiHandler:
     def __init__(self, environ, apps, middlewareHandler):
         self.apps = apps
+        self.environ = environ
         self.middlewareHandler = middlewareHandler
-
+        
+    def getResponse(self):
         #Makes the Request object
-        request = Request(environ, environ.get('REMOTE_ADDR'), True)
+        request = Request(self.environ, self.environ.get('REMOTE_ADDR'), True)
 
         self.requestHandler = RequestHandler(request)
 

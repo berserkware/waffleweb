@@ -33,14 +33,4 @@ Gets the content of the response
 ``getResponseHeaders()``
 ------------------------
 
-Gets the response headers is a list of tuples of names and values.
-
 **Returns:** ``list[tuple]``
-
------------------------
-``getResponseStatus()``
------------------------
-
-Gets the response status code and message.
-
-**Returns:** ``str``

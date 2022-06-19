@@ -1,27 +1,14 @@
 class Cookie():
     '''
-    This is a cookie num num num, takes 11 arguments::
-        name - The name of the cookie.
-
-        value - The value of the cookie.
-
-        path - the path of the cookie.
-
-        maxAge - Maximum age of the cookie.
-
-        domain - Domian of the cookie.
-
-        secure - If the cookie is secure
-
-        HTTPOnly - If the cookie is Http only
-
-        sameSite - If the cookie is restricted to a first-party of same-site context.
-
-        strict
-
-        lax
-
-        none
+    This is a cookie num num num, takes 11 arguments:
+     - name - The name of the cookie.
+     - value - The value of the cookie.
+     - path - the path of the cookie.
+     - maxAge - Maximum age of the cookie.
+     - domain - Domian of the cookie.
+     - secure - If the cookie is secure
+     - HTTPOnly - If the cookie is Http only
+     - sameSite - If the cookie is restricted to a first-party or same-site context.
     '''
 
     def __init__(
@@ -53,8 +40,8 @@ class Cookie():
 
 class Cookies(dict):
     '''
-    This stores Cookies, it is a dictionary. Takes 1 arguments::
-        cookies - a string of cookies, example: nameThing=valueThing; anotherNameThing=anotherValueThing
+    This stores Cookies, it is a dictionary. Takes 1 arguments:
+     - cookies - a string of cookies, example: nameThing=valueThing; anotherNameThing=anotherValueThing
     '''
 
     def __init__(self, cookies: str=None, *args, **kwargs):

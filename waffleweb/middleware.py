@@ -50,7 +50,7 @@ class MiddlewareHandler():
 
         return loadedMiddleware
 
-    def runRequestMiddleware(self, request: Request, appView) -> Request:
+    def runRequestMiddleware(self, request: Request, app) -> Request:
         '''Runs all the middleware on the request'''
 
         for ware in self.middleware['global']:
@@ -68,7 +68,7 @@ class MiddlewareHandler():
         
         #Runs the app specific middleware
         newRew = request
-        for ware in self.middleware[appView.app]:
+        for ware in self.middleware[app.app]:
             try:
                 newRew = ware['middleware'].before(request)
 
@@ -79,7 +79,7 @@ class MiddlewareHandler():
 
         return request
 
-    def runResponseMiddleware(self, response, appView):
+    def runResponseMiddleware(self, response, app):
         '''Runs all the middleware on the response'''
         
         for ware in self.middleware['global']:
@@ -93,7 +93,7 @@ class MiddlewareHandler():
 
         #Runs the app specific middleware
         try:
-            for ware in self.middleware[appView.app]:
+            for ware in self.middleware[app.app]:
                 response = ware['middleware'].after(response)
         except (IndexError, AttributeError):
             pass

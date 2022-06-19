@@ -9,7 +9,7 @@ except ModuleNotFoundError:
 from urllib.parse import urlparse
 from waffleweb.cookie import Cookies
 from waffleweb.response import HTTP404, FileResponse, HTTPResponse, HTTPResponsePermenentRedirect, JSONResponse
-from waffleweb.static import StaticHandler
+from waffleweb.static import getStaticFileResponse
 from waffleweb.template import renderErrorPage, renderTemplate
 from waffleweb.files import File
 from waffleweb.parser import parseBody, parseHeaders, parsePost
@@ -388,8 +388,7 @@ class RequestHandler:
                 return self._handle404View()
         else:
             try:
-                handler = StaticHandler(self.request, root, splitRoot, ext)
-                return handler.findFile()
+                return getStaticFileResponse(self.request, root, ext)
             except HTTP404:
                 return self._handle404View()
                 

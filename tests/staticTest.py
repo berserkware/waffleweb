@@ -1,6 +1,6 @@
 import unittest
 from waffleweb.request import Request
-from waffleweb.static import StaticHandler, findStatic
+from waffleweb.static import getStaticFileResponse, findStatic
 from waffleweb.response import HTTP404, FileResponse
 
 request = Request("""GET /page1/10/index HTTP/1.1
@@ -19,22 +19,19 @@ request = Request("""GET /page1/10/index HTTP/1.1
 
 class StaticHandlerTest(unittest.TestCase):
     def test_findFile(self):
-        handler = StaticHandler(request, 'testCSS', ['cssTest'], '.css')
-        self.assertEqual(type(handler.findFile()), FileResponse)
+        res = getStaticFileResponse(request, 'testCSS', '.css')
+        self.assertEqual(type(res), FileResponse)
 
     def test_findFileDoesntExist(self):
-        handler = StaticHandler(request, 'DoesntExist', ['DoesntExist'], '.jpg')
         with self.assertRaises(HTTP404):
-            handler.findFile()
+            res = getStaticFileResponse(request, 'DoesntExist', '.jpg')
 
     def test_findFileMimeKnown(self):
-        handler = StaticHandler(request, 'testCSS', ['cssTest'], '.css')
-        response = handler.findFile()
+        response = getStaticFileResponse(request, 'testCSS', '.css')
         self.assertEqual(response.mimeType, 'text/css')
 
     def test_findFileMimeUnknown(self):
-        handler = StaticHandler(request, 'unknownmine', ['unknownmine'], '.whateveredoo')
-        response = handler.findFile()
+        response = getStaticFileResponse(request, 'unknownmine', '.whateveredoo')
         self.assertEqual(response.mimeType, 'application/octet-stream')
 
 class FindStaticTest(unittest.TestCase):

@@ -15,8 +15,7 @@ Contents
 6. `template.py <template.py.rst>`_
 7. `middleware.py <middleware.py.rst>`_
 8. `wsgi.py <wsgi.py.rst>`_
-9. `cookie.py <cookie.py.rst>`_
-10. `files.py <files.py.rst>`_
-11. `parser.py <parser.py.rst>`_
-12. `defaults.py <defaults.py.rst>`_
-13. `exceptions.py <exceptions.py.rst>`_
+9. `datatypes.py <datatypes.py.rst>`_
+10. `cookie.py <cookie.py.rst>`_
+11. `files.py <files.py.rst>`_
+12. `parser.py <parser.py.rst>`_

@@ -41,6 +41,4 @@ Renders an error page for debug mode.
 **Parameters:**
  - **mainMessage** (``str``) - The main heading for the error page.
  - **subMessage** (optional) (``str``) - The subheading for the error page.
- - **traceback** (optional) (``str``) - The traceback to the error.
- 
-**Returns:** ``str``
+ - **traceback** (opti

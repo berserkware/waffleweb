@@ -39,9 +39,3 @@ Runs all the middleware on the request and then returns the request.
 ========================================
 
 Runs all the middleware on the response and then returns the response.
-
-**Parameters:**
- - **request** (``HTTPResponse``) - The response to run the middleware on.
- - **app** (``WaffleApp``) - The app of the route matching the URL (for app specific middleware).
- 
-**Returns:** ``HTTPResponse``

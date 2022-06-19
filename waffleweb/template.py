@@ -44,7 +44,7 @@ def getRelativeUrl(viewStr: str, **kwargs):
     #if cant find app, raise error
     raise AppNotFoundError(f'App {appName} could not be found.')
 
-def _getEnviromentFile() -> Environment:
+def _getEnvironmentFile() -> Environment:
     '''Gets a jinja Enviroment with the loader being FileSystemLoader.'''
 
     #Gets the template directory
@@ -69,10 +69,9 @@ def _getEnviromentFile() -> Environment:
 
 def renderTemplate(filePath: str, context: dict={}) -> str:
     '''
-    renders a template using jinja2, takes three arguments::
-        filepath - required - the file path to the template
-
-        context - the variables for the template
+    renders a template using jinja2, takes three arguments:
+     - filepath - required - the file path to the template
+     - context - the variables for the template
     '''
 
     if hasattr(settings, 'TEMPLATE_RENDERER'):
@@ -81,7 +80,7 @@ def renderTemplate(filePath: str, context: dict={}) -> str:
         return renderer(filePath, context)
     else:
         #gets the enviroment
-        env = _getEnviromentFile()
+        env = _getEnvironmentFile()
 
         #gets the template render
         template = env.get_template(filePath)
@@ -91,12 +90,10 @@ def renderTemplate(filePath: str, context: dict={}) -> str:
     
 def renderErrorPage(mainMessage: str, subMessage: str=None, traceback: str=None) -> str:
     '''
-    Renders and error page for debug, it takes 3 arguments::
-        mainMessage
-
-        subMessage - optional
-
-        traceback - optional
+    Renders an error page for debug, it takes 3 arguments:
+     - mainMessage
+     - subMessage - optional
+     - traceback - optional
     '''
 
     return '''

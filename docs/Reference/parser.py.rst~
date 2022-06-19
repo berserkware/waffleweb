@@ -24,14 +24,3 @@ Takes a raw request and returns the body part of the request.
  - **request** (``str``) - A raw request.
  
 **Returns:** ``str``
-
-==================================
-``function parseHeaders(request)``
-==================================
-
-Takes a raw request and returns a dictionary of the headers.
-
-**Parameters:**
- - **request** (``str``) - A raw request.
- 
-**Returns:** ``dict``

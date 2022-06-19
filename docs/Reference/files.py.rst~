@@ -8,7 +8,7 @@ files.py
 
 A file for post file uploads.
 
-**Parameters:**
+**Attributes:**
  - **name** (``str``) - The name of the file.
  - **data** (``str``) - The file data.
  - **contentType** (``str``) - The content type of the file.
