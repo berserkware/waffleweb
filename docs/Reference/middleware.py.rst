@@ -15,7 +15,7 @@ A handler of middleware. Middleware gets ran on the request before your view rec
 ``loadMiddleware(middleware)``
 ------------------------------
 
-Loads all the middleware into a list of dictionaries. The dictionaries include the module and the class of the middleware: {'module': middleware module, 'middleware': middlwareClass,}.
+Loads all the middleware into a list of dictionaries. The dictionaries include the module and the class of the middleware: ``{'module': middleware module, 'middleware': middlwareClass,}``.
 
 **Parameters:**
  - **middleware** (``list[str]``) - A list of all the middleware needed to be loaded. You need to format the middleware strings as so: 'module.MiddlewareClass'.
