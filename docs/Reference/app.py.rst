@@ -6,7 +6,7 @@ app.py
 ``class waffleweb.WaffleApp(appName, middleware=[])``
 =====================================================
 
-The WaffleApp object is what you attach your views to.
+The WaffleApp object is what you attach your views and app specific middleware to.
 
 **Parameters:**
  - **appName** (``str``) - The name of your app.
