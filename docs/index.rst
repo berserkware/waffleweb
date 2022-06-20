@@ -30,7 +30,7 @@ Contents
     | 3.1. `project.py <Reference/project.py.rst>`_
     | 3.2. `app.py <Reference/app.py.rst>`_
     | 3.3. `response.py <Reference/response.py.rst>`_
-    | 3.4. `request.py <Reference/request.py.rst>`_ x
+    | 3.4. `request.py <Reference/request.py.rst>`_ 
     | 3.5. `static.py <Reference/static.py.rst>`_
     | 3.6. `template.py <Reference/template.py.rst>`_ 
     | 3.7. `middleware.py <Reference/middleware.py.rst>`_ 

@@ -2,9 +2,9 @@
 middleware.py
 =============
 
-========================================
-``class MiddlewareHandler(middleware)``
-========================================
+============================================================
+``class waffleweb.middleware.MiddlewareHandler(middleware)``
+============================================================
 
 A handler of middleware. Middleware gets ran on the request before your view recieves it and on the response before it is sent.
 
@@ -34,9 +34,9 @@ Runs all the middleware on the request and then returns the request. It calls th
  
 **Returns:** ``Request``
 
-========================================
+----------------------------------------
 ``runResponseMiddleware(response, app)``
-========================================
+----------------------------------------
 
 Runs all the middleware on the response and then returns the response. It calls the ``after(response)`` method on the middleware classes.
 

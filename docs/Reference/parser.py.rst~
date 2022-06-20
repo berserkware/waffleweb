@@ -3,7 +3,7 @@ parser.py
 =========
 
 =========================================
-``function parsePost(body, contentType)``
+``function waffleweb.parser.parsePost(body, contentType)``
 =========================================
 
 Parses post data and returns two dictionaries in a tuple: post data and files.
@@ -15,7 +15,7 @@ Parses post data and returns two dictionaries in a tuple: post data and files.
 **Returns:** ``tuple[dict]``
 
 ===============================
-``function parseBody(request)``
+``function waffleweb.parser.parseBody(request)``
 ===============================
 
 Takes a raw request and returns the body part of the request.
@@ -24,3 +24,14 @@ Takes a raw request and returns the body part of the request.
  - **request** (``str``) - A raw request.
  
 **Returns:** ``str``
+
+==================================
+``function waffleweb.parser.parseHeaders(request)``
+==================================
+
+Takes a raw request and returns a dictionary of the headers.
+
+**Parameters:**
+ - **request** (``str``) - A raw request.
+ 
+**Returns:** ``dict``

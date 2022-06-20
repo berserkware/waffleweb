@@ -83,10 +83,10 @@ A handler for requests to find the views and responses.
 ``_getArg(index, part)``
 ------------------------
 
-Converts the URL variable to it's type. Returns a ``tuple`` with the name of the variable and the value: ('name', 'value').
+Converts the arg to it's type. Returns a ``tuple`` with the name of the argument and the value: ('name', 'value').
 
 **Parameters:**
- - **index** (``int``) - The section in the URL to convert.
+ - **index** (``int``) - The section in the URL to covert.
  - **part** (``list``) - The part in the view's URL to know what the type to convert is and the name of the argument.
 
 **Returns:** ``tuple``

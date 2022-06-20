@@ -21,9 +21,11 @@ Opens a static file. takes all the same arguments as ``open()``. Its basically j
 ``function getStaticFileResponse(request, root, ext)``
 ======================================================
 
-Finds a static file and puts it into a ``FileResponse``.
+Finds a static file and puts it into a ``FileResponse``. If can't find file it raises HTTP404.
 
 **Parameters:**
  - **request** (``Request``) - The request for the response.
  - **root** (``str``) - The path to the file.
  - **ext** (``str``) - The file extension.
+ 
+**Returns:** ``FileResponse``

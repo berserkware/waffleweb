@@ -18,7 +18,7 @@ The base for the responses.
  - **status** (optional) (``int``) - The status code of the response, default is 200.
  - **reason** (optional) (``str``) - The reason phrase of the response.
  
-**Attributes:**
+**Important attributes:**
  - **headers** (`MultiValueOneKeyDict </Reference/datatypes.py.rst>`_) - A MultiValueOneKeyDict of all your headers.
  - **statusCode** (``int``) - The status code of the response.
  - **charset** (``str``) - The charset of the response.
@@ -106,7 +106,7 @@ A HTTP Response.
  - **request** (optional) (``Request``) - The request data for the cookies.
  - **content** (optional) (``str``) - The content of the response.
  
-**Attributes:**
+**Important attributes:**
  - **request** (``Request``) - The request data.
  - **content** (``str``) - The content of the response.
  
@@ -128,7 +128,7 @@ A Json response.
  - **request** (optional) (``Request``) - The request data for the cookies.
  - **data** (optional) (``dict``) - The data of the response.
  
-**Attributes:**
+**Important attributes:**
  - **request** (``Request``) - The request data.
  - **content** (``str``) - The content of the response.
  
@@ -151,7 +151,7 @@ A file response.
  - **fileObj** (optional) (File object thing) - The file for the response.
  - **mimeType** (optional) (``str``) - The mime type of the response.
  
-**Attributes:**
+**Important attributes:**
  - **request** (``Request``) - The request data.
  - **content** (``str``) - The content of the response.
  - **mimeType** (``str``) - The mimeType of the response.
@@ -181,17 +181,17 @@ Inherits from ``HTTPResponseRedirectBase``
 
 A redirect, status code is 302.
 
-=========================================
-``class HTTPResponsePermenentRedirect()``
-=========================================
+============================================================
+``class waffleweb.response.HTTPResponsePermenentRedirect()``
+============================================================
 
 Inherits from ``HTTPResponseRedirectBase``
 
 A permanent redirect, status code is 308.
 
-====================================================================================================
-``function render(request=None, filePath=None, context={}, charset=None, status=None, reason=None)``
-====================================================================================================
+=======================================================================================================================
+``function waffleweb.response.render(request=None, filePath=None, context={}, charset=None, status=None, reason=None)``
+=======================================================================================================================
 
 Renders a template and returns a HTTPResponse. It uses `Jinja2 <https://palletsprojects.com/p/jinja/>`__ by default.
 
@@ -205,9 +205,9 @@ Renders a template and returns a HTTPResponse. It uses `Jinja2 <https://palletsp
 
 **Returns:** ``HTTPResponse``
 
-==================================================
-``function redirect(redirectTo, permanent=False)``
-==================================================
+=====================================================================
+``function waffleweb.response.redirect(redirectTo, permanent=False)``
+=====================================================================
 
 A redirect.
 

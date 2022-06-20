@@ -2,9 +2,9 @@
 template.py
 ===========
 
-==============================================
-``function getRelativeUrl(viewStr, **kwargs)``
-==============================================
+=================================================================
+``function waffleweb.template.getRelativeUrl(viewStr, **kwargs)``
+=================================================================
 
 Gets the URL of view from the viewStr. A viewStr is `appname:viewname`. The kwargs are the URL parameters.
 
@@ -12,17 +12,17 @@ Gets the URL of view from the viewStr. A viewStr is `appname:viewname`. The kwar
  - **viewStr** (``str``) - A string of the app and route of the desired view, Example: `appname:viewname`.
  - ****kwargs** - The URL parameters.
  
-==================================
-``function _getEnvironmentFile()``
-==================================
+=====================================================
+``function waffleweb.template._getEnvironmentFile()``
+=====================================================
 
 Get the environment for Jinja2. It gets a environment with ``FileSystemLoader`` with the searchpath being ``TEMPLATE_DIR`` from the settings.py file, defaults to 'templates/'.
 
 **Returns:** ``Environment``
 
-=================================================
-``function renderTemplate(filePath, context={})``
-=================================================
+====================================================================
+``function waffleweb.template.renderTemplate(filePath, context={})``
+====================================================================
 
 Renders a template, returns the rendered template.
 
@@ -32,9 +32,9 @@ Renders a template, returns the rendered template.
  
 **Returns:** ``str``
 
-==========================================================================
-``function renderErrorPage(mainMessage, subMessage=None, traceback=None)``
-==========================================================================
+=============================================================================================
+``function waffleweb.template.renderErrorPage(mainMessage, subMessage=None, traceback=None)``
+=============================================================================================
 
 Renders an error page for debug mode.
 
