@@ -106,10 +106,6 @@ A HTTP Response.
  - **request** (optional) (``Request``) - The request data for the cookies.
  - **content** (optional) (``str``) - The content of the response.
  
-**Important attributes:**
- - **request** (``Request``) - The request data.
- - **content** (``str``) - The content of the response.
- 
 ----------------------
 ``property content()``
 ----------------------
@@ -127,10 +123,6 @@ A Json response.
 **Parameters:**
  - **request** (optional) (``Request``) - The request data for the cookies.
  - **data** (optional) (``dict``) - The data of the response.
- 
-**Important attributes:**
- - **request** (``Request``) - The request data.
- - **content** (``str``) - The content of the response.
  
 -------------------
 ``property data()``
@@ -150,11 +142,6 @@ A file response.
  - **request** (optional) (``Request``) - The request data for the cookies.
  - **fileObj** (optional) (File object thing) - The file for the response.
  - **mimeType** (optional) (``str``) - The mime type of the response.
- 
-**Important attributes:**
- - **request** (``Request``) - The request data.
- - **content** (``str``) - The content of the response.
- - **mimeType** (``str``) - The mimeType of the response.
  
 ----------------------
 ``property fileObj()``
