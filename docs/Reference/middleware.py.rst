@@ -15,7 +15,7 @@ A handler of middleware.
 ``loadMiddleware(middleware)``
 ------------------------------
 
-Loads all the middleware into a list of dictionaries.
+Loads all the middleware into a list of dictionaries. The dictionaries include the module and the class of the middleware: {'module': middleware module, 'middleware': middlwareClass,}.
 
 **Parameters:**
  - **middleware** (``list[str]``) - A list of all the middleware needed to be loaded. You need to format the middleware strings as so: 'module.MiddlewareClass'.
@@ -26,7 +26,7 @@ Loads all the middleware into a list of dictionaries.
 ``runRequestMiddleware(request, app)``
 --------------------------------------
 
-Runs all the middleware on the request and then returns the request.
+Runs all the middleware on the request and then returns the request. It calls the ``before(request)`` method on the middleware classes.
 
 **Parameters:**
  - **request** (``Request``) - The request to run the middleware on.
@@ -38,7 +38,7 @@ Runs all the middleware on the request and then returns the request.
 ``runResponseMiddleware(response, app)``
 ========================================
 
-Runs all the middleware on the response and then returns the response.
+Runs all the middleware on the response and then returns the response. It calls the ``after(response)`` method on the middleware classes.
 
 **Parameters:**
  - **request** (``HTTPResponse``) - The response to run the middleware on.
