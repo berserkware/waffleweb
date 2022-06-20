@@ -16,18 +16,18 @@ The WafflewebProject object is where you can access the wsgi app and a test serv
 ``loadApps(apps)``
 ------------------
 
-	Loads all the apps into a list.
+Loads all the apps into a list of dictionaries. The dictionaries have the module of the app and the WaffleApp object: ``{'module': app module, 'app': WaffleApp}``.
 
-	**Parameters:**
-	 - **apps** (``list[str]``) - A list of apps. All the apps are strings with the module and the WaffleApp name. Example: 'testModule.yourApp' or 'apps.testModule.yourApp'.
+**Parameters:**
+ - **apps** (``list[str]``) - A list of apps. All the apps are strings with the module and the WaffleApp name. Example: 'testModule.yourApp' or 'apps.testModule.yourApp'.
 
-	**Returns:** ``list``
+**Returns:** ``list``
 
 -------------------------------------------------
 ``run(host='127.0.0.1', port=8000, debug=False)``
 -------------------------------------------------
 
-Runs a test server. Shouldn't be used in production.
+Runs a test server. This shouldn't be used in production as it does not have any security checks.
 
 **Parameters:**
  - **host** (optional) (``str``) - The host of your website.
