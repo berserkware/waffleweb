@@ -7,7 +7,7 @@ datatypes.py
 ============================================================================
 Inherits from ``dict``.
 
-This is a dictionary were one key can have multiple values.
+This is a dictionary where one key can have multiple values.
 
 **Parameters:**
  - **data** (optional) (``dict``) - A normal dictionary for initial data, to add multiple values, put them in a list.
