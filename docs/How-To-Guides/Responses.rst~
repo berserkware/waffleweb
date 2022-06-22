@@ -141,16 +141,3 @@ Redirects
 	@yourApp.route('/permanentRedirect')
 	def permanentRedirect(request):
 	    return HTTPResponsePermenentRedirect('https://www.youtube.com/watch?v=dQw4w9WgXcQ')
-	    
-**redirect()**
---------------
-
-A shortcut for redirects. It takes two arguments, the place to redirect to and whether or not it is permanent or not.
-
-.. code-block:: python
-
-	from waffleweb.response import redirect
-	
-	@yourApp.route('/redirect')
-	def redirect(request):
-	    return redirect('https://www.youtube.com/watch?v=dQw4w9WgXcQ', permanent=True)

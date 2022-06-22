@@ -2,6 +2,7 @@ import waffleweb
 import json
 import os
 import importlib
+import mimetypes
 try:
     settings = importlib.import_module('settings')
 except ModuleNotFoundError:
@@ -191,6 +192,12 @@ class FileResponse(HTTPResponse):
         #add mimetype to content-type
         if self.mimeType is not None:
             self.headers['Content-Type', None] = f'{self.mimeType}; charset={self.charset}'
+        else:
+            mt = mimetypes.guess_type(fileObj.name)
+            if mt[0] is not None:
+                self.headers['Content-Type', None] = f'{mt[0]}; charset={self.charset}'
+            else:
+                self.headers['Content-Type', None] = f'application/octet-stream; charset={self.charset}'
 
         self.headers['Content-Length', None] = str(len(self.fileObj))
 

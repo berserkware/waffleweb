@@ -1,0 +1,17 @@
+=============
+How-To Guides
+=============
+
+This section of the docs is a collection of How-To Guides.
+
+1. `Routing <How-To-Guides/Routing.rst>`_
+2. `The Request Object <How-To-Guides/The-Request-Object.rst>`_
+3. `Responses <How-To-Guides/Responses.rst>`_
+5. `Forms <How-To-Guides/Forms.rst>`_
+6. `Static Files <How-To-Guides/Static-Files.rst>`_
+7. `Templating <How-To-Guides/Templating.rst>`_
+8. `Custom Error Pages <How-To-Guides/Custom-Error-Pages.rst>`_
+9. `Uploaded Files <How-To-Guides/Uploaded-Files.rst>`_
+10. `Cookies <How-To-Guides/Cookies.rst>`_
+11. `Middleware <How-To-Guides/Middleware.rst>`_
+12. `Deploying Your Project <How-To-Guides/Deploying-Your-Project.rst>`_

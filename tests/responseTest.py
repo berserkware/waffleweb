@@ -110,7 +110,7 @@ class FileResponseTest(unittest.TestCase):
         with open('tests/commands.txt', 'rb') as f:
             response = responses.FileResponse(request, f)
 
-            self.assertEqual(response.headers['Content-Type'], 'text/html; charset=utf-8')
+            self.assertEqual(response.headers['Content-Type'], 'text/plain; charset=utf-8')
 
 class HTTPResponseRedirectTest(unittest.TestCase):
     def test_redirect(self):
