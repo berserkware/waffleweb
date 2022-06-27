@@ -16,7 +16,7 @@ A object for storing all the request data.
 **Important attributes:**
  - **FILES** (``dict``) -  The uploaded files of the request.
  - **META** (``dict``) - The headers of the request.
- - **POST** (``dict``) - The POST data of the request.
+ - **POST** (``dict``) - The POST data of the request. All the values are stored in byte strings.
  - **URL_PARAMS** (``dict``) - The URL parameters of the request.
  - **body** (``bytes``) - The body of the request.
  - **COOKIES** (``Cookies``) - All the request`s cookies.

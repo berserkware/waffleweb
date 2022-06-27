@@ -33,7 +33,7 @@ To create an app create a python file and put a WaffleApp object in it as so.
     yourApp = WaffleApp('appName')
     
 WaffleApp only needs to take one variable for now: the name of your app. The name of your app is for some functions to identify your app.
-to register your app all you need to do is add 'app.yourApp' to your project's
+To register your app all you need to do is add 'app.yourApp' to your project's
 app list. your project.py should now look as so.
 
 ``project.py:``
@@ -77,7 +77,7 @@ If you want to change the host or port you can specify them in run().
     yourProject.run('0.0.0.0', 8080)
 
 Right now if you go to '127.0.0.1:8000' you will see a 404 page this is because we haven't
-routed any views. We will add some views later.
+routed any pages yet. We will add some routes later.
 
 ----------
 Debug Mode
@@ -116,7 +116,7 @@ To route a URL use the ``route()`` decorator.
 	def about(request):
 	    return HTTPResponse(request, 'About page')
 		
-All of your view functions have to take a request argument. The request argument stores all the request data such as post data, cookies and headers. You have to pass the request argument to the HTTPResponse.
+All of your routed functions have to take a request argument. The request argument stores all the request data such as post data, cookies and headers. You have to pass the request argument to the HTTPResponse.
 
 -------------
 URL Variables
@@ -298,7 +298,7 @@ For more information you can go to `Custom Error Pages </How-To-Guides/Custom-Er
 
 Accessing request data
 ......................
-The Request object holds all the data about the request. It stores stuff like POST data, cookies, headers. For more in-depth information in the `Request </How-To-Guides/The-Request-Object.rst>`_ How-To Guide. The request object is passed into you view as the first arg.
+The Request object holds all the data about the request. It stores stuff like POST data, cookies, headers. For more in-depth information in the `Request </How-To-Guides/The-Request-Object.rst>`_ How-To Guide. The request object is passed into you routed function as the first arg.
 
 To access the method of the request use the ``method`` attribute. To access form data you can use the ``POST`` attribute.
 
@@ -324,7 +324,7 @@ For more information you can go to `The Request Object </How-To-Guides/The-Reque
 ------------
 File Uploads
 ------------
-You can access file uploads with the ``FILES`` attribute. The uploaded files are stored in memory. each uploaded file is a ``File`` object. You can access the data of the file with the ``data`` attribute.
+You can access file uploads with the ``FILES`` attribute. The uploaded files are stored in memory. each uploaded file is a ``File`` object. You can access the data of the file with the ``data`` attribute. The data of the files are stored in bytes.
 
 .. code-block:: python
 
@@ -332,7 +332,7 @@ You can access file uploads with the ``FILES`` attribute. The uploaded files are
 	def form(request):
 	    if request.method == 'POST':
 	        file = request.FILES.get('file.jpg').data
-	        f = openStatic('file.jpg', 'w')
+	        f = openStatic('file.jpg', 'wb')
 	        f.write(file)
 	        f.close()
 

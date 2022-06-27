@@ -324,15 +324,15 @@ For more information you can go to `The Request Object </How-To-Guides/The-Reque
 ------------
 File Uploads
 ------------
-You can access file uploads with the ``FILES`` attribute. The uploaded files are stored in memory. each uploaded file is a ``File`` object. You can access the data of the file with the ``data`` attribute.
+You can access file uploads with the ``FILES`` attribute. The uploaded files are stored in memory. each uploaded file is a ``File`` object. You can access the data of the file with the ``data`` attribute. The data of the files are stored in bytes.
 
 .. code-block:: python
 
 	@yourApp.route('/upload/', methods=['GET', 'POST'])
 	def form(request):
 	    if request.method == 'POST':
-	        file = request.FILES.get('file.jpg').data
-	        f = openStatic('file.jpg', 'w')
+	        file = request.FILES.get('file').data
+	        f = openStatic('file.jpg', 'wb')
 	        f.write(file)
 	        f.close()
 

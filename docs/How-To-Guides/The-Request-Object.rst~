@@ -98,3 +98,10 @@ Cookies are vary useful for many uses, such as identifying users. Cookies are st
 	            return render(request, 'user.html', {'name': request.COOKIES['name'].value})
 	   	else:
 	   	    return render(request, 'enter.html')
+	   	    
+Accessing other data
+....................
+
+To access the raw request you can use the ``rawRequest`` attribute.
+
+To access the body of the request you can use the ``body`` attribute.

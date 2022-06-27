@@ -111,13 +111,6 @@ class WaffleProject():
                         
                         #turns the request into a Request object.
                         request = Request(req, addr)
-                        
-                        try:
-                            contentType = request.META['CONTENT_TYPE']
-                        except KeyError:
-                            contentType = 'application/x-www-form-urlencoded'
-                        
-                        parsePost(request.body, contentType)
 
                         #Creates a RequestHandler object.
                         handler = RequestHandler(request, debug)

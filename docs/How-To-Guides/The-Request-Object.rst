@@ -62,7 +62,9 @@ The file uploads of the request is stored in a ``dict`` in the ``FILES`` attribu
 	                
 	    return render(request, 'upload.html')
 	    
-In a real life situation you should make sure the content or name is safe. 
+In a real life situation you should make sure the content or name is safe.
+
+For more information you can go to `Uploaded Files <Uploaded-Files.rst>`_. 
 
 Accessing URL parameters
 ........................

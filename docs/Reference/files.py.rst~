@@ -10,6 +10,6 @@ A file for post file uploads.
 
 **Parameters:**
  - **name** (``str``) - The name of the file.
- - **data** (``bytes``) - The file data.
+ - **data** (``str``) - The file data.
  - **contentType** (``str``) - The content type of the file.
  - **size** (``int``) - The size of the file.

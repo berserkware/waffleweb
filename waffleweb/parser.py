@@ -38,15 +38,19 @@ def parsePost(body: bytes, contentType: str) -> dict:
         for formValue in splitFormValues:
             if formValue != b'\n' and formValue != b'--\n' and formValue != b'' and formValue != b'--\r\n':
                 #Gets the headers and data
-                headersAndData = formValue.split(b'\n\n')
-                if len(headersAndData) == 1:
-                    headersAndData = formValue.split(b'\r\n\r\n')
+
+                headersAndData = formValue.split(b'\r\n\r\n')
                     
-                headersStr, data = headersAndData[0].strip(b'\r\n'), b'\n\n'.join(headersAndData[1:]).strip(b'\r\n')
+                if len(headersAndData) == 1:
+                    headersAndData = formValue.split(b'\n\n')
+                    headersStr, data = headersAndData[0].strip(b'\r\n').strip(b'\n'), b'\n\n'.join(headersAndData[1:]).strip(b'\r\n').strip(b'\n')
+                else:
+                    headersStr, data = headersAndData[0].strip(b'\r\n').strip(b'\n'), b'\r\n\r\n'.join(headersAndData[1:]).strip(b'\r\n').strip(b'\n')
 
                 headers = {}
                 for field in headersStr.split(b'\n'):
-                    headers[field.split(b': ')[0].upper().replace(b'-', b'_').decode()] = field.split(b': ')[1].decode()
+                    if field != b'\r':
+                        headers[field.split(b': ')[0].upper().replace(b'-', b'_').decode()] = field.split(b': ')[1].decode()
                 
                 isFile = False
                 name = ''

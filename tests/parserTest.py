@@ -16,12 +16,12 @@ class ParsePostTest(unittest.TestCase):
         self.assertEqual(postData, {'testData1': '1234'})
     
     def test_formData(self):
-        content = b'----------------------------301008406445698181922656\r\nContent-Disposition: form-data; name="testData1"\n\n123\r\n----------------------------301008406445698181922656\r\nContent-Disposition: form-data; name="testData2"\r\n\r\n5678\r\n----------------------------301008406445698181922656--\r\n'
+        content = b'----------------------------301008406445698181922656\r\nContent-Disposition: form-data; name="testData1"\r\n\r\n123\r\n----------------------------301008406445698181922656\r\nContent-Disposition: form-data; name="testData2"\r\n\r\n5678\r\n----------------------------301008406445698181922656--\r\n'
         postData = parsePost(content, 'multipart/form-data; boundary=--------------------------301008406445698181922656')[0]
         self.assertEqual(postData, {'testData1': '123', 'testData2': '5678'})
         
     def test_formDataWithFiles(self):
-        content = b'--12f2be4c4dbc55b5cfd9e23a63efe76e\r\nContent-Disposition: form-data; name="test"; filename="testFile.txt"\n\nTest Data lol\r\n--12f2be4c4dbc55b5cfd9e23a63efe76e--\r\n'
+        content = b'--12f2be4c4dbc55b5cfd9e23a63efe76e\r\nContent-Disposition: form-data; name="test"; filename="testFile.txt"\r\n\r\nTest Data lol\r\n--12f2be4c4dbc55b5cfd9e23a63efe76e--\r\n'
         postData = parsePost(content, 'multipart/form-data; boundary=12f2be4c4dbc55b5cfd9e23a63efe76e')[1]
         self.assertEqual(type(postData['test']), File)
 
