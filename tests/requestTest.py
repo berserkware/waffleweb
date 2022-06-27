@@ -9,7 +9,7 @@ import requests
 
 from waffleweb.response import HTTP404
 
-testRequest = Request("""GET / HTTP/1.1
+testRequest = Request(b"""GET / HTTP/1.1
                         Host: localhost:8080
                         User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux aarch64; rv:96.0) Gecko/20100101 Firefox/96.0
                         Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
@@ -29,7 +29,7 @@ testRequest = Request("""GET / HTTP/1.1
 class RequestTest(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super(RequestTest, self).__init__(*args, **kwargs)
-        self.request = Request('GET /math/ HTTP/1.1\r\nUser-Agent: PostmanRuntime/7.29.0\r\nAccept: */*\r\nAccept-Encoding: gzip, deflate, br\r\nConnection: keep-alive\r\nCookie: addedCookie=32\r\nHost: localhost:8080\r\n\r\ntestData1=321&testData2=123', IP='127.0.0.1')
+        self.request = Request(b'GET /math/ HTTP/1.1\r\nUser-Agent: PostmanRuntime/7.29.0\r\nAccept: */*\r\nAccept-Encoding: gzip, deflate, br\r\nConnection: keep-alive\r\nCookie: addedCookie=32\r\nHost: localhost:8080\r\n\r\ntestData1=321&testData2=123', IP='127.0.0.1')
 
     def test_path(self):
         self.assertEqual(self.request.path, '/math/')
@@ -56,7 +56,7 @@ class RequestTest(unittest.TestCase):
         self.assertEqual(self.request.IP, '127.0.0.1')
 
     def test_body(self):
-        self.assertEqual(self.request.body, '\ntestData1=321&testData2=123')
+        self.assertEqual(self.request.body, b'\ntestData1=321&testData2=123')
 
     def test_FILES(self):
         with open('tests/static/test.html') as f:

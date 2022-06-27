@@ -1,6 +1,7 @@
 from waffleweb.files import File
+from urllib.parse import unquote
 
-def parsePost(body, contentType) -> dict:
+def parsePost(body: bytes, contentType: str) -> dict:
     postData = {}
     files = {}
     
@@ -8,13 +9,13 @@ def parsePost(body, contentType) -> dict:
 
     #Spits the form values and adds them to a dictionary if Content-Type is 'application/x-www-form-urlencoded'
     if contentTypeMime == 'application/x-www-form-urlencoded':
-        formValues = body.split('&')
+        formValues = body.split(b'&')
 
         #For every form value add it to a dictionary called postData
         for value in formValues:
             try:
-                key, value = value.split('=')
-                postData[str(key.strip('\n'))] = str(value.strip('\n'))
+                key, value = value.split(b'=')
+                postData[unquote(key.strip(b'\n').decode())] = unquote(value.strip(b'\n').decode())
             except ValueError:
                 pass
 
@@ -31,21 +32,21 @@ def parsePost(body, contentType) -> dict:
                     boundary = value
 
         #splits the form values by the boundry
-        splitFormValues = body.split('--' + boundary)
+        splitFormValues = body.split(b'--' + boundary.encode())
 
         #goes through all the split values
         for formValue in splitFormValues:
-            if formValue != '\n' and formValue != '--\n' and formValue != '' and formValue != '--\r\n':
-                #splits the data into its seporate headers and removes empty items
-                dataWithSpaces = formValue.split('\n')
-                data = []
-                for i in dataWithSpaces:
-                    if i != '' and i != '\r':
-                        data.append(i)
+            if formValue != b'\n' and formValue != b'--\n' and formValue != b'' and formValue != b'--\r\n':
+                #Gets the headers and data
+                headersAndData = formValue.split(b'\n\n')
+                if len(headersAndData) == 1:
+                    headersAndData = formValue.split(b'\r\n\r\n')
+                    
+                headersStr, data = headersAndData[0].strip(b'\r\n'), b'\n\n'.join(headersAndData[1:]).strip(b'\r\n')
 
                 headers = {}
-                for field in data[0].split('\n'):
-                    headers[field.split(': ')[0].upper().replace('-', '_')] = field.split(': ')[1]
+                for field in headersStr.split(b'\n'):
+                    headers[field.split(b': ')[0].upper().replace(b'-', b'_').decode()] = field.split(b': ')[1].decode()
                 
                 isFile = False
                 name = ''
@@ -55,39 +56,44 @@ def parsePost(body, contentType) -> dict:
                     if i.split('=')[0] == 'name':
                         name = i.split('=')[1].strip('\r').strip('"')
                     elif i.split('=')[0] == 'filename':
-                        size = len(str(data[-1]))
+                        size = len(str(data))
 
                         contentType = headers.get('CONTENT_TYPE')
-                        files[str(name)] = File(i.split('=')[1].strip('\r').strip('"'), data[-1].strip('\r'), (contentType if contentType != -1 else 'text/plain'), size)
+                        files[str(name)] = File(unquote(i.split('=')[1].strip('\r').strip('"')), data.strip(b'\r'), (contentType if contentType != -1 else 'text/plain'), size)
                         isFile = True
 
                 if isFile == False:
                     #adds to postData
-                    postData[str(name)] = data[-1].strip('\r')
+                    postData[unquote(str(name))] = unquote(data.strip(b'\r').decode())
 
     return (postData, files)
 
-def parseBody(request: str) -> str:
+def parseBody(request: bytes) -> str:
     splitContent = []
     isContent = False
 
     #this splits the request by the \r
-    for line in request.split('\r'):
+    for line in request.split(b'\r'):
         #check if isContent is True to start adding to the content
         if isContent == True:
             splitContent.append(line)
 
         #checks if the line is = '\n'. this splits the request into content and header
-        if line == '\n':
+        if line == b'\n':
             isContent = True
 
     #returns the joins content
-    return ''.join(splitContent)
+    content = b''.join(splitContent)
+    if content == b'\n':
+        return b''
+    else:
+        return content
 
-def parseHeaders(request: str) -> dict:
+def parseHeaders(request: bytes) -> dict:
     headerDict = {}
     #Gets all the headers
-    for line in request.split('\r'):
+    for line in request.split(b'\r'):
+        line = line.decode()
         if len(line.split(': ')) == 2:    
             splitLine = line.strip().split(' ')
             headerDict[str(splitLine[0][:(len(splitLine[0]) - 1)]).upper().replace('-', '_')] = ' '.join(splitLine[1:])

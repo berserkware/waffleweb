@@ -31,7 +31,7 @@ class ParamsTest(unittest.TestCase):
 class SplitUrlTest(unittest.TestCase):
     def test_splitURLNormal(self):
         request = Request(
-            'GET /page1/10/index HTTP/1.1\r\nUser-Agent: PostmanRuntime/7.29.0\r\nAccept: */*\r\nHost: localhost:8080\r\nAccept-Encoding: gzip, deflate, br\r\nConnection: keep-alive\r\n\r\n', 
+            b'GET /page1/10/index HTTP/1.1\r\nUser-Agent: PostmanRuntime/7.29.0\r\nAccept: */*\r\nHost: localhost:8080\r\nAccept-Encoding: gzip, deflate, br\r\nConnection: keep-alive\r\n\r\n', 
             '101.98.137.19'
             )
 
@@ -41,7 +41,7 @@ class SplitUrlTest(unittest.TestCase):
 
     def test_splitUrlWithExt(self):
         request = Request(
-            'GET /test/testExt.jpg HTTP/1.1\r\nUser-Agent: PostmanRuntime/7.29.0\r\nAccept: */*\r\nHost: localhost:8080\r\n\r\n', 
+            b'GET /test/testExt.jpg HTTP/1.1\r\nUser-Agent: PostmanRuntime/7.29.0\r\nAccept: */*\r\nHost: localhost:8080\r\n\r\n', 
             '127.0.0.1'
             )
 
@@ -51,7 +51,7 @@ class SplitUrlTest(unittest.TestCase):
 
     def test_splitUrlNone(self):
         request = Request(
-            'GET / HTTP/1.1\r\nUser-Agent: PostmanRuntime/7.29.0\r\nAccept: */*\r\nHost: localhost:8080\r\nAccept-Encoding: gzip, deflate, br\r\nConnection: keep-alive\r\nContent-Type: application/x-www-form-urlencoded\r\n\r\n',
+            b'GET / HTTP/1.1\r\nUser-Agent: PostmanRuntime/7.29.0\r\nAccept: */*\r\nHost: localhost:8080\r\nAccept-Encoding: gzip, deflate, br\r\nConnection: keep-alive\r\nContent-Type: application/x-www-form-urlencoded\r\n\r\n',
             '127.0.0.1'
             )
 
@@ -137,7 +137,7 @@ class MethodTest(unittest.TestCase):
 class ErrorHandlerTest(unittest.TestCase):
     def test_404Custom(self):
         request = Request(
-            'GET /testing404Page HTTP/1.1\r\nUser-Agent: PostmanRuntime/7.29.0\r\nAccept: */*\r\nHost: localhost:8080\r\nAccept-Encoding: gzip, deflate, br\r\nConnection: keep-alive\r\n\r\n', 
+            b'GET /testing404Page HTTP/1.1\r\nUser-Agent: PostmanRuntime/7.29.0\r\nAccept: */*\r\nHost: localhost:8080\r\nAccept-Encoding: gzip, deflate, br\r\nConnection: keep-alive\r\n\r\n', 
             '101.98.137.19'
             )
 
@@ -148,7 +148,7 @@ class ErrorHandlerTest(unittest.TestCase):
         
     def test_customErrorCode(self):
         request = Request(
-            'GET /randomStatus HTTP/1.1\r\nUser-Agent: PostmanRuntime/7.29.0\r\nAccept: */*\r\nHost: localhost:8080\r\nAccept-Encoding: gzip, deflate, br\r\nConnection: keep-alive\r\n\r\n', 
+            b'GET /randomStatus HTTP/1.1\r\nUser-Agent: PostmanRuntime/7.29.0\r\nAccept: */*\r\nHost: localhost:8080\r\nAccept-Encoding: gzip, deflate, br\r\nConnection: keep-alive\r\n\r\n', 
             '101.98.137.19'
             )
 
@@ -159,7 +159,7 @@ class ErrorHandlerTest(unittest.TestCase):
         
     def test_noErrorCodeHandler(self):
         request = Request(
-            'GET /statusNoHandler HTTP/1.1\r\nUser-Agent: PostmanRuntime/7.29.0\r\nAccept: */*\r\nHost: localhost:8080\r\nAccept-Encoding: gzip, deflate, br\r\nConnection: keep-alive\r\n\r\n', 
+            b'GET /statusNoHandler HTTP/1.1\r\nUser-Agent: PostmanRuntime/7.29.0\r\nAccept: */*\r\nHost: localhost:8080\r\nAccept-Encoding: gzip, deflate, br\r\nConnection: keep-alive\r\n\r\n', 
             '101.98.137.19'
             )
 
@@ -170,7 +170,7 @@ class ErrorHandlerTest(unittest.TestCase):
         
     def test_getErrorHandlerByResponse(self):
         request = Request(
-            'GET /statusNoHandler HTTP/1.1\r\nUser-Agent: PostmanRuntime/7.29.0\r\nAccept: */*\r\nHost: localhost:8080\r\nAccept-Encoding: gzip, deflate, br\r\nConnection: keep-alive\r\n\r\n', 
+            b'GET /statusNoHandler HTTP/1.1\r\nUser-Agent: PostmanRuntime/7.29.0\r\nAccept: */*\r\nHost: localhost:8080\r\nAccept-Encoding: gzip, deflate, br\r\nConnection: keep-alive\r\n\r\n', 
             '101.98.137.19'
             )
 
@@ -181,7 +181,7 @@ class ErrorHandlerTest(unittest.TestCase):
         
     def test_getErrorHandlerByStatus(self):
         request = Request(
-            'GET /statusNoHandler HTTP/1.1\r\nUser-Agent: PostmanRuntime/7.29.0\r\nAccept: */*\r\nHost: localhost:8080\r\nAccept-Encoding: gzip, deflate, br\r\nConnection: keep-alive\r\n\r\n', 
+            b'GET /statusNoHandler HTTP/1.1\r\nUser-Agent: PostmanRuntime/7.29.0\r\nAccept: */*\r\nHost: localhost:8080\r\nAccept-Encoding: gzip, deflate, br\r\nConnection: keep-alive\r\n\r\n', 
             '101.98.137.19'
             )
 
@@ -192,7 +192,7 @@ class ErrorHandlerTest(unittest.TestCase):
         
     def test_getErrorHandlerStatusNoHandler(self):
         request = Request(
-            'GET /statusNoHandler HTTP/1.1\r\nUser-Agent: PostmanRuntime/7.29.0\r\nAccept: */*\r\nHost: localhost:8080\r\nAccept-Encoding: gzip, deflate, br\r\nConnection: keep-alive\r\n\r\n', 
+            b'GET /statusNoHandler HTTP/1.1\r\nUser-Agent: PostmanRuntime/7.29.0\r\nAccept: */*\r\nHost: localhost:8080\r\nAccept-Encoding: gzip, deflate, br\r\nConnection: keep-alive\r\n\r\n', 
             '101.98.137.19'
             )
 
@@ -203,7 +203,7 @@ class ErrorHandlerTest(unittest.TestCase):
         
     def test_getErrorHandlerByResponseNoHandler(self):
         request = Request(
-            'GET /statusNoHandler HTTP/1.1\r\nUser-Agent: PostmanRuntime/7.29.0\r\nAccept: */*\r\nHost: localhost:8080\r\nAccept-Encoding: gzip, deflate, br\r\nConnection: keep-alive\r\n\r\n', 
+            b'GET /statusNoHandler HTTP/1.1\r\nUser-Agent: PostmanRuntime/7.29.0\r\nAccept: */*\r\nHost: localhost:8080\r\nAccept-Encoding: gzip, deflate, br\r\nConnection: keep-alive\r\n\r\n', 
             '101.98.137.19'
             )
         res = HTTPResponse(request, 'test', status=223)

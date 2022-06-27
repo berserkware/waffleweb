@@ -6,7 +6,7 @@ try:
 except ModuleNotFoundError:
     settings = None
 
-from urllib.parse import urlparse
+from urllib.parse import urlparse, unquote
 from waffleweb.cookie import Cookies
 from waffleweb.response import HTTP404, FileResponse, HTTPResponse, HTTPResponsePermenentRedirect, JSONResponse
 from waffleweb.static import getStaticFileResponse
@@ -73,27 +73,27 @@ class Request:
             return parseBody(self.rawRequest)
         else:
             length = int(self.META.get('CONTENT_LENGTH', '0'))
-            body = self.META['wsgi.input'].read(length).decode('utf-8')
+            body = self.META['wsgi.input'].read(length)
             return body
 
     @property
     def path(self):
         if self.wsgi == False:
-            return self.rawRequest.split('\n')[0].split()[1]
+            return unquote(self.rawRequest.split(b'\n')[0].split()[1].decode())
         else:
-            return self.META['RAW_URI']
+            return unquote(self.META['RAW_URI'])
 
     @property
     def method(self):
         if self.wsgi == False:
-            return self.rawRequest.split('\n')[0].split()[0]
+            return self.rawRequest.split(b'\n')[0].split()[0].decode()
         else:
             return self.META['REQUEST_METHOD']
 
     @property
     def HTTPVersion(self):
         if self.wsgi == False:
-            return self.rawRequest.split('\n')[0].split()[2]
+            return self.rawRequest.split(b'\n')[0].split()[2].decode()
         return 'N/A'
 
 class RequestHandler:
@@ -287,12 +287,12 @@ class RequestHandler:
                     path = path.replace('>', '&gt;')
                     searchedViews.append(path)
 
-                page = renderErrorPage(
-                    mainMessage='404 Page Not Found', 
-                    subMessage=f'The requested page could not be found',
-                    traceback=f'Views searched:<br>{"<br>".join(searchedViews)}',
-                    )
-                return HTTPResponse(content=page, status=404)
+            page = renderErrorPage(
+                mainMessage='404 Page Not Found', 
+                subMessage=f'The requested page could not be found',
+                traceback=f'Views searched:<br>{"<br>".join(searchedViews)}',
+                )
+            return HTTPResponse(content=page, status=404)
         else:
             response = self.getErrorHandler(statusCode=404)
 

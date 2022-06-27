@@ -17,6 +17,7 @@ from waffleweb.template import renderErrorPage, renderTemplate
 from waffleweb.middleware import MiddlewareHandler
 from waffleweb.wsgi import WsgiHandler
 from waffleweb.exceptions import AppNotFoundError, AppImportError
+from waffleweb.parser import parsePost
 
 class WaffleProject():
     '''
@@ -106,9 +107,17 @@ class WaffleProject():
                         #waits for connection to server
                         conn, addr = sock.accept()
 
-                        req = conn.recv(1024).decode()
+                        req = conn.recv(1024)
+                        
                         #turns the request into a Request object.
                         request = Request(req, addr)
+                        
+                        try:
+                            contentType = request.META['CONTENT_TYPE']
+                        except KeyError:
+                            contentType = 'application/x-www-form-urlencoded'
+                        
+                        parsePost(request.body, contentType)
 
                         #Creates a RequestHandler object.
                         handler = RequestHandler(request, debug)
