@@ -15,7 +15,9 @@ def parsePost(body: bytes, contentType: str) -> dict:
         for value in formValues:
             try:
                 key, value = value.split(b'=')
-                postData[unquote(key.strip(b'\n').decode())] = unquote(value.strip(b'\n').decode())
+                value = value.strip(b'\n').decode().replace('+', ' ')
+                key = key.strip(b'\n').decode().replace('+', ' ')
+                postData[unquote(key)] = unquote(value)
             except ValueError:
                 pass
 

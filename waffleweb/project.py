@@ -107,7 +107,7 @@ class WaffleProject():
                         #waits for connection to server
                         conn, addr = sock.accept()
 
-                        req = conn.recv(1024)
+                        req = conn.recv(2048)
                         
                         #turns the request into a Request object.
                         request = Request(req, addr)
