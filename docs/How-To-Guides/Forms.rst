@@ -25,11 +25,11 @@ The form we are going to make is to get data and save it to a json file. To crea
 
 	<h1>Form:</h1>
 	<form method="post">
-		  <label for="username">Username:</label>
-		  <input type="text" name="username"><br>
-		  <label for="favThing">Favourite Thing:</label>
-		  <input type="text" name="favThing"><br>
-		  <button type="submit">Submit</button>
+	    <label for="username">Username:</label>
+	    <input type="text" name="username"><br>
+	    <label for="favThing">Favourite Thing:</label>
+	    <input type="text" name="favThing"><br>
+	    <button type="submit">Submit</button>
 	</form>
 	
 Now we need to add logic to our route. We also need to create a folder called 'static' with a file called 'data.json'. For the the logic to work we need add boilerplate data to the file.
@@ -51,19 +51,19 @@ Now we need to add logic to our route. We also need to create a folder called 's
 
 	@yourApp.route('/form', methods=['GET', 'POST'])
 	def form(request):
-		  if request.method == 'POST':
-		      name = bleach.clean(request.POST.get('username', 'N/A'))
-		      favThing = bleach.clean(request.POST.get('favThing', 'N/A'))
+	    if request.method == 'POST':
+	        name = bleach.clean(request.POST.get('username', 'N/A'))
+	        favThing = bleach.clean(request.POST.get('favThing', 'N/A'))
 		      
-		      with openStatic('data.json', 'r') as f:
-		          data = json.loads(f.read())
+	        with openStatic('data.json', 'r') as f:
+	            data = json.loads(f.read())
 		          
-		      with openStatic('data.json', 'w') as f:
-		          entry = {'username': name, 'favThing': favThing}
-		          data['entries'].append(entry)
-		          f.write(json.dumps(data))
+	        with openStatic('data.json', 'w') as f:
+	            entry = {'username': name, 'favThing': favThing}
+	            data['entries'].append(entry)
+	            f.write(json.dumps(data))
 		          
-		  return render(request, 'form.html')
+	    return render(request, 'form.html')
 
 All the data from the form is stored in the ``POST`` attribute. The get method is used for retrieving data in case the client doesn't send the correct data. The `bleach <https://bleach.readthedocs.io/en/latest/>`_ library is used to clean the data.
 
@@ -77,11 +77,11 @@ If your are making a social media you will probably need to accept file uploads.
 .. code-block:: html
 
 	<h1>Upload:</h1>
-  <form method="post" enctype="multipart/form-data">
-      <label for="file">File:</label><br>
-      <input type="file" name="file"><br>
-      <button type="submit">Submit</button>
-  </form>
+	<form method="post" enctype="multipart/form-data">
+	    <label for="file">File:</label><br>
+	    <input type="file" name="file"><br>
+	    <button type="submit">Submit</button>
+	</form>
   
 ``yourApp.py:``
 
@@ -92,11 +92,11 @@ If your are making a social media you will probably need to accept file uploads.
 
 	@yourApp.route('/upload', methods=['GET', 'POST'])
 	def upload(request):
-		  if request.method == 'POST':
-		      file = request.FILES['file']
-		      with openStatic(f'{file.name}/', 'wb') as f:
-		          f.write(file.data)
-		  return render(request, 'upload.html')
+	    if request.method == 'POST':
+	        file = request.FILES['file']
+	        with openStatic(f'{file.name}/', 'wb') as f:
+	            f.write(file.data)
+	    return render(request, 'upload.html')
 		  
 All the files are stored in ``File`` objects. The data is stored in bytes in the ``data`` attribute. Because of this, to save the file you have to set the mode of ``openStatic()`` to 'wb'. The name of the file is stored in the ``name`` attribute.
 

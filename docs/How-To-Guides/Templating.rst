@@ -78,11 +78,11 @@ If Statment:
 .. code-block:: Jinja
 
 	{% if var1 is 'on' %}
-      <h1>on</h1>
+	    <h1>on</h1>
 	{% elif var1 is 'off' %}
-		  <h1>on</h1>
+	    <h1>on</h1>
 	{% else %}
-		  <h1>N/A</h1>
+	    <h1>N/A</h1>
 	{% endif %}
 	
 For Loop:

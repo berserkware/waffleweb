@@ -26,12 +26,12 @@ Adding Cookies
 
 You can add cookies to the response with the ``setCookie()`` method. ``setCookie()`` takes 8 arguments, the first two are required but the other 6 are optional. The first two are the name and value of the cookie. The other six are as so:
 
- - **path** (optional) (``str``) - The path of the cookie, defaults to the route of your app.
- - **maxAge**  (optional) (``str``) - The maximum age of the cookie.
- - **domain** (optional) (``str``) - The domain of the cookie.
- - **secure** (optional) (``bool``) - If the cookie is secure.
- - **HTTPOnly** (optional) (``bool``) - If the cookie is HTTP Only.
- - **sameSite** (optional) (``str``) - If your cookie is first-party of same-site.
+- **path** (optional) (``str``) - The path of the cookie, defaults to the route of your app.
+- **maxAge**  (optional) (``str``) - The maximum age of the cookie.
+- **domain** (optional) (``str``) - The domain of the cookie.
+- **secure** (optional) (``bool``) - If the cookie is secure.
+- **HTTPOnly** (optional) (``bool``) - If the cookie is HTTP Only.
+- **sameSite** (optional) (``str``) - If your cookie is first-party of same-site.
  
 .. code-block:: python
 

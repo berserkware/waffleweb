@@ -110,8 +110,8 @@ Cookies are vary useful for many uses, such as identifying users. Cookies are st
 	            return render(request, 'secret.html')
 	        else:
 	            return render(request, 'user.html', {'name': request.COOKIES['name'].value})
-	   	else:
-	   	    return render(request, 'enter.html')
+	    else:
+	        return render(request, 'enter.html')
 	   	    
 Accessing other data
 ....................

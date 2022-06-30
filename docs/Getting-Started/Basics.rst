@@ -175,7 +175,7 @@ If you only want to allow certain HTTP methods to access your page then you can 
 	@yourApp.route('/form/', methods=['GET', 'POST'])
 	def form(request):
 	    if request.method == 'POST':
-			    return doFormStuff(request.POST)
+	        return doFormStuff(request.POST)
 	    return HTTPResponse(request, 'form')
 		
 Waffleweb by default allows all HTTP methods. If you have 'GET' in your methods Waffleweb automatically handles the HEAD and OPTIONS methods.
@@ -191,11 +191,11 @@ To access these static files in your browser just go to ``/folder/file.ext``. Wa
 .. code-block::
 	
 		yourProj/
-		    --project.py
-		    --app.py
-		    --static/
-		        --css/
-			        --index.css
+		    project.py
+		    app.py
+		    static/
+		        css/
+		            index.css
 
 To access a static file from your app you can use ``open()`` or ``openStatic()``. The difference between ``open()`` and ``openStatic()`` is that ``openStatic()`` searches in your static directory and it's mode is defaulted to 'rb'.
 
