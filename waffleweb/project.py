@@ -182,10 +182,10 @@ class WaffleProject():
                                 'trackbackMessage': stackStr,
                                 }
 
-                            response = HTTPResponse(content=renderErrorPage(context['mainErrorMessage'], context['subErrorMessage'], context['trackbackMessage']))
+                            response = HTTPResponse(content=renderErrorPage(context['mainErrorMessage'], context['subErrorMessage'], context['trackbackMessage']), status=500)
                             conn.sendall(bytes(response))
                         else:
-                            conn.sendall(bytes(HTTPResponse(content='<h1>An error occured!</h1>')))
+                            conn.sendall(bytes(HTTPResponse(content='<h1>An error occured!</h1>', status=500)))
 
             except KeyboardInterrupt as e:
                 print('\nKeyboardInterrupt, Closing server')

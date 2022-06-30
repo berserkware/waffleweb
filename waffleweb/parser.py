@@ -62,7 +62,7 @@ def parsePost(body: bytes, contentType: str) -> dict:
                     if i.split('=')[0] == 'name':
                         name = i.split('=')[1].strip('\r').strip('"')
                     elif i.split('=')[0] == 'filename':
-                        size = len(str(data))
+                        size = len(data)
 
                         contentType = headers.get('CONTENT_TYPE')
                         files[str(name)] = File(unquote(i.split('=')[1].strip('\r').strip('"')), data.strip(b'\r'), (contentType if contentType != -1 else 'text/plain'), size)

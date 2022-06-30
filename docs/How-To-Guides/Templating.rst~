@@ -27,7 +27,6 @@ This finds a template and renders with the context.
 .. code-block:: python
 
 	from waffleweb.template import renderTemplate
-	from waffleweb.response import HTTPResponse
 
 	@yourApp.route('/template', methods=['GET'])
 	def template(request):

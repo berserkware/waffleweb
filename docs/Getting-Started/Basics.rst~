@@ -151,6 +151,8 @@ Redirect behavior
 
 .. code-block:: python
 
+	from waffleweb.response import HTTPResponse
+
 	@yourApp.route('/index')
 	def index(request):
 	    return HTTPResponse(request, 'index page')
@@ -167,6 +169,8 @@ HTTP Methods
 If you only want to allow certain HTTP methods to access your page then you can add a optional parameter called ``methods`` to the ``route()`` function. 
 
 .. code-block:: python
+	
+	from waffleweb.response import HTTPResponse
 	
 	@yourApp.route('/form/', methods=['GET', 'POST'])
 	def form(request):
@@ -304,6 +308,8 @@ To access the method of the request use the ``method`` attribute. To access form
 
 .. code-block:: python
 
+	from waffleweb.response import render
+
 	@yourApp.route('/form/', methods=['GET', 'POST'])
 	def form(request):
 	    if request.method == 'POST':
@@ -328,10 +334,12 @@ You can access file uploads with the ``FILES`` attribute. The uploaded files are
 
 .. code-block:: python
 
+	from waffleweb.response import HTTPResponse
+
 	@yourApp.route('/upload/', methods=['GET', 'POST'])
 	def form(request):
 	    if request.method == 'POST':
-	        file = request.FILES.get('file.jpg').data
+	        file = request.FILES.get('file').data
 	        f = openStatic('file.jpg', 'wb')
 	        f.write(file)
 	        f.close()
@@ -348,14 +356,18 @@ Getting Cookies:
 
 .. code-block:: python
 
+	from waffleweb.response import HTTPResponse
+
 	@yourApp.route('/index/')
 	def index(request):
-	    cookie = request.COOKIES.get('cookieName')
+	    cookie = request.COOKIES.get('cookieName').value
 	    return HTTPResponse(request, 'Index Page')
 	    
 Adding Cookies:
 
 .. code-block:: python
+
+	from waffleweb.response import HTTPResponse
 
 	@yourApp.route('/index/')
 	def index(request):
@@ -366,6 +378,8 @@ Adding Cookies:
 Removing Cookies from response:
 
 .. code-block:: python
+
+	from waffleweb.response import HTTPResponse
 
 	@yourApp.route('/index/')
 	def index(request):
@@ -383,6 +397,8 @@ To add middleware to your project you can add a argument to your WaffleProject o
 ``project.py:``
 
 .. code-block:: python
+
+	from waffleweb import WafflewebProject
 
 	middleware = [
 	    'addCookieMiddleware.addCookie'

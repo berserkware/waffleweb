@@ -15,7 +15,6 @@ Contents
 1. `Getting Started <Getting-Started/Index.rst>`_
     | 1.1. `Installation Guide <Getting-Started/Installation-Guide.rst>`_
     | 1.2. `The Basics <Getting-Started/Basics.rst>`_
-    | 1.3. `Creating Your First App <Getting-Started/Creating-Your-First-App.rst>`_
 2. `How-To Guides <How-To-Guides/Index.rst>`_
     | 2.1. `The Request Object <How-To-Guides/The-Request-Object.rst>`_
     | 2.2. `Responses <How-To-Guides/Responses.rst>`_

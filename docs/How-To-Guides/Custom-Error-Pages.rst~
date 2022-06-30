@@ -13,7 +13,7 @@ This handler gets called when a 404 page is needed:
 	from waffleweb.response import render
 
 	@yourApp.errorHandler(404)
-	def pageNotFound(request):
+	def page404(request):
 	    return render(request, '404.html', {'path': request.path}, status=404)
 
 This handler gets called when an internal server error occurs:

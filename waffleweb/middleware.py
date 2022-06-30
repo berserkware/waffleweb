@@ -31,7 +31,7 @@ class MiddlewareHandler():
                 if len(splitMiddlewareName) < 2:
                     raise MiddlewareImportError('Your middleware has to have a module and a class that is the middleware, example: moduleName.middlewareClass')
                 
-                #Gets the varible
+                #Gets the variable
                 ware = splitMiddlewareName[len(splitMiddlewareName) - 1]
 
                 #Gets the module

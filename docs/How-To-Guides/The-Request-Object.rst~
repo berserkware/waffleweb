@@ -8,6 +8,8 @@ To get the method of request you can use the ``method`` attribute:
 
 .. code-block:: python
 
+	from waffleweb.response import render
+
 	@yourApp.route('/upload', methods=['GET', 'POST'])
 	def upload(request):
 	    if request.method == 'POST':
@@ -21,6 +23,8 @@ Accessing headers
 The headers of the request is stored in a ``dict`` in the ``META`` attribute. It is recommended to use ``get()`` to get the POST data as the client might not the send the right headers.
 
 .. code-block:: python 
+
+	from waffleweb.response import render
 
 	@yourApp.route('/page', methods=['GET'])
 	def page(request):
@@ -38,6 +42,8 @@ The POST data of the request is stored in a ``dict`` in the ``POST`` attribute. 
 
 .. code-block:: python
 
+	from waffleweb.response import render
+
 	@yourApp.route('/form', methods=['GET', 'POST'])
 	def form(request):
 	    if request.method == 'POST':
@@ -52,6 +58,8 @@ The file uploads of the request is stored in a ``dict`` in the ``FILES`` attribu
 
 .. code-block:: python
 
+	from waffleweb.response import render
+
 	@yourApp.route('/upload', methods=['GET', 'POST'])
 	def form(request):
 	    if request.method == 'POST':
@@ -62,7 +70,9 @@ The file uploads of the request is stored in a ``dict`` in the ``FILES`` attribu
 	                
 	    return render(request, 'upload.html')
 	    
-In a real life situation you should make sure the content or name is safe. 
+In a real life situation you should make sure the content or name is safe.
+
+For more information you can go to `Uploaded Files <Uploaded-Files.rst>`_. 
 
 Accessing URL parameters
 ........................
@@ -70,6 +80,8 @@ Accessing URL parameters
 URL parameters are the '?paramName=value' after the URL. URL parameters are useful for when you want to send data in a GET request. URL parameters are stored in a ``dict`` in the ``URL_PARAMS`` attribute. Again it is recommended to use ``get()`` to get the parameters data as the client might not the send the correct parameters.
 
 .. code-block:: python
+
+	from waffleweb.response import render
 
 	@yourApp.route('/search', methods=['GET'])
 	def search(request):

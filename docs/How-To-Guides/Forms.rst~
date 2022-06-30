@@ -47,8 +47,9 @@ Now we need to add logic to our route. We also need to create a folder called 's
 	import json
 	import bleach
 	from waffleweb.static import openStatic
+	from waffleweb.response import render
 
-	@app.route('/form', methods=['GET', 'POST'])
+	@yourApp.route('/form', methods=['GET', 'POST'])
 	def form(request):
 		  if request.method == 'POST':
 		      name = bleach.clean(request.POST.get('username', 'N/A'))
@@ -86,7 +87,7 @@ If your are making a social media you will probably need to accept file uploads.
 
 .. code-block:: python
 
-	@app.route('/upload', methods=['GET', 'POST'])
+	@yourApp.route('/upload', methods=['GET', 'POST'])
 	def upload(request):
 		  if request.method == 'POST':
 		      file = request.FILES['file']

@@ -23,7 +23,7 @@ def getRelativeUrl(viewStr: str, **kwargs):
             for view in app.views:
                 if view.name == viewName:
                     if view.hasPathHasArgs() == False:
-                        return f'/{view.path}/'
+                        return f'{view.unstripedPath}'
                     else:
                         finalPath = []
                         
@@ -36,8 +36,11 @@ def getRelativeUrl(viewStr: str, **kwargs):
                                     raise KeyError(f'Value for arg \"{argName}\" not found in kwargs.')
                             else:
                                 finalPath.append(part)
-                                
-                        return f'/{"/".join(finalPath)}/'
+                            
+                        if view.unstripedPath.endswith('/'):
+                            return f'/{"/".join(finalPath)}/'
+                        else:
+                            return f'/{"/".join(finalPath)}'
                                 
             #if cant find view, raise error
             raise ViewNotFoundError(f'View {viewName} could not be found.')

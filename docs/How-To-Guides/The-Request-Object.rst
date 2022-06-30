@@ -8,6 +8,8 @@ To get the method of request you can use the ``method`` attribute:
 
 .. code-block:: python
 
+	from waffleweb.response import render
+
 	@yourApp.route('/upload', methods=['GET', 'POST'])
 	def upload(request):
 	    if request.method == 'POST':
@@ -21,6 +23,8 @@ Accessing headers
 The headers of the request is stored in a ``dict`` in the ``META`` attribute. It is recommended to use ``get()`` to get the POST data as the client might not the send the right headers.
 
 .. code-block:: python 
+
+	from waffleweb.response import render
 
 	@yourApp.route('/page', methods=['GET'])
 	def page(request):
@@ -38,6 +42,8 @@ The POST data of the request is stored in a ``dict`` in the ``POST`` attribute. 
 
 .. code-block:: python
 
+	from waffleweb.response import render
+
 	@yourApp.route('/form', methods=['GET', 'POST'])
 	def form(request):
 	    if request.method == 'POST':
@@ -51,6 +57,8 @@ Accessing file uploads
 The file uploads of the request is stored in a ``dict`` in the ``FILES`` attribute. All the files are ``File`` objects. The content of the file is stored in the ``data`` attribute of the file and the name is stored in the ``name`` attribute.
 
 .. code-block:: python
+
+	from waffleweb.response import render
 
 	@yourApp.route('/upload', methods=['GET', 'POST'])
 	def form(request):
@@ -73,6 +81,8 @@ URL parameters are the '?paramName=value' after the URL. URL parameters are usef
 
 .. code-block:: python
 
+	from waffleweb.response import render
+
 	@yourApp.route('/search', methods=['GET'])
 	def search(request):
 	    term = request.URL_PARAMS.get('term', None)
@@ -90,6 +100,8 @@ Accessing cookies
 Cookies are vary useful for many uses, such as identifying users. Cookies are stored in a ``dict`` as ``Cookie`` objects in the ``COOKIES`` attribute. Once again it is recommended to use ``get()`` to get the parameters data as the client might not the send the correct parameters. You can access the value of the cookie with the ``value`` attribute.
 
 .. code-block:: python
+
+	from waffleweb.response import render
 
 	@yourApp.route('/enter', methods=['GET'])
 	def enter(request):

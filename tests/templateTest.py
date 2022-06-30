@@ -89,7 +89,7 @@ class RenderErrorPageTest(unittest.TestCase):
 class GetRelativeUrlTest(unittest.TestCase):
     def test_basicTest(self):
         url = getRelativeUrl('test:BasicTest')
-        self.assertEqual(url, '/BasicTest/')
+        self.assertEqual(url, 'BasicTest/')
     
     def test_noKwargs(self):
         with self.assertRaises(KeyError):
@@ -121,5 +121,5 @@ class GetRelativeUrlTest(unittest.TestCase):
             
     def test_inTemplate(self):
         render = renderTemplate('inTemplateTest.html')
-        self.assertEqual(render, '/BasicTest/')
+        self.assertEqual(render, 'BasicTest/')
     

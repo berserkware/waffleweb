@@ -6,11 +6,11 @@ template.py
 ``function waffleweb.template.getRelativeUrl(viewStr, **kwargs)``
 =================================================================
 
-Gets the URL of view from the viewStr. A viewStr is `appname:viewname`. The kwargs are the URL variables.
+Gets the URL of view from the viewStr. A viewStr is `appname:viewname`. The kwargs are the URL parameters.
 
 **Parameters:**
  - **viewStr** (``str``) - A string of the app and route of the desired view, Example: `appname:viewname`.
- - ****kwargs** - The URL variables.
+ - ****kwargs** - The URL parameters.
  
 =====================================================
 ``function waffleweb.template._getEnvironmentFile()``

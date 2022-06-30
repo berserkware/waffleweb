@@ -151,6 +151,8 @@ Redirect behavior
 
 .. code-block:: python
 
+	from waffleweb.response import HTTPResponse
+
 	@yourApp.route('/index')
 	def index(request):
 	    return HTTPResponse(request, 'index page')
@@ -167,6 +169,8 @@ HTTP Methods
 If you only want to allow certain HTTP methods to access your page then you can add a optional parameter called ``methods`` to the ``route()`` function. 
 
 .. code-block:: python
+	
+	from waffleweb.response import HTTPResponse
 	
 	@yourApp.route('/form/', methods=['GET', 'POST'])
 	def form(request):
@@ -304,6 +308,8 @@ To access the method of the request use the ``method`` attribute. To access form
 
 .. code-block:: python
 
+	from waffleweb.response import render
+
 	@yourApp.route('/form/', methods=['GET', 'POST'])
 	def form(request):
 	    if request.method == 'POST':
@@ -328,6 +334,8 @@ You can access file uploads with the ``FILES`` attribute. The uploaded files are
 
 .. code-block:: python
 
+	from waffleweb.response import HTTPResponse
+
 	@yourApp.route('/upload/', methods=['GET', 'POST'])
 	def form(request):
 	    if request.method == 'POST':
@@ -342,20 +350,24 @@ For more information you can go to `Uploaded Files </How-To-Guides/Uploaded-File
 	    
 Cookies
 .......
-To access cookies from a request you can use the ``cookies`` attribute. each cookie is a ``Cookie`` object so to access the value use ``str()``. To set a cookie you can use the ``setCookie()`` method of response objects. You can remove a cookie from a response with ``deleteCookie()``.
+To access cookies from a request you can use the ``cookies`` attribute. Each cookie is a ``Cookie`` object so to access the value use the ``value`` attribute. To set a cookie you can use the ``setCookie()`` method of response objects. You can remove a cookie from a response with ``deleteCookie()``.
 
 Getting Cookies:
 
 .. code-block:: python
 
+	from waffleweb.response import HTTPResponse
+
 	@yourApp.route('/index/')
 	def index(request):
-	    cookie = request.COOKIES.get('cookieName')
+	    cookie = request.COOKIES.get('cookieName').value
 	    return HTTPResponse(request, 'Index Page')
 	    
 Adding Cookies:
 
 .. code-block:: python
+
+	from waffleweb.response import HTTPResponse
 
 	@yourApp.route('/index/')
 	def index(request):
@@ -366,6 +378,8 @@ Adding Cookies:
 Removing Cookies from response:
 
 .. code-block:: python
+
+	from waffleweb.response import HTTPResponse
 
 	@yourApp.route('/index/')
 	def index(request):
@@ -383,6 +397,8 @@ To add middleware to your project you can add a argument to your WaffleProject o
 ``project.py:``
 
 .. code-block:: python
+
+	from waffleweb import WafflewebProject
 
 	middleware = [
 	    'addCookieMiddleware.addCookie'
