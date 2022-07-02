@@ -70,4 +70,4 @@ When a file is accessed from the browser Waffleweb calls function as so:
 
 	#Accessed URL: "localhost:8000/CSS/file.css"
 
-	DEFUALT_STATIC_FINDER('CSS/file.css', 'rb', -1, None, None, None, True, None)
+	DEFUALT_STATIC_FINDER('')

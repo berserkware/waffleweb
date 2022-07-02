@@ -97,7 +97,7 @@ class Request:
         return 'N/A'
 
 class RequestHandler:
-    '''Handles a requests, Returns response'''
+    '''Handles a requests.'''
     def __init__(self, request: Request, debug=False):
         self.request = request
         self.apps = waffleweb.defaults.APPS
@@ -297,7 +297,7 @@ class RequestHandler:
             response = self.getErrorHandler(statusCode=404)
 
             if response is None:
-                return HTTPResponse(content='404 The requested page could not be found.')
+                return HTTPResponse(content='404 The requested page could not be found.', status=404)
             else:
                 return response
 

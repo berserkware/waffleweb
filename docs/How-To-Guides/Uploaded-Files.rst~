@@ -27,8 +27,6 @@ The data of files are stored in bytes so to save the file you will need to set t
 	    
 You should clean the data to prevent data that could break things.
 
-If your are using the built-in test server some of your files may not be fully uploaded. This is becuase of the request size limit. You can get around this by using a WSGI server, See `Deploying Your Project <Deploying-Your-Project.rst>`_.
-
 You can access the content type of the file with the ``contentType`` attribute.
 
 The size of the file is stored with the ``size`` attribute.

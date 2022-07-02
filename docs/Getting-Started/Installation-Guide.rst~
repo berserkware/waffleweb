@@ -17,4 +17,4 @@ To install Waffleweb you have to use pip:
 
 .. code-block:: bash
 
-   $ pip install waffleweb
+   pip install waffleweb

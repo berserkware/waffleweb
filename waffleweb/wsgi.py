@@ -1,5 +1,6 @@
+from waffleweb.exceptions import ParsingError
 from waffleweb.request import RequestHandler, Request
-from waffleweb.response import HTTP404
+from waffleweb.response import HTTP404, HTTPResponse
 
 class WsgiHandler:
     def __init__(self, environ, apps, middlewareHandler):
@@ -8,8 +9,20 @@ class WsgiHandler:
         self.middlewareHandler = middlewareHandler
         
     def getResponse(self):
-        #Makes the Request object
-        request = Request(self.environ, self.environ.get('REMOTE_ADDR'), True)
+        try:
+            #Makes the Request object
+            request = Request(self.environ, self.environ.get('REMOTE_ADDR'), True)
+        except ParsingError:
+            for app in self.apps:
+                app = app['app']
+                for handler in app.errorHandlers:
+                    try:
+                        if handler.statusCode == 400:
+                            return handler.view()
+                    except AttributeError:
+                        pass
+                    
+            return HTTPResponse(content='400 Bad Request', status=400)
 
         self.requestHandler = RequestHandler(request)
 

@@ -12,3 +12,6 @@ class MiddlewareNotFoundError(Exception):
 
 class MiddlewareImportError(Exception):
     pass
+
+class ParsingError(Exception):
+    pass
