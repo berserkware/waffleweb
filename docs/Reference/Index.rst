@@ -19,3 +19,4 @@ Contents
 10. `cookie.py <cookie.py.rst>`_
 11. `files.py <files.py.rst>`_
 12. `parser.py <parser.py.rst>`_
+13. `errorResponses.py <errorResponses.py.rst>`_

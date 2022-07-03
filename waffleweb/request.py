@@ -274,28 +274,31 @@ class RequestHandler:
         return response
 
     def _handle404View(self):
+        response = self.getErrorHandler(statusCode=404)
+        
         if self.debug:
-            #Gets all searched views.
-            searchedViews = []
-            for app in self.apps:
-                app = app['app']
-                for view in app.views:
-                    path = view.unstripedPath
+            if response is None:
+                #Gets all searched views.
+                searchedViews = []
+                for app in self.apps:
+                    app = app['app']
+                    for view in app.views:
+                        path = view.unstripedPath
 
-                    #turns the arrows into one html cannot render
-                    path = path.replace('<', '&lt;')
-                    path = path.replace('>', '&gt;')
-                    searchedViews.append(path)
+                        #turns the arrows into one html cannot render
+                        path = path.replace('<', '&lt;')
+                        path = path.replace('>', '&gt;')
+                        searchedViews.append(path)
 
-            page = renderErrorPage(
-                mainMessage='404 Page Not Found', 
-                subMessage=f'The requested page could not be found',
-                traceback=f'Views searched:<br>{"<br>".join(searchedViews)}',
-                )
-            return HTTPResponse(content=page, status=404)
+                page = renderErrorPage(
+                    mainMessage='404 Page Not Found', 
+                    subMessage=f'The requested page could not be found',
+                    traceback=f'Views searched:<br>{"<br>".join(searchedViews)}',
+                    )
+                return HTTPResponse(content=page, status=404)
+            else:
+                return response
         else:
-            response = self.getErrorHandler(statusCode=404)
-
             if response is None:
                 return HTTPResponse(content='404 The requested page could not be found.', status=404)
             else:
@@ -303,17 +306,21 @@ class RequestHandler:
 
     def _405MethodNotAllowed(self, allowedMethods) -> HTTPResponse:
         '''Returns a 405 response'''
+        response = self.getErrorHandler(statusCode=405)
+        
         methods = ', '.join(allowedMethods)
         if self.debug:
-            render = renderErrorPage(
-                mainMessage='405 Method Not Allowed',
-                subMessage=f'Allowed Methods: {methods}',
-            )
-            res = HTTPResponse(content=render, status=405) 
-            res.headers['Allow'] = methods
-            return res
+            if response == None:
+                render = renderErrorPage(
+                    mainMessage='405 Method Not Allowed',
+                    subMessage=f'Allowed Methods: {methods}',
+                )
+                res = HTTPResponse(content=render, status=405) 
+                res.headers['Allow'] = methods
+                return res
+            else:
+                return response
         else:
-            response = self.getErrorHandler(statusCode=405)
             if response == None:
                 res = HTTPResponse(content='405 Method not Allowed', status=405) 
                 res.headers['Allow'] = methods
@@ -322,15 +329,18 @@ class RequestHandler:
                 return response
 
     def _501NotImplementedError(self):
+        response = self.getErrorHandler(statusCode=501)
         if self.debug:
-            render = renderErrorPage(
-                mainMessage='501 Not Implemented Error', 
-                subMessage=f'The requested method is not implemented',
-                traceback=f'Method:{self.request.method}',
-            )
-            return HTTPResponse(content=render, status=501) 
+            if response == None:
+                render = renderErrorPage(
+                    mainMessage='501 Not Implemented Error', 
+                    subMessage=f'The requested method is not implemented',
+                    traceback=f'Method:{self.request.method}',
+                )
+                return HTTPResponse(content=render, status=501) 
+            else:
+                return response
         else:
-            response = self.getErrorHandler(statusCode=501)
             if response == None:
                 return HTTPResponse(content='Not Implemented Error', status=501)
             else:

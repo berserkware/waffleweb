@@ -17,7 +17,7 @@ from waffleweb.template import renderErrorPage, renderTemplate
 from waffleweb.middleware import MiddlewareHandler
 from waffleweb.wsgi import WsgiHandler
 from waffleweb.exceptions import AppNotFoundError, AppImportError, ParsingError
-from waffleweb.parser import parsePost
+from waffleweb.errorResponses import badRequest
 
 class WaffleProject():
     '''
@@ -141,20 +141,7 @@ class WaffleProject():
                         #closes the connection
                         conn.close()
                     except ParsingError:
-                        if debug == False:
-                            for app in self.apps:
-                                app = app['app']
-                                for handler in app.errorHandlers:
-                                    try:
-                                        if handler.statusCode == 400:
-                                            return bytes(handler.view())
-                                    except AttributeError:
-                                        pass
-                                    
-                            return bytes(HTTPResponse(content='400 Bad Request', status=400))
-                        else:
-                            render = renderErrorPage('400 Bad Request', subMessage='The request was malformend so the server could not process it.')
-                            return bytes(HTTPResponse(content=render, status=400))
+                        return bytes(badRequest(self.apps, debug))
                     except Exception as e:
                         #gets the exception
                         exception = traceback.TracebackException.from_exception(e)

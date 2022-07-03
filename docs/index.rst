@@ -39,3 +39,4 @@ Contents
     | 3.10. `cookie.py <Reference/cookie.py.rst>`_
     | 3.11. `files.py <Reference/files.py.rst>`_
     | 3.12. `parser.py <Reference/parser.py.rst>`_ 
+    | 3.13. `errorResponses.py <Reference/errorResponses.py.rst>`_

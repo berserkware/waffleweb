@@ -39,3 +39,7 @@ In your terminal you should now see something like this:
 	[2022-07-02 17:34:48 +1200] [18669] [INFO] Listening at: http://127.0.0.1:8000 (18669)
 	[2022-07-02 17:34:48 +1200] [18669] [INFO] Using worker: sync
 	[2022-07-02 17:34:48 +1200] [18670] [INFO] Booting worker with pid: 18670
+
+If you go to http://127.0.0.1:8000 you should now see your website working.
+
+For more information on Gunicorn you can go to the `Gunicorn Docs <https://docs.gunicorn.org/en/stable/index.html>`_.
