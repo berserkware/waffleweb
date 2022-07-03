@@ -24,7 +24,7 @@ Creating an app
 ...............
 To create an app create a python file and put a WaffleApp object in it as so.
 
-``project.py:``
+``app.py:``
 
 .. code-block:: python
     
