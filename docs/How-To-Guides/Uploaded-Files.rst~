@@ -2,9 +2,9 @@
 How-To: Uploaded Files
 ======================
 
-Uploaded files are key to any image based social media platform. Waffleweb makes receiving and using uploaded files easy. 
+Uploaded files are key to any image based social media platform. Waffleweb make receiving and using uploaded files easy. 
 
-File uploads are stored in the ``FILES`` attribute of the ``Request`` object passed into your route functions. The files are stored in ``File`` objects. You can access the data of the file with the ``data`` attribute. You can access the name of the file with the ``name`` attribute.
+File uploads are stored in the ``FILES`` attribute of the ``Request`` object passed into your routed views. The files are stored in ``File`` objects. You can access the data of the file with the ``data`` attribute. You can access the name of the file with the ``name`` attribute.
 
 The data of files are stored in bytes so to save the file you will need to set the mode of ``open()`` to "wb".
 

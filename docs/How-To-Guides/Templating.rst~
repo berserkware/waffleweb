@@ -123,4 +123,4 @@ Adding your own template renderer is easy, all you have to is create a file call
 	
 Your template renderer must take a file path and the context (variables) for the template. It must return a string of the rendered template.
 
-If you have a TEMPLATE_RENDER supplied it will be called by ``renderTemplate()``. So out of the box it will automatically work with ``render()``.
+Your template renderer is called by ``renderTemplate()``. So out of the box it will automatically work with ``render()``.

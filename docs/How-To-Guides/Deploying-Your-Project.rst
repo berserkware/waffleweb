@@ -25,7 +25,7 @@ The WSGI callable is a method of your WaffleProject called "wsgiApplication".
 Connecting The Callable To Gunicorn
 -----------------------------------
 
-Connecting the WSGI callable to Gunicorn is easy.
+Connecting the WSGI callable to Gunicorn is easy. Just go to your project directory in the terminal and run this command.
 
 .. code-block:: bash
 

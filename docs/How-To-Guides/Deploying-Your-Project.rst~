@@ -2,7 +2,7 @@
 How-To: Deploying Your Project
 ==============================
 
-Waffleweb allows you to deploy your project with WSGI. In this how-to guide you will be shown how to deploy your project with `Gunicorn <https://gunicorn.org/>`_.
+Waffleweb allows you to deploy your project with WSGI. In this How-To guide you will be shown how to deploy your project with `Gunicorn <https://gunicorn.org/>`_.
 
 Installing Gunicorn
 -------------------

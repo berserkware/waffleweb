@@ -303,7 +303,7 @@ For more information you can go to `Custom Error Pages </How-To-Guides/Custom-Er
 
 Accessing request data
 ......................
-The Request object holds all the data about the request. It stores stuff like POST data, cookies, headers. For more in-depth information in the `Request </How-To-Guides/The-Request-Object.rst>`_ How-To Guide. The request object is passed into you routed function as the first argument.
+The Request object holds all the data about the request. It stores stuff like POST data, cookies, headers. For more in-depth information in the `Request </How-To-Guides/The-Request-Object.rst>`_ How-To Guide. The request object is passed into you routed function as the first arg.
 
 To access the method of the request use the ``method`` attribute. To access form data you can use the ``POST`` attribute.
 
