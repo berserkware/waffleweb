@@ -27,7 +27,7 @@ A decorator to route a function to an URL.
 ``errorHandler(statusCode)``
 ----------------------------
 
-A decorator to route a function to a certain error code. Whenever your return a response with a status code, if you have a errorHandler with that status code it will return your errorHandler.
+A decorator to route a function to a certain error code. Whenever you return a response with a status code a errorHandler will be looked for with that status code. it will return your errorHandler.
 
 **Parameters:**
  - **statusCode** (``int``) - The status code to route the function to.

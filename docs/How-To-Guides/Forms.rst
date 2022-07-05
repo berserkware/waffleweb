@@ -65,12 +65,12 @@ Now we need to add logic to our route. We also need to create a folder called 's
 		          
 	    return render(request, 'form.html')
 
-All the data from the form is stored in the ``POST`` attribute. The get method is used for retrieving data in case the client doesn't send the correct data. The `bleach <https://bleach.readthedocs.io/en/latest/>`_ library is used to clean the data.
+All the data from the form is stored in the ``POST`` attribute. The get method is used for retrieving data in case the client doesn't send the correct data. The `bleach <https://bleach.readthedocs.io/en/latest/>`_ library is used to clean the data in this example.
 
 File Forms
 ..........
 
-If your are making a social media you will probably need to accept file uploads. The uploaded files of the request is stored in the ``FILES`` attribute. This form will take a file and the server will save it. You need to set the ``enctype`` of the form to "multipart/form-data", so that the data of the file goes through.
+If your are making a social media you will probably need to accept file uploads. The uploaded files of the request are stored in the ``FILES`` attribute. This form will take a file and the server will save it. You need to set the ``enctype`` of the form to "multipart/form-data", so that the data of the file goes through.
 
 ``upload.html:``
 

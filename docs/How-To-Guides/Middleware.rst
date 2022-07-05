@@ -29,7 +29,7 @@ To add middleware to your entire project you can add the ``middleware`` argument
 App Specific Middleware
 -----------------------
 
-To add app-specific middleware is much the same as adding middleware to your project. All you need to do is add the ``middleware`` argument to your ``WaffleApp``. The middleware is again a list formatted the same way as the project-wide middleware.
+Adding app-specific middleware is much the same as adding middleware to your project. All you need to do is add the ``middleware`` argument to your ``WaffleApp``. The middleware is again a list formatted the same way as the project-wide middleware.
 
 .. code-block:: python
 

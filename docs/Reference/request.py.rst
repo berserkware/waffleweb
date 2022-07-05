@@ -219,7 +219,7 @@ Handles PATCH request by running the view functions with the kwargs and requests
 ``getErrorHandler(response=None, statusCode=None)``
 ---------------------------------------------------
 
-Looks for a error handler with the response's status code or the ``statusCode`` arg. If it finds an error handler it returns the response from the error handler, otherwise it returns the ``response`` arg. You should provide either a response or a statusCode.
+Looks for a error handler with the response's status code or the ``statusCode`` arg. If it finds an error handler it returns the response from the error handler otherwise it returns the ``response`` arg. You should provide either a response or a statusCode.
 
 **Returns:** ``HTTPResponse``
 
@@ -231,14 +231,14 @@ Looks for a error handler with the response's status code or the ``statusCode`` 
 ``_handle404View()``
 --------------------
 
-If a ``HTTP404`` is raised this function will get called. If debug is on it will return a default 404 error page. If debug is off then it will try to get a error handler, if one cannot be found it will return a plain 404 page.
+If a ``HTTP404`` is raised this function will get called. If debug is on it will return a default 404 error page. If debug is off then it will try to get a error handler, but if one cannot be found it will return a plain 404 page.
 
 **Returns:** ``HTTPResponse``
 
 ----------------------------------------
 ``_405MethodNotAllowed(allowedMethods)``
 ----------------------------------------
-If the view found does not allow the request's method then this will be called. If debug is on it will return a default 405 error page. If debug is off then it will try to get a error handler, if one cannot be found it will return a plain 405 page.
+If the view found does not allow the request's method then this will be called. If debug is on it will return a default 405 error page. If debug is off then it will try to get a error handler, but if one cannot be found it will return a plain 405 page.
 
 **Returns:** ``HTTPResponse``
 
@@ -246,7 +246,7 @@ If the view found does not allow the request's method then this will be called. 
 ``_501NotImplementedError()``
 -----------------------------
 
-This will be called when the request's method is unknown this will be called. If debug is on it will return a default 501 error page. If debug is off then it will try to get a error handler, if one cannot be found it will return a plain 501 page.
+This will be called when the request's method is unknown this will be called. If debug is on it will return a default 501 error page. If debug is off then it will try to get a error handler, but if one cannot be found it will return a plain 501 page.
 
 **Returns:** ``HTTPResponse``
 

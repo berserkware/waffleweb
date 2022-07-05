@@ -24,7 +24,7 @@ A Cookie. ``str()`` returns a string for the Set-Cookie header.
 
 Inherites from ``dict``
 
-A special dictionary for cookies. ``str()`` returns a string of the cookies, example: 'cookieName=value; cookieName2=value'.
+A special dictionary for cookies. ``str()`` returns a string of the cookies. For example: 'cookieName=value; cookieName2=value'.
 
 **Parameters:**
- - **cookies** (``str``) - A string of all your the cookies, all of them get turned into ``Cookie`` objects, Example: 'cookieName=value; cookieName2=value'.
+ - **cookies** (``str``) - A string of all your the cookies. All of them get turned into ``Cookie`` objects. For example: 'cookieName=value; cookieName2=value'.

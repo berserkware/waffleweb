@@ -24,7 +24,7 @@ Sent cookies are stored in the COOKIES attribute of the request. The cookies are
 Adding Cookies
 ..............
 
-You can add cookies to the response with the ``setCookie()`` method. ``setCookie()`` takes 8 arguments, the first two are required but the other 6 are optional. The first two are the name and value of the cookie. The other six are as so:
+You can add cookies to the response with the ``setCookie()`` method. ``setCookie()`` takes 8 arguments: the first two are required but the other 6 are optional. The first two are the name and value of the cookie. The other six are as so:
 
 - **path** (optional) (``str``) - The path of the cookie, defaults to the route of your app.
 - **maxAge**  (optional) (``str``) - The maximum age of the cookie.

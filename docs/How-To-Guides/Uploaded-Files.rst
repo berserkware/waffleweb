@@ -31,4 +31,4 @@ If your are using the built-in test server some of your files may not be fully u
 
 You can access the content type of the file with the ``contentType`` attribute.
 
-The size of the file is stored with the ``size`` attribute.
+The size of the file is stored in the ``size`` attribute.

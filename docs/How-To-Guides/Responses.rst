@@ -2,7 +2,7 @@
 How-To: Responses
 =================
 
-For your routes to work properly they have to return a response. Waffleweb provides several responses for you to use in your project. They allow for several different types of response, such as files, json and html.
+For your routes to work properly they have to return a response. Waffleweb provides several responses for you to use in your project. There are several types of responses built into Waffleweb such as files, json and html.
 
 Responses
 .........
@@ -40,7 +40,7 @@ To change the content type of the response you can use the ``contentType`` argum
 	def text(request):
 	    return HTTPResponse(request, 'Some text', contentType='text/plain')
 	    
-You can add headers with the ``headers`` attribute. The headers are stored in a `MultiValueOneKeyDict </Reference/datatypes.py.rst>`_, For more advanced usage go to there.
+You can add headers with the ``headers`` attribute. The headers are stored in a `MultiValueOneKeyDict </Reference/datatypes.py.rst>`_. For more advanced usage go to there.
 	    
 .. code-block:: python
 
@@ -69,7 +69,7 @@ To add cookies you can use the ``setCookie()`` method. The path of the cookies a
 **JSONResponse**
 ----------------
 
-``JSONResponse`` is for JSON responses, it can be particularly useful for APIs. It inherits from the HTTPResponse class. The first argument is the request passed into your routed function. The second argument is a JSON serializable object.
+``JSONResponse`` is for JSON responses. It can be particularly useful for APIs. It inherits from the HTTPResponse class. The first argument is the request passed into your routed function. The second argument is a JSON serializable object.
 
 .. code-block:: python
 
@@ -96,12 +96,12 @@ As it inherites from the ``HTTPResponse`` class you can do most of the same thin
 	     with openStatic('testFile.jpeg') as f:
 	         return FileResponse(request, f)
 	         
-``openStatic()`` looks in your ``STATIC_DIR`` directory for files and its mode is set to 'rb'. To learn more about static functions you can go to `Static Files <Static-Files.rst>`_. If you want to use the normal ``open()`` function just set the ``mode`` argument to 'rb'
+``openStatic()`` looks in your ``STATIC_DIR`` directory for files and its mode is set to 'rb'. To learn more about static functions you can go to `Static Files <Static-Files.rst>`_. If you want to use the normal ``open()`` function, just set the ``mode`` argument to 'rb'
 
 **render()**
 ------------
 
-``render()`` is a response for templates. The first argument is the request passed into your routed function. The second argument is the path to the template. It looks under your ``TEMPLATE_DIR`` for the templates. The third optional argument is the variables for the templates. ``render()`` by default uses Jinja2 for templating.
+``render()`` is a response for templates. The first argument is the request passed into your routed function. The second argument is the path to the template. It looks under your ``TEMPLATE_DIR`` for the templates. The third optional argument is the variables for the templates. ``render()`` uses Jinja2 for templating by default.
 
 .. code-block:: python
 
@@ -145,7 +145,7 @@ Redirects
 **redirect()**
 --------------
 
-A shortcut for redirects. It takes two arguments, the place to redirect to and whether or not it is permanent or not.
+A shortcut for redirects. It takes two arguments: the place to redirect to and whether or not it is a permanent redirect or not.
 
 .. code-block:: python
 

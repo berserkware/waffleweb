@@ -44,4 +44,4 @@ This handler gets called when the client send a malformed request. It must not t
 	def methodNotAllowed():
 	    return render(filePath='405.html')
 	    
-Remember to set the status of the response to the status of the handler because if you don't the status will the 200.
+Remember to set the status of the response to the status of the handler, because if you don't the status will the 200 OK.

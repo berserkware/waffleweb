@@ -6,7 +6,7 @@ middleware.py
 ``class waffleweb.middleware.MiddlewareHandler(middleware)``
 ============================================================
 
-A handler of middleware. Middleware gets ran on the request before your view recieves it and on the response before it is sent.
+A handler of middleware. Middleware gets ran on the request before your view receives it and on the response before it is sent.
 
 **Parameters:**
  - **middleware** (``list[str]``) - A list of all your middleware. You need to format the middleware strings as so: 'module.MiddlewareClass'.

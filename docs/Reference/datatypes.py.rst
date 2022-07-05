@@ -126,7 +126,7 @@ Deleting a specific value from a key:
 ``get(keyname, index=None, default=None)``
 ------------------------------------------
 
-Return the value of the item with the specified key. If your key has more than one value you will need to provide a index, otherwise it will return all the items. Returns the item.
+Return the value of the item with the specified key. If your key has more than one value you will need to provide a index otherwise it will return all the items. Returns the item.
 
 **Parameters:**
  - **keyname** (``str``) - The key name.

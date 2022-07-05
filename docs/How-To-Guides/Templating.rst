@@ -2,7 +2,7 @@
 How-To: Templating
 ==================
 
-Templating is useful for when you want have complex pages with variables and simple logic. By default Waffleweb uses `Jinja2 <https://palletsprojects.com/p/jinja/>`__ for templating. You can change the template renderer, we will get into that later. In this How-To guide you will learn the basics of creating Jinja templates. and how to render them with Waffleweb.
+Templating is useful for when you want have complex pages with variables and simple logic. By default Waffleweb uses `Jinja2 <https://palletsprojects.com/p/jinja/>`__ for templating. You can change the template renderer. we will get into that later. In this How-To guide you will learn the basics of creating Jinja templates and how to render them with Waffleweb.
 
 Rendering Templates
 ...................
@@ -37,7 +37,7 @@ This finds a template and renders with the context.
 ``render()``
 ------------
 
-This calls ``renderTemplate`` with the ``filePath`` and ``context`` and puts it in a ``HTTPResponse``, then returns the response.
+This calls ``renderTemplate`` with the ``filePath`` and ``context`` and puts it in a ``HTTPResponse`` then returns the response.
 
 ``render`` takes 6 arguments:
  - ``request`` (``Request``) - The request passed into the routed function.
@@ -115,7 +115,7 @@ This only work when using the default rendering functions.
 Adding Your Own Template Renderer
 .................................
 
-Adding your own template renderer is easy, all you have to is create a file called "settings.py" and add a variable called "TEMPLATE_RENDERER".
+Adding your own template renderer is easy. All you have to is create a file called "settings.py" and add a variable called "TEMPLATE_RENDERER".
 
 .. code-block:: python
 

@@ -6,7 +6,7 @@ This is the basics of Waffleweb. You will get walked through all the basic featu
 
 Creating a project
 ..................
-To create a project, create a python file and put a WaffleProject object in it as so.
+To start creating your website with Waffleweb you first need to create a project. To create a project you can create a python file and put a WaffleProject object in it as so.
 
 ``project.py:``
  
@@ -20,11 +20,12 @@ To create a project, create a python file and put a WaffleProject object in it a
 
     yourProject = WaffleProject(apps)
     
-Apps hold all of your views, we will add some soon.
+Apps hold all of your pages, we will add some soon.
 
 Creating an app
 ...............
-To create an app, create a python file and put a WaffleApp object in it as so.
+
+To add pages to your website you need apps. To create an app you can create a python file and put a WaffleApp object in it as so.
 
 ``app.py:``
 
@@ -36,9 +37,7 @@ To create an app, create a python file and put a WaffleApp object in it as so.
     
 WaffleApp only needs to take one variable for now: the name of your app. The name of your app is for some functions to identify your app.
 
-
-To register your app all you need to do is add 'app.yourApp' to your project's
-app list. your project.py should now look as so.
+To register your app, all you need to do is add 'app.yourApp' to your project's app list. your project.py should now look as so. Remember the last part of the app string should NOT be the ``appName`` of your app. It should be the variable of your ``WaffleApp``.
 
 ``project.py:``
     
@@ -79,13 +78,13 @@ If you want to change the host or port you can specify them in run().
 
     yourProject.run(host='0.0.0.0', port=8080)
 
-Right now if you go to "127.0.0.1:8000" you will see a 404 page, this is because we haven't
+Right now if you go to "127.0.0.1:8000" you will see a 404 page. This is because we haven't
 routed any pages yet. We will add some routes later.
 
 ----------
 Debug Mode
 ----------
-Debug mode allows you to see extra data about 404 and traceback and error data in the browser.
+Debug mode allows you to see extra data about 404, traceback and error data in the browser.
 You can turn on debug mode by adding debug=True to ``run()``.
 
 ``project.py:``
@@ -124,7 +123,7 @@ All of your routed functions have to take a request argument. The request argume
 -------------
 URL Variables
 -------------
-You can add variables to your URL by adding ``<type:variableName>`` to your URL. Your function can access the variables through the keyword args of your view function. The type part tells Waffleweb what type to convert the variable to, if Waffleweb can't convert it or type is unknown, it converts to string.
+You can add variables to your URL by adding ``<type:variableName>`` to your URL. Your function can access the variables through the keyword args of your view function. The type part tells Waffleweb what type to convert the variable to. If Waffleweb can't convert it or the type is unknown, it gets converted to string.
 
 ``app.py:``
 	
@@ -169,7 +168,7 @@ The URL for the index page doesn't end with a slash meaning that if you access t
 ------------
 HTTP Methods
 ------------
-If you only want to allow certain HTTP methods to access your page then you can add a optional parameter called ``methods`` to the ``route()`` function. 
+If you only want to allow certain HTTP methods to access your page you can add a optional parameter called ``methods`` to the ``route()`` decorator. 
 
 .. code-block:: python
 	
@@ -181,13 +180,13 @@ If you only want to allow certain HTTP methods to access your page then you can 
 	        return doFormStuff(request.POST)
 	    return HTTPResponse(request, 'form')
 		
-Waffleweb by default allows all HTTP methods. If you have 'GET' in your methods Waffleweb automatically handles the HEAD and OPTIONS methods.
+By default Waffleweb allows all HTTP methods. If you have 'GET' in your methods Waffleweb automatically handles the HEAD and OPTIONS methods.
 
 Static files
 ............
 To add static files to your Waffleweb project all you need to do is make a folder called static and put your files in there. You can change the folder Waffleweb looks in for your static files in a ``settings.py`` file in your project directory. Just add ``STATIC_DIR = 'path/to/static/'`` to ``settings.py``.
 
-To access these static files in your browser just go to ``/folder/file.ext``. Waffleweb hides the static directory path in the URL to remove complexity. For example, if your project directory looks like the example bellow then to access ``test.css`` you would need to go to ``/css/index.css`` NOT ``/static/css/index.css``.
+To access these static files in your browser just go to ``localhost:8000/folder/file.ext``. Waffleweb hides the static directory path in the URL to remove complexity. For example, if your project directory looks like the example bellow then to access ``test.css`` you would need to go to ``localhost:8000/css/index.css`` NOT ``localhost:8000/static/css/index.css``.
 
 .. code-block::
 	
@@ -247,7 +246,7 @@ A Json response. Sets the Content-Type to application/json.
 ``FileResponse()``
 ------------------
 
-A file response. Takes a bytes file object. Sets the Content-Type to whatever the mime of the file is.
+A file response. Takes a bytes file object. The FileResponse sets the Content-Type to whatever the mime of the file is.
 
 .. code-block:: python
 
@@ -303,7 +302,7 @@ For more information you can go to `Custom Error Pages </How-To-Guides/Custom-Er
 
 Accessing request data
 ......................
-The Request object holds all the data about the request. It stores stuff like POST data, cookies, headers. For more in-depth information in the `Request </How-To-Guides/The-Request-Object.rst>`_ How-To Guide. The request object is passed into you routed function as the first argument.
+The Request object holds all the data about the request. It stores stuff like POST data, cookies and headers. For more in-depth information you can go to the `Request </How-To-Guides/The-Request-Object.rst>`_ How-To Guide. The ``Request`` object is passed into you routed function as the first argument.
 
 To access the method of the request use the ``method`` attribute. To access form data you can use the ``POST`` attribute.
 
@@ -331,7 +330,7 @@ For more information you can go to `The Request Object </How-To-Guides/The-Reque
 ------------
 File Uploads
 ------------
-You can access file uploads with the ``FILES`` attribute. The uploaded files are stored in memory. each uploaded file is a ``File`` object. You can access the data of the file with the ``data`` attribute. The data of the files are stored in bytes.
+You can access file uploads with the ``FILES`` attribute. The uploaded files are stored in memory. Each uploaded file is a ``File`` object. You can access the data of the file with the ``data`` attribute. The data of the files are stored in bytes.
 
 .. code-block:: python
 
@@ -351,7 +350,7 @@ For more information you can go to `Uploaded Files </How-To-Guides/Uploaded-File
 	    
 Cookies
 .......
-To access cookies from a request you can use the ``cookies`` attribute. Each cookie is a ``Cookie`` object so to access the value use the ``value`` attribute. To set a cookie you can use the ``setCookie()`` method of response objects. You can remove a cookie from a response with ``deleteCookie()``.
+To access cookies from a request you can use the ``COOKIES`` attribute. Each cookie is a ``Cookie`` object so to access the value use the ``value`` attribute. To set a cookie you can use the ``setCookie()`` method of response objects. You can remove a cookie from a response with ``deleteCookie()``.
 
 Getting Cookies:
 
@@ -393,7 +392,7 @@ For more information you can go to `Cookies </How-To-Guides/Cookies.rst>`_.
 	    
 Adding Middleware
 .................
-To add middleware to your project you can add a argument to your WaffleProject object in your ``project.py``.
+To add middleware to your project, you can add a argument to your ``WaffleProject`` object in your ``project.py`` file.
 
 ``project.py:``
 
