@@ -180,7 +180,7 @@ If you only want to allow certain HTTP methods to access your page you can add a
 	        return doFormStuff(request.POST)
 	    return HTTPResponse(request, 'form')
 		
-By default Waffleweb only allows GET, HEAD and OPTIONS requests. If you have 'GET' in your methods Waffleweb automatically handles the HEAD and OPTIONS methods.
+By default Waffleweb allows all HTTP methods. If you have 'GET' in your methods Waffleweb automatically handles the HEAD and OPTIONS methods.
 
 Static files
 ............

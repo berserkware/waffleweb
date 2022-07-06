@@ -106,7 +106,7 @@ class RequestHandler:
     def _getArg(self, index, part) -> tuple:
         '''
         Gets the kwargs and converts them to their type.
-        returns a tuple with the name and type
+        returns a tuple with the name and value
         '''
         kwargName = ''
         kwargValue = None

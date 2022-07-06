@@ -14,7 +14,7 @@ Dependencies
 Installing Waffleweb
 ....................
 
-Waffleweb can be installed with pip.
+Waffleweb can be installed with `pip <https://pip.pypa.io/en/stable/>`__.
 
 .. code-block:: bash
 

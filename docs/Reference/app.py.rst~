@@ -13,7 +13,7 @@ The WaffleApp object is what you attach your views and app specific middleware t
  - **middleware** (``list[str]``) - A list of your app's middleware. All the middleware are strings with the module and middleware class. Example: 'testModule.Middleware' or 'middleware.testModule.Middleware'.
 
 ---------------------------------------------------------------------------------------------------------------
-``route(path='/', name=None, methods=['GET'])``
+``route(path='/', name=None, methods=['OPTIONS', 'GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'TRACE', 'CONNECT'])``
 ---------------------------------------------------------------------------------------------------------------
 
 A decorator to route a function to an URL.

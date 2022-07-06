@@ -54,7 +54,7 @@ class WaffleApp():
         self.views = []
         self.errorHandlers = []
 
-    def route(self, path='/', name=None, methods=['OPTIONS', 'GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'TRACE', 'CONNECT']):
+    def route(self, path='/', name=None, methods=['GET']):
         '''
         This is the decorator you put on all your views it gives your view a URL and a name.
         It takes two arguments path and name. The path argument is the relative URL to your 
