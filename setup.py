@@ -13,6 +13,7 @@ setup(
   long_description_content_type="text/markdown",
   author = 'Caleb Mckay',
   author_email = 'bersekware@gmail.com',
+  keywords=['framework', 'web', 'wsgi', 'waffleweb', 'web-framework'],
   classifiers=[
     'Intended Audience :: Developers',
     'License :: OSI Approved :: MIT License',
