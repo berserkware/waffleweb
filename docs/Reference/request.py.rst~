@@ -69,16 +69,15 @@ Returns the HTTP version of the request.
 
 **Returns:** ``str``
 
-===========================================================================
-``class waffleweb.request.RequestHandler(request, debug=False, apps=None)``
-===========================================================================
+================================================================
+``class waffleweb.request.RequestHandler(request, debug=False)``
+================================================================
 
 A handler for requests to find the views and responses.
 
 **Parameters:**
  - **request** (``Request``) - The Request to use to find the response.
- - **debug** (``bool``) - If debug mode is on.
- - **apps** (``list``) - If you want to add your own apps instead of using waffleweb.defaults.APPS.
+ - **debug** (``bool``) - If debug mode is on..
  
 ------------------------
 ``_getArg(index, part)``

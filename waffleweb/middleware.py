@@ -5,9 +5,12 @@ from waffleweb.request import Request, RequestHandler
 from waffleweb.exceptions import MiddlewareNotFoundError, MiddlewareImportError
 
 class MiddlewareHandler():
-    def __init__(self, middleware: list[str]):
+    def __init__(self, middleware: list[str], apps=None):
         self.middleware = {}
-        self.apps = waffleweb.defaults.APPS
+        if apps is None:
+            self.apps = waffleweb.defaults.APPS
+        else:
+            self.apps = apps
         #Gets the global middleware
         self.middleware['global'] = self.loadMiddleware(middleware)
 

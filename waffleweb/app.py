@@ -1,7 +1,8 @@
 import re
 
 from waffleweb.middleware import MiddlewareHandler
-from waffleweb.request import Request
+from waffleweb.request import Request,RequestHandler
+from waffleweb.response import HTTP404
 
 class View:
     '''A view.'''
@@ -134,3 +135,32 @@ class WaffleApp():
                 
             return wrapper
         return decorator
+        
+    def request(self, rawRequest: bytes):
+        '''Sends a request to any of the views.'''
+        apps = [{
+            'module': __name__,
+            'app': self
+            }]
+        request = Request(rawRequest, '127.0.0.1')
+        handler = RequestHandler(request, debug=False, apps=apps)
+        
+        middlewareHandler = MiddlewareHandler(self.middleware, apps)
+        
+        view = None
+        try:
+            #Run middleware on Request
+            view = handler.getView()[0]
+            request = middlewareHandler.runRequestMiddleware(request, view)
+            handler.request = request
+        except HTTP404:
+            pass
+        
+        #gets the response
+        response = handler.getResponse()
+
+        if view is not None:
+            #Run middleware on response
+            response = middlewareHandler.runResponseMiddleware(response, view)
+            
+        return response

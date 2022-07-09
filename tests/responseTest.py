@@ -1,6 +1,6 @@
 import unittest
 
-import requests
+from waffleweb.app import WaffleApp
 
 from waffleweb.request import Request
 import waffleweb.response as responses
@@ -114,5 +114,12 @@ class FileResponseTest(unittest.TestCase):
 
 class HTTPResponseRedirectTest(unittest.TestCase):
     def test_redirect(self):
-        response = requests.get('http://localhost:8080/redirecternator')
-        self.assertEqual(response.content, b'<h1>Test</h1>')
+        app = WaffleApp('testApp')
+        
+        @app.route('redirecternator')
+        def redirectTest(request):
+            return responses.HTTPResponseRedirect('/page')
+            
+        res = app.request(b'GET /redirecternator HTTP/1.1\r\n\r\n')
+        
+        self.assertEqual(res.headers['Location'], '/page')

@@ -1,7 +1,7 @@
 import unittest
-import requests
 
 from waffleweb import WaffleApp
+from waffleweb.response import HTTPResponse
 
 class BasicRouteTest(unittest.TestCase):
     def test_pathInvalidRelitiveURL(self):
@@ -54,5 +54,63 @@ class BasicRouteTest(unittest.TestCase):
             index(request=None)
     
     def test_arguments(self):
-        response = requests.get('http://localhost:8080/math/add/12/12').json()
-        self.assertEqual(response, {'answer':24})
+        app = WaffleApp('test')
+        
+        @app.route('/article/<name:str>')
+        def article(request, name):
+            return HTTPResponse(request, f"{name}")
+            
+        res = app.request(b'GET /article/test HTTP/1.1\r\n\r\n')
+        self.assertEqual(res.content, b'test')
+        
+class requestTest(unittest.TestCase):
+    def test_basic(self):
+        app = WaffleApp('test')
+        
+        @app.route('/index')
+        def index(request):
+            return HTTPResponse(request, 'index')
+            
+        res = app.request(b'GET /index HTTP/1.1\r\n\r\n')
+        self.assertEqual(res.content, b'index')
+        
+    def test_withArgs(self):
+        app = WaffleApp('test')
+        
+        @app.route('/article/<name:str>')
+        def article(request, name):
+            return HTTPResponse(request, name)
+            
+        res = app.request(b'GET /article/test HTTP/1.1\r\n\r\n')
+        self.assertEqual(res.content, b'test')
+        
+    def test_withMiddleware(self):
+        app = WaffleApp('test', ['middleware.testMiddleware.TestMiddleware'])
+        
+        @app.route('/page')
+        def page(request):
+            return HTTPResponse(request, f'{request.META["middlewareHeader2"]}')
+            
+        res = app.request(b'GET /page HTTP/1.1\r\n\r\n')
+        self.assertEqual(res.content, b'value')
+        self.assertEqual(res.headers['middlewareHeader'], 'value')
+        
+    def test_404(self):
+        app = WaffleApp('test')
+        
+        @app.route('/page')
+        def page(request):
+            return HTTPResponse(request, 'page')
+            
+        res = app.request(b'GET /existnt HTTP/1.1\r\n\r\n')
+        self.assertEqual(res.statusCode, 404)
+        
+    def test_errorHandler(self):
+        app = WaffleApp('test')
+        
+        @app.errorHandler(404)
+        def handler(request):
+            return HTTPResponse(request, '404')
+            
+        res = app.request(b'GET /existnt HTTP/1.1\r\n\r\n')
+        self.assertEqual(res.content, b'404')

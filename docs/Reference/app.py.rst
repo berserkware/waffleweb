@@ -31,3 +31,28 @@ A decorator to route a function to a certain error code. Whenever you return a r
 
 **Parameters:**
  - **statusCode** (``int``) - The status code to route the function to.
+
+-----------------------
+``request(rawRequest)``
+-----------------------
+
+Sends a request to any of the views. It's main use is for the testing of waffleweb. It goes through the normal process that the requests takes when going through the server, except it doesn't go through a server.
+
+**Parameters:**
+ - **rawRequest** (``bytes``) - A byte request.
+ 
+**Returns:** Response
+ 
+**Usage:**
+
+.. code-block:: python
+
+	from waffleweb import WaffleApp
+	
+	app = WaffleApp('appName')
+	
+	@app.route('/')
+	def index(request):
+	    return HTTPResponse(request, 'index')
+	    
+	res = app.request(b'GET /index HTTP/1.1\r\nHeader-Name: value\r\n\r\n')

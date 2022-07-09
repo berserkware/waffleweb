@@ -98,9 +98,12 @@ class Request:
 
 class RequestHandler:
     '''Handles a requests.'''
-    def __init__(self, request: Request, debug=False):
+    def __init__(self, request: Request, debug=False, apps=None):
         self.request = request
-        self.apps = waffleweb.defaults.APPS
+        if apps is None:
+            self.apps = waffleweb.defaults.APPS
+        else:
+            self.apps = apps
         self.debug = debug
 
     def _getArg(self, index, part) -> tuple:
@@ -237,8 +240,15 @@ class RequestHandler:
             res = HTTPResponse(status=204) 
             res.headers['Allow'] = methods
             return res
-
-        methods = ', '.join(view.allowedMethods)
+        
+        allowedMethods = view.allowedMethods.copy()
+        if 'GET' in allowedMethods:
+            if 'HEAD' not in allowedMethods:
+                allowedMethods.append('HEAD')
+            if 'OPTIONS' not in allowedMethods:
+                allowedMethods.append('OPTIONS')
+        
+        methods = ', '.join(allowedMethods)
         res = HTTPResponse(status=204) 
         res.headers['Allow'] = methods
         return res

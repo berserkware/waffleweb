@@ -27,14 +27,14 @@ class ParsePostTest(unittest.TestCase):
 
 class ParseBodyTest(unittest.TestCase):
     def test_bodyDataSpaces(self):
-        req = b'POST / HTTP/1.1\r\nContent-Type: text/plain\r\nUser-Agent: PostmanRuntime/7.29.0\r\nAccept: */*\r\nHost: localhost:8080\r\nAccept-Encoding: gzip, deflate, br\r\nConnection: keep-alive\r\nContent-Length: 102\r\n\r\nthis is some test body data for the body test becuase a book i read told me i should write more tests.'
+        req = b'POST / HTTP/1.1\r\nContent-Type: text/plain\r\nContent-Length: 102\r\n\r\nthis is some test body data for the body test becuase a book i read told me i should write more tests.'
         body = parseBody(req)
         self.assertEqual(b'\nthis is some test body data for the body test becuase a book i read told me i should write more tests.', body)
         
     def test_bodyDataNoSpaces(self):
-        req = b'POST / HTTP/1.1\r\nContent-Type: text/plain\r\nUser-Agent: PostmanRuntime/7.29.0\r\nAccept: */*\r\nHost: localhost:8080\r\nAccept-Encoding: gzip, deflate, br\r\nConnection: keep-alive\r\nContent-Length: 17\r\n\r\nmewhengettestdata'
+        req = b'POST / HTTP/1.1\r\nContent-Type: text/plain\r\nContent-Length: 17\r\n\r\ntest data'
         body = parseBody(req)
-        self.assertEqual(body, b'\nmewhengettestdata')
+        self.assertEqual(body, b'\ntest data')
 
 class ParseHeadersTest(unittest.TestCase):
     def test_headersData(self):

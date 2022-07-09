@@ -2,15 +2,14 @@
 middleware.py
 =============
 
-=======================================================================
-``class waffleweb.middleware.MiddlewareHandler(middleware, apps=None)``
-=======================================================================
+============================================================
+``class waffleweb.middleware.MiddlewareHandler(middleware)``
+============================================================
 
 A handler of middleware. Middleware gets ran on the request before your view receives it and on the response before it is sent.
 
 **Parameters:**
  - **middleware** (``list[str]``) - A list of all your middleware. You need to format the middleware strings as so: 'module.MiddlewareClass'.
- - **apps** (``list``) - If you want to add your own apps instead of using waffleweb.defaults.APPS.
  
 ------------------------------
 ``loadMiddleware(middleware)``

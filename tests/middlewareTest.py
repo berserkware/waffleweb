@@ -1,21 +1,25 @@
 import unittest
-import requests
 
-class ProjectMiddlewareTest(unittest.TestCase):
-    def test_before(self):
-        pass
-
-    def test_after(self):
-        with requests.session() as s:
-            res = s.get('http://localhost:8080/')
-            resCookies = s.cookies
-            self.assertEqual(resCookies.get_dict(), {'addedCookie': '32'})
+from waffleweb.app import WaffleApp
+from waffleweb.response import HTTPResponse
 
 class AppMiddlewareTest(unittest.TestCase):
     def test_beforeResponse(self):
-        res = requests.post('http://localhost:8080/testBefore/', data = {'test1': 'test2'})
+        app = WaffleApp('testApp', middleware=['middleware.appMiddletest.AppMiddletest'])
+        
+        @app.route('/testBefore', methods=['GET', 'POST'])
+        def testBefore(request):
+            return HTTPResponse(request, request.POST)
+            
+        res = app.request(b'POST /testBefore HTTP/1.1\r\nContent-Length: 25\r\nContent-Type: application/x-www-form-urlencoded\r\n\r\ntest1=test2')
         self.assertEqual(res.content, b'{}')
 
     def test_afterResponse(self):
-        res = requests.get('http://localhost:8080/')
+        app = WaffleApp('testApp', middleware=['middleware.appMiddletest.AppMiddletest'])
+        
+        @app.route('/')
+        def testAfter(request):
+            return HTTPResponse(request, 'not middlewared')
+            
+        res = app.request(b'GET / HTTP/1.1\r\n\r\n')
         self.assertEqual(res.content, b'middlewareified')
