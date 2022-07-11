@@ -99,12 +99,12 @@ class WaffleApp():
                                 raise AttributeError('Your URL arguments have to have a name and a type')
 
                             if argList[1] not in ['int', 'str', 'float']:
-                                raise AttributeError('Your URL argument type has to be a integer, string or float')
+                                raise AttributeError('Your URL argument type has to be a int, str or float')
                             
                             splitPathWithArgs.append(argList)
                         else:
                             splitPathWithArgs.append(part)
-
+                
                 #adds function to view registry
                 self.views.append(
                     View(
@@ -127,6 +127,16 @@ class WaffleApp():
         
     def errorHandler(self, statusCode: int):
         def decorator(view):
+            #Checks if status code is valid.
+            if statusCode is not None:
+                try:
+                    self.statusCode = int(statusCode)
+                except(ValueError, TypeError):
+                    raise TypeError('HTTP status code has to be an integer.')
+
+                if 100 > statusCode or statusCode > 599:
+                    raise ValueError('HTTP status code must be a integer from 100 to 599.')
+                    
             self.errorHandlers.append(
                 ErrorHandler(statusCode, view, self)
             )

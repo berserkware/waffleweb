@@ -2,7 +2,7 @@
 How-To: Cookies
 ===============
 
-Cookies are very useful for a variety of purposes. Some purposes include analytic and tracking logins. Waffleweb makes it easy to set cookies and access cookies.
+Cookies are very useful for a variety of purposes. Some purposes include analytics and tracking logins. Waffleweb makes it easy to set cookies and access cookies.
 
 Accessing Cookies
 .................

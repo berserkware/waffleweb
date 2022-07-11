@@ -14,6 +14,7 @@ To contribute to Waffleweb all you need to do fork the repo and change what you 
 
 # Links
  - Documentation- N/A
+ - Changes - https://waffleweb.site/changes
  - Source Code - https://github.com/Berserkware/waffleweb
  - Website - https://waffleweb.site
  - Discord - https://discord.gg/U6HjwhkcGr

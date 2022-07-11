@@ -2,7 +2,7 @@
 How-To: Static Files
 ====================
 
-All good websites need static files like images, fonts and CSS. In this How-To guide you will be guided through how to access and use static files. You will also be shown how to modify certain things like changing how Waffleweb looks for static files.
+All good websites need static files like images, fonts and CSS. In this How-To guide you will be guided through how to access and use static files. You will also be shown how to modify certain things, like changing how Waffleweb looks for static files.
 
 Adding Static Files
 ...................

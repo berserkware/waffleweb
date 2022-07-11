@@ -63,6 +63,33 @@ class BasicRouteTest(unittest.TestCase):
         res = app.request(b'GET /article/test HTTP/1.1\r\n\r\n')
         self.assertEqual(res.content, b'test')
         
+class ErrorHandlerTest(unittest.TestCase):
+    def test_statusTooBig(self):
+        with self.assertRaises(ValueError):
+            app = WaffleApp('test')
+            
+            @app.errorHandler(700)
+            def handler(request):
+                return HTTPResponse(request, '700')
+            
+    def test_statusTooSmall(self):
+        with self.assertRaises(ValueError):
+            app = WaffleApp('test')
+            
+            @app.errorHandler(50)
+            def handler(request):
+                return HTTPResponse(request, '50')
+                
+    def test_statusJustRight(self):
+        try:
+            app = WaffleApp('test')
+            
+            @app.errorHandler(404)
+            def handler(request):
+                return HTTPResponse(request, '404')
+        except ValueError:
+            self.fail('A ValueError was raised.')
+        
 class requestTest(unittest.TestCase):
     def test_basic(self):
         app = WaffleApp('test')

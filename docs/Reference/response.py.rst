@@ -174,7 +174,7 @@ A redirect, status code is 302.
 
 Inherits from ``HTTPResponseRedirectBase``
 
-A permanent redirect, status code is 308.
+A permanent redirect, status code is 301.
 
 =======================================================================================================================
 ``function waffleweb.response.render(request=None, filePath=None, context={}, charset=None, status=None, reason=None)``

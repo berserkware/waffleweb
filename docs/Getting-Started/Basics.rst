@@ -145,6 +145,8 @@ int      converts the variable to a int
 float    converts the variable to a float      
 =======  ================================
 
+Please note that you cannot have a float variable as the last part of your URL. This is because the decimal part of the float will be identified as a file extension.
+
 -----------------
 Redirect behavior
 -----------------
@@ -334,7 +336,8 @@ You can access file uploads with the ``FILES`` attribute. The uploaded files are
 
 .. code-block:: python
 
-	from waffleweb.response import HTTPResponse
+	from waffleweb.response import render
+	from waffleweb.static import openStatic
 
 	@yourApp.route('/upload/', methods=['GET', 'POST'])
 	def form(request):

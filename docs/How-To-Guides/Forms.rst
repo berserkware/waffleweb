@@ -17,7 +17,7 @@ The form we are going to make is to get data and save it to a json file. To crea
 
 	@yourApp.route('/form')
 	def form(request):
-		  return render(request, 'form.html')
+	    return render(request, 'form.html')
 		  
 ``form.html:``
 
@@ -32,7 +32,7 @@ The form we are going to make is to get data and save it to a json file. To crea
 	    <button type="submit">Submit</button>
 	</form>
 	
-Now we need to add logic to our route. We also need to create a folder called 'static' with a file called 'data.json'. For the the logic to work we need add boilerplate data to the file.
+Now we need to add logic to our route. We also need to create a folder called 'static' with a file called 'data.json'. For the the logic to work we need add some boilerplate data to the file.
 
 ``data.json:``
 

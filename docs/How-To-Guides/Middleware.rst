@@ -2,7 +2,7 @@
 How-To: Middleware
 ==================
 
-Middleware is code that modifies the request before going into your code and the response after coming out of your route function. Waffleweb allows you to add middleware to your apps and project easily.
+Middleware is code that modifies the request before going into your code, and the response after coming out of your route function. Waffleweb allows you to add middleware to your apps and project easily.
 
 Adding Middleware
 ..................

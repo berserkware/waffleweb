@@ -217,7 +217,7 @@ class HTTPResponseRedirect(HTTPResponseRedirectBase):
 
 class HTTPResponsePermenentRedirect(HTTPResponseRedirectBase):
     '''A Http response permanent redirect, takes one argument: redirectTo'''
-    statusCode = 308
+    statusCode = 301
 
 def render(request=None, filePath: str=None, context: dict={}, charset=None, status=None, reason=None):
     '''

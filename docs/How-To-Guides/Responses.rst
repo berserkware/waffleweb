@@ -10,7 +10,7 @@ Responses
 **HTTPResponse**
 -----------------
 
-The ``HTTPResponse`` is the most basic of all the responses. It is just a basic response for text. The first argument is the request passed into your routed function. The second argument is the content of the response. The Date and Content-Length headers are automatically added.
+The ``HTTPResponse`` is the most basic of all the responses. It is just a basic response for text. The first argument is the request passed into your routed function. The second argument is the content of the response. The Date and Content-Length headers are automatically added to the response.
 
 .. code-block:: python
 

@@ -87,10 +87,11 @@ class WaffleProject():
         #Checks if port is valid
         try:
             port = int(port)
-            if 1 > port or port > 65535:
-                raise ValueError('port has to be more 1 and less that 65536!')
-        except:
+        except ValueError:
             raise TypeError('port has to be a int!')
+            
+        if 1 > port or port > 65535:
+            raise ValueError('port has to be more 1 and less that 65536!')
 
         #Starts the test server socket
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:

@@ -20,7 +20,7 @@ To get the method of request you can use the ``method`` attribute.
 Accessing headers
 .................
 
-The headers of the request is stored in a ``dict`` in the ``META`` attribute. It is recommended to use ``get()`` to get the POST data as the client might not the send the right headers.
+The headers of the request is stored in a ``dict`` in the ``META`` attribute. It is recommended to use ``get()`` to get the POST data as the client might not the send the expected headers.
 
 .. code-block:: python 
 
@@ -38,7 +38,7 @@ The headers of the request is stored in a ``dict`` in the ``META`` attribute. It
 Accessing POST data
 ...................
 
-The POST data of the request is stored in a ``dict`` in the ``POST`` attribute. It is recommended to use ``get()`` to get the POST data as the client might not the send the right POST data.
+The POST data of the request is stored in a ``dict`` in the ``POST`` attribute. It is recommended to use ``get()`` to get the POST data as the client might not the send the expected POST data.
 
 .. code-block:: python
 
@@ -70,7 +70,7 @@ The file uploads of the request is stored in a ``dict`` in the ``FILES`` attribu
 	                
 	    return render(request, 'upload.html')
 	    
-In a real life situation you should make sure the content or name is safe.
+In a real life situation you should make sure the content or name is clean.
 
 For more information you can go to `Uploaded Files <Uploaded-Files.rst>`_. 
 
@@ -92,12 +92,12 @@ URL parameters are the '?paramName=value' at the end of the URL. URL parameters 
 	    results = getResults(term)
 	    return render(request, 'searchResults.html', {'results': results})
 	    
-As this is just an example it does not clean the data but in a real life scenario you should clean the data.
+As this is just an example it does not clean the data, but in a real life scenario you should clean the data.
 
 Accessing cookies
 .................
 
-Cookies are very useful for many reasons such as identifying users. Cookies are stored in a ``dict`` as ``Cookie`` objects in the ``COOKIES`` attribute. Once again it is recommended to use ``get()`` to get the parameters data as the client might not the send the correct cookies. You can access the value of the cookie with the ``value`` attribute.
+Cookies are very useful for many reasons, such as identifying users. Cookies are stored in a ``dict`` as ``Cookie`` objects in the ``COOKIES`` attribute. Once again it is recommended to use ``get()`` to get the parameters data, as the client might not the send the correct cookies. You can access the value of the cookie with the ``value`` attribute.
 
 .. code-block:: python
 
