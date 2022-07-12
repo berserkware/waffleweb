@@ -4,7 +4,7 @@ with open('README.md', 'r') as f:
   long_description = f.read()
 
 setup(
-  name = 'waffleweb',
+  name = 'Waffleweb',
   packages = ['waffleweb'],
   version = '0.1a1',
   license='MIT',
