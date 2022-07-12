@@ -40,4 +40,4 @@ Contents
     | 3.11. `files.py <Internals/files.py.rst>`_
     | 3.12. `parser.py <Internals/parser.py.rst>`_ 
     | 3.13. `errorResponses.py <Internals/errorResponses.py.rst>`_
-    | 3.14. `Testing Waffleweb <Internals/Testing-Waffleweb.rst>`_
+    | 3.14. `Testing Waffleweb <Testing-Waffleweb.rst>`_

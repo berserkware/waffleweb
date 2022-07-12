@@ -1,12 +1,12 @@
-=============
-API Reference
-=============
+=========
+Internals
+=========
 
 This part of the documentation cover the code and internals of Waffleweb.
 
-
+========
 Contents
-........
+========
 1. `project.py <project.py.rst>`_
 2. `app.py <app.py.rst>`_
 3. `response.py <response.py.rst>`_
@@ -20,3 +20,4 @@ Contents
 11. `files.py <files.py.rst>`_
 12. `parser.py <parser.py.rst>`_
 13. `errorResponses.py <errorResponses.py.rst>`_
+14. `Testing Waffleweb <Testing-Waffleweb.rst>`_
