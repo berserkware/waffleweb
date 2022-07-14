@@ -19,7 +19,7 @@ The base for the responses.
  - **reason** (optional) (``str``) - The reason phrase of the response.
  
 **Important attributes:**
- - **headers** (`MultiValueOneKeyDict <datatypes.py.rst>`_) - A MultiValueOneKeyDict of all your headers.
+ - **headers** (`MultiValueOneKeyDict <datatypes.py.html>`_) - A MultiValueOneKeyDict of all your headers.
  - **statusCode** (``int``) - The status code of the response.
  - **charset** (``str``) - The charset of the response.
 

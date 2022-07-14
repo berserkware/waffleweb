@@ -40,7 +40,7 @@ To change the content type of the response you can use the ``contentType`` argum
 	def text(request):
 	    return HTTPResponse(request, 'Some text', contentType='text/plain')
 	    
-You can add headers with the ``headers`` attribute. The headers are stored in a `MultiValueOneKeyDict </Reference/datatypes.py.rst>`_. For more advanced usage go to there.
+You can add headers with the ``headers`` attribute. The headers are stored in a `MultiValueOneKeyDict </Reference/datatypes.py.html>`_. For more advanced usage go to there.
 	    
 .. code-block:: python
 
@@ -53,7 +53,7 @@ You can add headers with the ``headers`` attribute. The headers are stored in a 
 	    res.headers['otherHeader'] = ['value1', 'value2']
 	    return res
 	    
-To add cookies you can use the ``setCookie()`` method. The path of the cookies are automatically set to the path of your route. For more information you can go to `Cookies <Cookies.rst>`_. You can delete a cookie from a response just as easily with the ``deleteCookie()`` method. If the cookie cannot be found it will raise a ``ValueError``.
+To add cookies you can use the ``setCookie()`` method. The path of the cookies are automatically set to the path of your route. For more information you can go to `Cookies <Cookies.html>`_. You can delete a cookie from a response just as easily with the ``deleteCookie()`` method. If the cookie cannot be found it will raise a ``ValueError``.
 
 .. code-block:: python
 
@@ -96,7 +96,7 @@ As it inherites from the ``HTTPResponse`` class you can do most of the same thin
 	     with openStatic('testFile.jpeg') as f:
 	         return FileResponse(request, f)
 	         
-``openStatic()`` looks in your ``STATIC_DIR`` directory for files and its mode is set to 'rb'. To learn more about static functions you can go to `Static Files <Static-Files.rst>`_. If you want to use the normal ``open()`` function, just set the ``mode`` argument to 'rb'
+``openStatic()`` looks in your ``STATIC_DIR`` directory for files and its mode is set to 'rb'. To learn more about static functions you can go to `Static Files <Static-Files.html>`_. If you want to use the normal ``open()`` function, just set the ``mode`` argument to 'rb'
 
 **render()**
 ------------
@@ -111,7 +111,7 @@ As it inherites from the ``HTTPResponse`` class you can do most of the same thin
 	def template(request):
 	    return render(request, 'template.html', {'var1': '1234'})
 	    
-To learn more about templating you can go to `Templating <Templating.rst>`_
+To learn more about templating you can go to `Templating <Templating.html>`_
 
 Redirects
 .........

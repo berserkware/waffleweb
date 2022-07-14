@@ -7,7 +7,7 @@ Cookies are very useful for a variety of purposes. Some purposes include analyti
 Accessing Cookies
 .................
 
-Sent cookies are stored in the COOKIES attribute of the request. The cookies are stored in a `Cookies <Reference/cookie.py.rst>`_ object. The `Cookies <Reference/cookie.py.rst>`_ object act just like a normal dictionary except it has some special ability used by Waffleweb internally. All the cookies are stored in `Cookie <Reference/cookie.py.rst>`_ Objects. To access the value of the cookies you can use the ``value`` attribute.
+Sent cookies are stored in the COOKIES attribute of the request. The cookies are stored in a `Cookies <Reference/cookie.py.html>`_ object. The `Cookies <Reference/cookie.py.html>`_ object act just like a normal dictionary except it has some special ability used by Waffleweb internally. All the cookies are stored in `Cookie <Reference/cookie.py.html>`_ Objects. To access the value of the cookies you can use the ``value`` attribute.
 
 .. code-block:: python
 

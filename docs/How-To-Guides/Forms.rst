@@ -100,4 +100,4 @@ If your are making a social media you will probably need to accept file uploads.
 		  
 All the files are stored in ``File`` objects. The data is stored in bytes in the ``data`` attribute. Because of this, to save the file you have to set the mode of ``openStatic()`` to 'wb'. The name of the file is stored in the ``name`` attribute.
 
-If your want to learn more about file uploads you can go to the `Uploaded Files <Uploaded-Files.rst>`_ How-To guide.
+If your want to learn more about file uploads you can go to the `Uploaded Files <Uploaded-Files.html>`_ How-To guide.
