@@ -4,7 +4,7 @@ Waffleweb is a WSGI Python web framework for making web applications easily. Waf
 # Installation 
 You can install Waffleweb with [pip](https://pip.pypa.io/en/stable/).
 ```
-pip install Waffleweb
+pip install waffleweb
 ```
 # Documentation
 You can find the documentation at https://waffleweb.readthedocs.io.
