@@ -286,7 +286,7 @@ Redirects to a page.
 	def nothing(request, name):
 	    return redirect(request, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', permanent=True)
       
-For more information you can go to `Responses </How-To-Guides/Responses.html>`_.
+For more information you can go to `Responses <../How-To-Guides/Responses.html>`_.
       
 Custom Error Pages
 ..................
