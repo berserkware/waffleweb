@@ -17,8 +17,11 @@ def findStatic(path, mode='rb', buffering=-1, encoding=None, errors=None, newlin
         staticDir = getattr(settings, 'STATIC_DIR').strip('/')
 
     file = path.strip('/')
-
-    path = Path(f'./{staticDir}/{file}').resolve()
+    
+    if file == '':
+        path = Path(f'./{file}').resolve()
+    else:
+        path = Path(f'./{staticDir}/{file}').resolve()
 
     return open(path, mode, buffering, encoding, errors, newline, closefd, opener)
 
