@@ -40,7 +40,7 @@ To change the content type of the response you can use the ``contentType`` argum
 	def text(request):
 	    return HTTPResponse(request, 'Some text', contentType='text/plain')
 	    
-You can add headers with the ``headers`` attribute. The headers are stored in a `MultiValueOneKeyDict </Reference/datatypes.py.html>`_. For more advanced usage go to there.
+You can add headers with the ``headers`` attribute. The headers are stored in a `MultiValueOneKeyDict <../Reference/datatypes.py.html>`_. For more advanced usage go to there.
 	    
 .. code-block:: python
 
