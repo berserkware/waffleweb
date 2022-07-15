@@ -211,7 +211,7 @@ To access a static file from your app you can use ``open()`` or ``openStatic()``
 	    with openStatic(f'/images/{imageName}.jpg') as f:
 	        return FileResponse(request, f)
 
-For more information you can go to `Static Files </How-To-Guides/Static-Files.html>`_.
+For more information you can go to `Static Files <../How-To-Guides/Static-Files.html>`_.
 
 Responses
 .........
@@ -300,7 +300,7 @@ To add custom error pages for status code you can use the ``errorhandler()`` dec
 	    
 You have to set the status code or it will automatically default to 200.
 
-For more information you can go to `Custom Error Pages </How-To-Guides/Custom-Error-Pages.html>`_.
+For more information you can go to `Custom Error Pages <../How-To-Guides/Custom-Error-Pages.html>`_.
 
 Accessing request data
 ......................
@@ -327,7 +327,7 @@ To access URL parameters for a request you can use the ``URL_PARAMS`` attribute.
 
 	request.URL_PARAMS.get('param1')
 	
-For more information you can go to `The Request Object </How-To-Guides/The-Request-Object.html>`_.
+For more information you can go to `The Request Object <../How-To-Guides/The-Request-Object.html>`_.
 	
 ------------
 File Uploads
@@ -349,7 +349,7 @@ You can access file uploads with the ``FILES`` attribute. The uploaded files are
 
 	    return render(request, 'upload.html')
 	    
-For more information you can go to `Uploaded Files </How-To-Guides/Uploaded-Files.html>`_.
+For more information you can go to `Uploaded Files <../How-To-Guides/Uploaded-Files.html>`_.
 	    
 Cookies
 .......
@@ -391,7 +391,7 @@ Removing Cookies from response:
 	    res.deleteCookie('cookieName')
 	    return res
 	    
-For more information you can go to `Cookies </How-To-Guides/Cookies.html>`_.
+For more information you can go to `Cookies <../How-To-Guides/Cookies.html>`_.
 	    
 Adding Middleware
 .................
@@ -409,4 +409,4 @@ To add middleware to your project, you can add a argument to your ``WaffleProjec
 	
 	yourProject = WaffleProject(apps, middleware=middleware)
 	
-For more information you can go to `Middleware </How-To-Guides/Middleware.html>`_.
+For more information you can go to `Middleware <../How-To-Guides/Middleware.html>`_.

@@ -43,7 +43,7 @@ This calls ``renderTemplate`` with the ``filePath`` and ``context`` and puts it 
  - ``request`` (``Request``) - The request passed into the routed function.
  - ``filePath`` (``str``) - The path to the template.
  - ``context`` (``dict``) - These are the variables for the template.
- - The other arguments can be found in the `template.py </Reference/template.py.html>`_ page.
+ - The other arguments can be found in the `template.py <../Reference/template.py.html>`_ page.
  
 .. code-block:: python
 
@@ -98,7 +98,7 @@ To learn more about creating template you can go the the Jinja `Docs <https://ji
 Functions in templates
 ----------------------
 
-Waffleweb has one built in template function: `getRelativeUrl() <Reference/template.py.html>`_.
+Waffleweb has one built in template function: `getRelativeUrl() <../Reference/template.py.html>`_.
 
 .. code-block:: Jinja
 

@@ -2,7 +2,7 @@
 How-To: The Request Object
 ==========================
 
-The ``Request`` object stores all the data of the request. It stores stuff like POST data, file uploads, cookies and headers. The ``Request`` object is passed into your view functions as the first argument. If you are looking for the API reference of the Request object you can go to the `request.py </Reference/request.py.html>`_ page.
+The ``Request`` object stores all the data of the request. It stores stuff like POST data, file uploads, cookies and headers. The ``Request`` object is passed into your view functions as the first argument. If you are looking for the API reference of the Request object you can go to the `request.py <../Reference/request.py.html>`_ page.
 
 To get the method of request you can use the ``method`` attribute.
 
