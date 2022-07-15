@@ -6,7 +6,7 @@ with open('README.md', 'r') as f:
 setup(
   name = 'waffleweb',
   packages = ['waffleweb'],
-  version = '0.1a1',
+  version = '0.1a2',
   license='MIT',
   description = 'A python library for making scalable websites easy',
   long_description=long_description,
