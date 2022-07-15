@@ -7,7 +7,7 @@ project = 'Waffleweb'
 copyright = '2022, Caleb Mckay'
 author = 'Caleb Mckay'
 
-version = '0.1a1'
+version = '0.1a2'
 
 # -- General configuration
 
