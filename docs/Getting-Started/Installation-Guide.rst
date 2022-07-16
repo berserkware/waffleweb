@@ -4,7 +4,7 @@ Installation
 Python Version
 ..............
 
-Waffleweb has only been tested in Python 3.9, so it is recommended that you use Python 3.9<=.
+Waffleweb has only been tested in Python 3.9, so it is recommended that you use Python 3.9>=.
 
 Dependencies
 ............
