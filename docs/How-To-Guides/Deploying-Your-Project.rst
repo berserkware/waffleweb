@@ -2,7 +2,7 @@
 How-To: Deploying Your Project
 ==============================
 
-Waffleweb allows you to deploy your project with WSGI. You should not use the server built into Waffleweb, this is because the test server doesn't have good security and it has a request size limitations. In this How-To guide you will be shown how to deploy your project with `Gunicorn <https://gunicorn.org/>`_. 
+Waffleweb allows you to deploy your application with WSGI. You should not use the server built into Waffleweb, this is because the test server doesn't have good security and it has a request size limitations. In this How-To guide you will be shown how to deploy your project with `Gunicorn <https://gunicorn.org/>`_. 
 
 Installing Gunicorn
 -------------------
@@ -20,7 +20,7 @@ The WSGI callable is a method of your WaffleProject called "wsgiApplication". Ma
 
 .. code-block:: python
 
-	wsgiApp = yourProject.wsgiApplication
+	wsgiApp = app.wsgiApplication
 	
 Connecting The Callable To Gunicorn
 -----------------------------------
@@ -29,7 +29,7 @@ Connecting the WSGI callable to Gunicorn is easy. Just go to your project direct
 
 .. code-block:: bash
 
-	$ gunicorn project:wsgiApp
+	$ gunicorn app:wsgiApp
 	
 In your terminal you should now see something like this:
 

@@ -1,7 +1,5 @@
-from waffleweb import WaffleApp
+from waffleweb import app
 from waffleweb.response import HTTPResponse
-
-app = WaffleApp('test')
 
 @app.route('/test/')
 def test(request):

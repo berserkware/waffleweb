@@ -13,7 +13,7 @@ Sent cookies are stored in the COOKIES attribute of the request. The cookies are
 
 	from waffleweb.response import render
 
-	@yourApp.route('/index', methods=['GET'])
+	@app.route('/index', methods=['GET'])
 	def index(request):
 	    cookie = request.COOKIES.get('cookie', None)
 	    if cookie is not None:
@@ -37,7 +37,7 @@ You can add cookies to the response with the ``setCookie()`` method. ``setCookie
 
 	from waffleweb.response import render
 
-	@yourApp.route('/index', methods=['GET'])
+	@app.route('/index', methods=['GET'])
 	def index(request):
 	    res = render(request, 'index.html')
 	    
@@ -58,7 +58,7 @@ If you add a cookie to a response and want to delete you can use the ``deleteCoo
 
 	from waffleweb.response import render
 
-	@yourApp.route('/index', methods=['GET'])
+	@app.route('/index', methods=['GET'])
 	def index(request):
 	    res = render(request, 'index.html')
 	    

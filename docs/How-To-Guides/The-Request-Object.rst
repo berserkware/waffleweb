@@ -10,7 +10,7 @@ To get the method of request you can use the ``method`` attribute.
 
 	from waffleweb.response import render
 
-	@yourApp.route('/upload', methods=['GET', 'POST'])
+	@app.route('/upload', methods=['GET', 'POST'])
 	def upload(request):
 	    if request.method == 'POST':
 	        return doUploadStuff(request)
@@ -26,7 +26,7 @@ The headers of the request is stored in a ``dict`` in the ``META`` attribute. It
 
 	from waffleweb.response import render
 
-	@yourApp.route('/page', methods=['GET'])
+	@app.route('/page', methods=['GET'])
 	def page(request):
 	    userAgent = request.META.get('USER_AGENT', None)
 	    if userAgent == 'agent':
@@ -44,7 +44,7 @@ The POST data of the request is stored in a ``dict`` in the ``POST`` attribute. 
 
 	from waffleweb.response import render
 
-	@yourApp.route('/form', methods=['GET', 'POST'])
+	@app.route('/form', methods=['GET', 'POST'])
 	def form(request):
 	    if request.method == 'POST':
 	        name = request.POST.get('name', 'john_doe')
@@ -60,7 +60,7 @@ The file uploads of the request is stored in a ``dict`` in the ``FILES`` attribu
 
 	from waffleweb.response import render
 
-	@yourApp.route('/upload', methods=['GET', 'POST'])
+	@app.route('/upload', methods=['GET', 'POST'])
 	def form(request):
 	    if request.method == 'POST':
 	        file = request.FILES.get('file', None)
@@ -83,7 +83,7 @@ URL parameters are the '?paramName=value' at the end of the URL. URL parameters 
 
 	from waffleweb.response import render
 
-	@yourApp.route('/search', methods=['GET'])
+	@app.route('/search', methods=['GET'])
 	def search(request):
 	    term = request.URL_PARAMS.get('term', None)
 	    if term is None:
@@ -103,7 +103,7 @@ Cookies are very useful for many reasons, such as identifying users. Cookies are
 
 	from waffleweb.response import render
 
-	@yourApp.route('/enter', methods=['GET'])
+	@app.route('/enter', methods=['GET'])
 	def enter(request):
 	    if 'name' in request.COOKIES.keys():
 	        if request.COOKIES['name'].value == 'john':

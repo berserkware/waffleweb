@@ -3,14 +3,14 @@ wsgi.py
 =======
 
 ======================================================================
-``class waffleweb.wsgi.WsgiHandler(environ, apps, middlewareHandler)``
+``class waffleweb.wsgi.WsgiHandler(environ, app, middlewareHandler)``
 ======================================================================
 
 Handles WSGI.
 
 **Parameters:**
  - **environ** (``dict``) - The environ with all the request data and stuff as outlined in PEP 3333.
- - **apps** (``list``) - All the apps of the project.
+ - **app** (``WaffleApp``) - The WaffleApp of your web application.
  - **middlewareHandler** (``MiddlewareHandler``) - The middleware handler for middleware.
 
 -----------------

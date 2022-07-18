@@ -1,16 +1,14 @@
 from waffleweb.response import HTTPResponse
 from waffleweb.template import renderErrorPage
 
-def badRequest(apps, debug):
+def badRequest(app, debug):
     if debug == False:
-        for app in apps:
-            app = app['app']
-            for handler in app.errorHandlers:
-                try:
-                    if handler.statusCode == 400:
-                        return bytes(handler.view())
-                except AttributeError:
-                    pass
+        for handler in app.errorHandlers:
+            try:
+                if handler.statusCode == 400:
+                    return bytes(handler.view())
+            except AttributeError:
+                pass
                 
         return bytes(HTTPResponse(content='400 Bad Request', status=400))
     else:

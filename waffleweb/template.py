@@ -9,43 +9,33 @@ except ModuleNotFoundError:
 from waffleweb.exceptions import AppNotFoundError, ViewNotFoundError
 from jinja2 import Environment, FileSystemLoader, ModuleLoader, select_autoescape
 
-def getRelativeUrl(viewStr: str, **kwargs):
-    if len(viewStr.split(':')) != 2:
-        raise ValueError('Your viewStr has to include an app and the view name, example: appName:viewName.')
-
-    appName, viewName = viewStr.split(':')
-    apps = waffleweb.defaults.APPS
+def getRelativeUrl(viewName: str, **kwargs):
+    app = waffleweb.app
     
-    for app in apps:
-        app = app['app']
-        
-        if app.appName == appName:
-            for view in app.views:
-                if view.name == viewName:
-                    if view.hasPathHasArgs() == False:
-                        return f'{view.unstripedPath}'
+    for view in app.views:
+        if view.name == viewName:
+            if view.hasPathHasArgs() == False:
+                return f'{view.unstripedPath}'
+            else:
+                finalPath = []
+                
+                for part in view.splitPath:
+                    if type(part) == list:
+                        argName = part[0]
+                        try:
+                            finalPath.append(kwargs[argName])
+                        except KeyError:
+                            raise KeyError(f'Value for arg \"{argName}\" not found in kwargs.')
                     else:
-                        finalPath = []
+                        finalPath.append(part)
+                    
+                if view.unstripedPath.endswith('/'):
+                    return f'/{"/".join(finalPath)}/'
+                else:
+                    return f'/{"/".join(finalPath)}'
                         
-                        for part in view.splitPath:
-                            if type(part) == list:
-                                argName = part[0]
-                                try:
-                                    finalPath.append(kwargs[argName])
-                                except KeyError:
-                                    raise KeyError(f'Value for arg \"{argName}\" not found in kwargs.')
-                            else:
-                                finalPath.append(part)
-                            
-                        if view.unstripedPath.endswith('/'):
-                            return f'/{"/".join(finalPath)}/'
-                        else:
-                            return f'/{"/".join(finalPath)}'
-                                
-            #if cant find view, raise error
-            raise ViewNotFoundError(f'View {viewName} could not be found.')
-    #if cant find app, raise error
-    raise AppNotFoundError(f'App {appName} could not be found.')
+    #if cant find view, raise error
+    raise ViewNotFoundError(f'View {viewName} could not be found.')
 
 def _getEnvironmentFile() -> Environment:
     '''Gets a jinja Enviroment with the loader being FileSystemLoader.'''

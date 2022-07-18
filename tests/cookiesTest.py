@@ -7,7 +7,7 @@ from waffleweb.cookie import Cookies
 
 class basicCookieTest(unittest.TestCase):
     def test_cookie(self):
-        app = WaffleApp('testApp')
+        app = WaffleApp()
         
         @app.route('/cookieTest')
         def cookieTest(request):

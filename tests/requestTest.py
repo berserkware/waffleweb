@@ -1,9 +1,9 @@
-from waffleweb.project import WaffleProject
 from waffleweb.request import Request, RequestHandler
 
 import unittest
 
 from waffleweb.response import HTTP404
+from waffleweb.datatypes import MultiValueOneKeyDict
 
 testRequest = Request(b"""GET / HTTP/1.1
                         Host: localhost:8080
@@ -38,14 +38,14 @@ class RequestTest(unittest.TestCase):
 
     def test_META(self):
         self.assertEqual(self.request.META,
-            {
+            MultiValueOneKeyDict({
                 'USER_AGENT': 'PostmanRuntime/7.29.0',
                 'ACCEPT': '*/*',
                 'ACCEPT_ENCODING': 'gzip, deflate, br',
                 'CONNECTION': 'keep-alive',
                 'COOKIE': 'addedCookie=32',
                 'HOST': 'localhost:8080'
-            }
+            })
         )
 
     def test_IP(self):

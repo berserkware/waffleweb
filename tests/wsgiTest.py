@@ -2,8 +2,9 @@ from re import A
 import unittest
 from datetime import datetime
 from pytz import timezone
+from waffleweb.app import WaffleApp
 
-from waffleweb.middleware import MiddlewareHandler
+from waffleweb.middleware import Middleware, MiddlewareHandler
 from waffleweb.response import HTTPResponse
 from waffleweb.wsgi import WsgiHandler
 
@@ -18,8 +19,9 @@ class WsgiHandlerTest(unittest.TestCase):
             'HTTP_CONNECTION': 'keep-alive', 'HTTP_UPGRADE_INSECURE_REQUESTS': '1', 'HTTP_SEC_FETCH_DEST': 'document',
             'HTTP_SEC_FETCH_MODE': 'navigate', 'HTTP_SEC_FETCH_SITE': 'none', 
             'HTTP_SEC_FETCH_USER': '?1', 'REMOTE_ADDR': '127.0.0.1', 'REMOTE_PORT': '47636', 'SERVER_NAME': '127.0.0.1', 
-            'SERVER_PORT': '8000', 'PATH_INFO': '/', 'SCRIPT_NAME': ''}        
-            self.wsgiHandler = WsgiHandler(testEnviron, apps=[], middlewareHandler=MiddlewareHandler([]))
+            'SERVER_PORT': '8000', 'PATH_INFO': '/', 'SCRIPT_NAME': ''}      
+            app = WaffleApp()  
+            self.wsgiHandler = WsgiHandler(testEnviron, app, middlewareHandler=MiddlewareHandler(Middleware()))
             testResponse = HTTPResponse(content='Test Content')
             testResponse.setCookie('testCookie', 'testValue')
             self.wsgiHandler.response = testResponse

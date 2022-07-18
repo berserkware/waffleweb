@@ -15,7 +15,7 @@ The form we are going to make is to get data and save it to a json file. To crea
 
 	from waffleweb.response import render
 
-	@yourApp.route('/form')
+	@app.route('/form')
 	def form(request):
 	    return render(request, 'form.html')
 		  
@@ -49,7 +49,7 @@ Now we need to add logic to our route. We also need to create a folder called 's
 	from waffleweb.static import openStatic
 	from waffleweb.response import render
 
-	@yourApp.route('/form', methods=['GET', 'POST'])
+	@app.route('/form', methods=['GET', 'POST'])
 	def form(request):
 	    if request.method == 'POST':
 	        name = bleach.clean(request.POST.get('username', 'N/A'))
@@ -90,7 +90,7 @@ If your are making a social media you will probably need to accept file uploads.
 	from waffleweb.static import openStatic
 	from waffleweb.response import render
 
-	@yourApp.route('/upload', methods=['GET', 'POST'])
+	@app.route('/upload', methods=['GET', 'POST'])
 	def upload(request):
 	    if request.method == 'POST':
 	        file = request.FILES['file']

@@ -14,7 +14,7 @@ The data of files are stored in bytes so to save the file you will need to set t
 	from waffleweb.response import render
 	import bleach
 
-	@yourApp.route('/upload', methods=['GET', 'POST'])
+	@app.route('/upload', methods=['GET', 'POST'])
 	def upload(request):
 	    if request.method == 'POST':
 	        file = request.FILES.get('file', None)

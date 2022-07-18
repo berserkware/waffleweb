@@ -5,7 +5,7 @@ from waffleweb.response import HTTPResponse
 
 class BasicRouteTest(unittest.TestCase):
     def test_pathInvalidRelitiveURL(self):
-        app = WaffleApp('test')
+        app = WaffleApp()
 
         with self.assertRaises(ValueError):
             @app.route('www.google.com', 'index')
@@ -15,7 +15,8 @@ class BasicRouteTest(unittest.TestCase):
             index()
     
     def test_pathValidRelitiveURL(self):
-        app = WaffleApp('test')
+        app = WaffleApp()
+        
         try:
             @app.route('/home/index', 'index')
             def index(request=None):
@@ -26,7 +27,7 @@ class BasicRouteTest(unittest.TestCase):
             self.fail('index() raised ValueError unexpectably')
 
     def test_argumentsFail(self):
-        app = WaffleApp('test')
+        app = WaffleApp()
 
         with self.assertRaises(AttributeError):
             @app.route('/index/arg1:str>/<int:arg2>', 'index')
@@ -36,7 +37,7 @@ class BasicRouteTest(unittest.TestCase):
             index(request=None)
 
     def test_argumentsRaiseAttributeError(self):
-        app = WaffleApp('test')
+        app = WaffleApp()
         with self.assertRaises(AttributeError):
             @app.route('/index/<arg1:int>/<arg2:notAValidType>', 'index')
             def index(request, arg1, arg2):
@@ -45,7 +46,8 @@ class BasicRouteTest(unittest.TestCase):
             index(request=None)
 
     def test_argumentsRaiseAttributeError2(self):
-        app = WaffleApp('test')
+        app = WaffleApp()
+        
         with self.assertRaises(AttributeError):
             @app.route('/index/<arg1>/<arg2>', 'index')
             def index(request, arg1, arg2):
@@ -54,7 +56,7 @@ class BasicRouteTest(unittest.TestCase):
             index(request=None)
     
     def test_arguments(self):
-        app = WaffleApp('test')
+        app = WaffleApp()
         
         @app.route('/article/<name:str>')
         def article(request, name):
@@ -66,7 +68,7 @@ class BasicRouteTest(unittest.TestCase):
 class ErrorHandlerTest(unittest.TestCase):
     def test_statusTooBig(self):
         with self.assertRaises(ValueError):
-            app = WaffleApp('test')
+            app = WaffleApp()
             
             @app.errorHandler(700)
             def handler(request):
@@ -74,7 +76,7 @@ class ErrorHandlerTest(unittest.TestCase):
             
     def test_statusTooSmall(self):
         with self.assertRaises(ValueError):
-            app = WaffleApp('test')
+            app = WaffleApp()
             
             @app.errorHandler(50)
             def handler(request):
@@ -82,7 +84,7 @@ class ErrorHandlerTest(unittest.TestCase):
                 
     def test_statusJustRight(self):
         try:
-            app = WaffleApp('test')
+            app = WaffleApp()
             
             @app.errorHandler(404)
             def handler(request):
@@ -92,7 +94,7 @@ class ErrorHandlerTest(unittest.TestCase):
         
 class requestTest(unittest.TestCase):
     def test_basic(self):
-        app = WaffleApp('test')
+        app = WaffleApp()
         
         @app.route('/index')
         def index(request):
@@ -102,7 +104,7 @@ class requestTest(unittest.TestCase):
         self.assertEqual(res.content, b'index')
         
     def test_withArgs(self):
-        app = WaffleApp('test')
+        app = WaffleApp()
         
         @app.route('/article/<name:str>')
         def article(request, name):
@@ -112,7 +114,9 @@ class requestTest(unittest.TestCase):
         self.assertEqual(res.content, b'test')
         
     def test_withMiddleware(self):
-        app = WaffleApp('test', ['middleware.testMiddleware.TestMiddleware'])
+        app = WaffleApp()
+        
+        app.middleware.append('middleware.testMiddleware.TestMiddleware')
         
         @app.route('/page')
         def page(request):
@@ -123,7 +127,7 @@ class requestTest(unittest.TestCase):
         self.assertEqual(res.headers['middlewareHeader'], 'value')
         
     def test_404(self):
-        app = WaffleApp('test')
+        app = WaffleApp()
         
         @app.route('/page')
         def page(request):
@@ -133,7 +137,7 @@ class requestTest(unittest.TestCase):
         self.assertEqual(res.statusCode, 404)
         
     def test_errorHandler(self):
-        app = WaffleApp('test')
+        app = WaffleApp()
         
         @app.errorHandler(404)
         def handler(request):

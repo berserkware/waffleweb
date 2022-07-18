@@ -13,21 +13,22 @@ from waffleweb.static import getStaticFileResponse
 from waffleweb.template import renderErrorPage, renderTemplate
 from waffleweb.files import File
 from waffleweb.parser import parseBody, parseHeaders, parsePost
+from waffleweb.datatypes import MultiValueOneKeyDict
 
 class Request:
     def __init__(self, rawRequest, IP, wsgi=False):
         self.rawRequest = rawRequest
         self.wsgi = wsgi
         self.FILES = {}
-        self.META = {}
+        self.META = MultiValueOneKeyDict()
         self.IP = IP
         self.POST = {}
         self.URL_PARAMS = {}
 
         if self.wsgi == False:
-            self.META = self.META | parseHeaders(self.rawRequest)
+            self.META._data.update(parseHeaders(self.rawRequest)._data)
         else:
-            self.META = self.rawRequest
+            self.META = MultiValueOneKeyDict(self.rawRequest)
 
         self._getURLParams()
         self.body = self._getBody()
@@ -72,7 +73,7 @@ class Request:
         if self.wsgi == False:
             return parseBody(self.rawRequest)
         else:
-            length = int(self.META.get('CONTENT_LENGTH', '0'))
+            length = int(self.META.get('CONTENT_LENGTH', default='0'))
             body = self.META['wsgi.input'].read(length)
             return body
 
@@ -98,12 +99,17 @@ class Request:
 
 class RequestHandler:
     '''Handles a requests.'''
-    def __init__(self, request: Request, debug=False, apps=None):
+    def __init__(self, request: Request, debug=False, app=None):
         self.request = request
-        if apps is None:
-            self.apps = waffleweb.defaults.APPS
+        self.app = app
+        
+        if app is None:
+            self.views = waffleweb.app.views
+            self.errorHandlers = waffleweb.app.errorHandlers
         else:
-            self.apps = apps
+            self.views = app.views
+            self.errorHandlers = app.errorHandlers
+            
         self.debug = debug
 
     def _getArg(self, index, part) -> tuple:
@@ -147,33 +153,31 @@ class RequestHandler:
         self.root, self.splitRoot, self.ext = self._splitURL()
         self.root = self.root.strip('/')
 
-        #Searches through all the apps to match the url
-        for app in self.apps:
-            app = app['app']
-            for view in app.views:
-                urlMatches = True
-                viewKwargs = {}
-                if view.path == self.root:
-                    return (view, {})
+        #Searches through all the views to match the url
+        for view in self.views:
+            urlMatches = True
+            viewKwargs = {}
+            if view.path == self.root:
+                return (view, {})
 
-                #checks if length of the view's split path is equal to the length of the split request request path
-                if len(view.splitPath) == len(self.splitRoot) and view.splitPath != ['']:
-                    for index, part in enumerate(view.splitPath):
-                        #checks if path part is equal to the split request path part at the same index
-                        if part != self.splitRoot[index] and type(part) == str:
-                            urlMatches = False
-                            break
-                        
-                        #makes sure not static file
-                        if self.ext == '':
-                            #adds args to view kwargs if part is list
-                            if type(part) == list:
-                                kwarg = self._getArg(index, part)
-                                viewKwargs[kwarg[0]] = kwarg[1]
+            #checks if length of the view's split path is equal to the length of the split request request path
+            if len(view.splitPath) == len(self.splitRoot) and view.splitPath != ['']:
+                for index, part in enumerate(view.splitPath):
+                    #checks if path part is equal to the split request path part at the same index
+                    if part != self.splitRoot[index] and type(part) == str:
+                        urlMatches = False
+                        break
+                    
+                    #makes sure not static file
+                    if self.ext == '':
+                        #adds args to view kwargs if part is list
+                        if type(part) == list:
+                            kwarg = self._getArg(index, part)
+                            viewKwargs[kwarg[0]] = kwarg[1]
 
-                    if urlMatches:
-                        return (view, viewKwargs)
-        
+                if urlMatches:
+                    return (view, viewKwargs)
+    
         raise HTTP404
 
 
@@ -268,19 +272,17 @@ class RequestHandler:
         return view.view(self.request, **kwargs)
 
     def getErrorHandler(self, response=None, statusCode=None):
-        #Goes through all the apps errorHandlers
-        for app in self.apps:
-            app = app['app']
-            for handler in app.errorHandlers:
-                try:
-                    #Checks to see if the handlers code is the same as the status Code
-                    if handler.statusCode == statusCode:
-                        return handler.view(self.request)
-                    #Checks to see the the response's status code is equal to the handlers code
-                    elif response.statusCode == handler.statusCode:
-                        return handler.view(self.request)
-                except AttributeError:
-                    pass
+        #Goes through all the errorHandlers
+        for handler in self.errorHandlers:
+            try:
+                #Checks to see if the handlers code is the same as the status Code
+                if handler.statusCode == statusCode:
+                    return handler.view(self.request)
+                #Checks to see the the response's status code is equal to the handlers code
+                elif response.statusCode == handler.statusCode:
+                    return handler.view(self.request)
+            except AttributeError:
+                pass
         return response
 
     def _handle404View(self):
@@ -290,15 +292,13 @@ class RequestHandler:
             if response is None:
                 #Gets all searched views.
                 searchedViews = []
-                for app in self.apps:
-                    app = app['app']
-                    for view in app.views:
-                        path = view.unstripedPath
+                for view in self.views:
+                    path = view.unstripedPath
 
-                        #turns the arrows into one html cannot render
-                        path = path.replace('<', '&lt;')
-                        path = path.replace('>', '&gt;')
-                        searchedViews.append(path)
+                    #turns the arrows into one html cannot render
+                    path = path.replace('<', '&lt;')
+                    path = path.replace('>', '&gt;')
+                    searchedViews.append(path)
 
                 page = renderErrorPage(
                     mainMessage='404 Page Not Found', 
@@ -310,7 +310,7 @@ class RequestHandler:
                 return response
         else:
             if response is None:
-                return HTTPResponse(content='404 The requested page could not be found.', status=404)
+                return HTTPResponse(content='<title>404 Not Found</title><h1 style="font-family: Arial, Helvetica, sans-serif; text-align: center; font-size: 80px; margin-bottom: 0px;">404</h1><h3 style="font-family: Arial, Helvetica, sans-serif; text-align: center; color: #5c5c5c; margin-top: 0px;">The requested page could not be found.</h3>', status=404)
             else:
                 return response
 

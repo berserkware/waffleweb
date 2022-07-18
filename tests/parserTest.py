@@ -3,6 +3,7 @@ import unittest
 from waffleweb.files import File
 from waffleweb.parser import parseBody, parseHeaders, parsePost
 from waffleweb.request import Request
+from waffleweb.datatypes import MultiValueOneKeyDict
 
 class ParsePostTest(unittest.TestCase):
     def test_urlencodedDataNormal(self):
@@ -40,9 +41,9 @@ class ParseHeadersTest(unittest.TestCase):
     def test_headersData(self):
         req = b'GET /math/ HTTP/1.1\r\nUser-Agent: PostmanRuntime/7.29.0\r\nAccept: */*\r\nAccept-Encoding: gzip, deflate, br\r\nConnection: keep-alive\r\nHost: localhost:8080\r\n\r\n'
         headers = parseHeaders(req)
-        self.assertEqual(headers, {'USER_AGENT': 'PostmanRuntime/7.29.0', 'ACCEPT': '*/*', 'ACCEPT_ENCODING': 'gzip, deflate, br', 'CONNECTION': 'keep-alive', 'HOST': 'localhost:8080'})
+        self.assertEqual(headers, MultiValueOneKeyDict({'USER_AGENT': 'PostmanRuntime/7.29.0', 'ACCEPT': '*/*', 'ACCEPT_ENCODING': 'gzip, deflate, br', 'CONNECTION': 'keep-alive', 'HOST': 'localhost:8080'}))
         
     def test_headersDataWithBodyInRequest(self):
         req = b'GET /math/ HTTP/1.1\r\nUser-Agent: PostmanRuntime/7.29.0\r\nAccept: */*\r\nAccept-Encoding: gzip, deflate, br\r\nConnection: keep-alive\r\nHost: localhost:8080\r\n\r\ndummydata: test'
         headers = parseHeaders(req)
-        self.assertEqual(headers, {'USER_AGENT': 'PostmanRuntime/7.29.0', 'ACCEPT': '*/*', 'ACCEPT_ENCODING': 'gzip, deflate, br', 'CONNECTION': 'keep-alive', 'HOST': 'localhost:8080'})
+        self.assertEqual(headers, MultiValueOneKeyDict({'USER_AGENT': 'PostmanRuntime/7.29.0', 'ACCEPT': '*/*', 'ACCEPT_ENCODING': 'gzip, deflate, br', 'CONNECTION': 'keep-alive', 'HOST': 'localhost:8080'}))

@@ -2,7 +2,7 @@
 How-To: Responses
 =================
 
-For your routes to work properly they have to return a response. Waffleweb provides several responses for you to use in your project. There are several types of responses built into Waffleweb such as files, json and html.
+For your routes to work properly they have to return a response. Waffleweb provides several responses for you to use in your application. There are several types of responses built into Waffleweb such as files, json and html.
 
 Responses
 .........
@@ -16,7 +16,7 @@ The ``HTTPResponse`` is the most basic of all the responses. It is just a basic 
 
 	from waffleweb.response import HTTPResponse
 
-	@yourApp.route('/index')
+	@app.route('/index')
 	def index(request):
 	    return HTTPResponse(request, 'The index page.')
 
@@ -26,7 +26,7 @@ To change the status of the response you can use the ``status`` argument.
 
 	from waffleweb.response import HTTPResponse
 
-	@yourApp.route('/about')
+	@app.route('/about')
 	def about(request):
 	    return HTTPResponse(request, 'The about page.', status=402)
 	    
@@ -36,7 +36,7 @@ To change the content type of the response you can use the ``contentType`` argum
 
 	from waffleweb.response import HTTPResponse
 
-	@yourApp.route('/text')
+	@app.route('/text')
 	def text(request):
 	    return HTTPResponse(request, 'Some text', contentType='text/plain')
 	    
@@ -46,7 +46,7 @@ You can add headers with the ``headers`` attribute. The headers are stored in a 
 
 	from waffleweb.response import HTTPResponse
 	    
-	@yourApp.route('/index')
+	@app.route('/index')
 	def index(request):
 	    res = HTTPResponse(request, 'The index page.')
 	    res.headers['headerName'] = 'value'
@@ -59,7 +59,7 @@ To add cookies you can use the ``setCookie()`` method. The path of the cookies a
 
 	from waffleweb.response import HTTPResponse
 	    
-	@yourApp.route('/cookie')
+	@app.route('/cookie')
 	def cooke(request):
 	    res = HTTPResponse(request, 'The index page.')
 	    res.setCookie('cookieName', 'value')
@@ -75,7 +75,7 @@ To add cookies you can use the ``setCookie()`` method. The path of the cookies a
 
 	from waffleweb.response import JSONResponse
 
-	@yourApp.route('/data')
+	@app.route('/data')
 	def data(request):
 	    return JSONResponse(request, {'number': 123})
 	    
@@ -91,7 +91,7 @@ As it inherites from the ``HTTPResponse`` class you can do most of the same thin
 	from waffleweb.response import FileResponse
 	from waffleweb.static import openStatic
 	
-	@yourApp.route('/file')
+	@app.route('/file')
 	def file(request):
 	     with openStatic('testFile.jpeg') as f:
 	         return FileResponse(request, f)
@@ -107,7 +107,7 @@ As it inherites from the ``HTTPResponse`` class you can do most of the same thin
 
 	from waffleweb.response import render
 	
-	@yourApp.route('/template')
+	@app.route('/template')
 	def template(request):
 	    return render(request, 'template.html', {'var1': '1234'})
 	    
@@ -125,7 +125,7 @@ Redirects
 
 	from waffleweb.response import HTTPResponseRedirect
 	
-	@yourApp.route('/redirect')
+	@app.route('/redirect')
 	def redirect(request):
 	    return HTTPResponseRedirect('https://www.youtube.com/watch?v=dQw4w9WgXcQ')
 	    
@@ -138,7 +138,7 @@ Redirects
 
 	from waffleweb.response import HTTPResponsePermenentRedirect
 	
-	@yourApp.route('/permanentRedirect')
+	@app.route('/permanentRedirect')
 	def permanentRedirect(request):
 	    return HTTPResponsePermenentRedirect('https://www.youtube.com/watch?v=dQw4w9WgXcQ')
 	    
@@ -151,6 +151,6 @@ A shortcut for redirects. It takes two arguments: the place to redirect to and w
 
 	from waffleweb.response import redirect
 	
-	@yourApp.route('/redirect')
+	@app.route('/redirect')
 	def redirect(request):
 	    return redirect('https://www.youtube.com/watch?v=dQw4w9WgXcQ', permanent=True)

@@ -15,7 +15,7 @@ A object for storing all the request data.
  
 **Important attributes:**
  - **FILES** (``dict``) -  The uploaded files of the request.
- - **META** (``dict``) - The headers of the request.
+ - **META** (``MultiValueOneKeyDict``) - The headers of the request.
  - **POST** (``dict``) - The POST data of the request.
  - **URL_PARAMS** (``dict``) - The URL parameters of the request.
  - **body** (``bytes``) - The body of the request.
@@ -70,7 +70,7 @@ Returns the HTTP version of the request.
 **Returns:** ``str``
 
 ===========================================================================
-``class waffleweb.request.RequestHandler(request, debug=False, apps=None)``
+``class waffleweb.request.RequestHandler(request, debug=False, app=None)``
 ===========================================================================
 
 A handler for requests to find the views and responses.
@@ -78,7 +78,7 @@ A handler for requests to find the views and responses.
 **Parameters:**
  - **request** (``Request``) - The Request to use to find the response.
  - **debug** (``bool``) - If debug mode is on.
- - **apps** (``list``) - If you want to add your own apps instead of using waffleweb.defaults.APPS.
+ - **app** (``WaffleApp``) - A WaffleApp to get views from, instead of waffleweb.app.app.
  
 ------------------------
 ``_getArg(index, part)``

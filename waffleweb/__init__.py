@@ -1,5 +1,4 @@
-from .app import WaffleApp
-from .project import WaffleProject
+from .app import WaffleApp, app
 from .defaults import *
 
-__version__ = '0.1a2'
+__version__ = '0.1a3'

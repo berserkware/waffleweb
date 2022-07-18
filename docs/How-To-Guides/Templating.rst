@@ -29,7 +29,7 @@ This finds a template and renders with the context.
 	from waffleweb.template import renderTemplate
 	from waffleweb.response import HTTPResponse
 
-	@yourApp.route('/template', methods=['GET'])
+	@app.route('/template', methods=['GET'])
 	def template(request):
 	    page = renderTemplate('page.html', {'var1': 'value'})
 	    return HTTPResponse(request, page)
@@ -49,7 +49,7 @@ This calls ``renderTemplate`` with the ``filePath`` and ``context`` and puts it 
 
 	from waffleweb.response import render
 
-	@yourApp.route('/template', methods=['GET'])
+	@app.route('/template', methods=['GET'])
 	def template(request):
 	    return render(request, 'page.html', {'var1': 'value'})
 	    

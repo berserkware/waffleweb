@@ -1,7 +1,7 @@
 import unittest
 from waffleweb.request import Request
-from waffleweb import WaffleProject
 from waffleweb.template import AppNotFoundError, ViewNotFoundError, getRelativeUrl, renderErrorPage, renderTemplate
+import apps.testApp
 
 class RenderTemplateTest(unittest.TestCase):
     def test_renderWithoutContext(self):
@@ -74,36 +74,24 @@ class RenderErrorPageTest(unittest.TestCase):
     
 class GetRelativeUrlTest(unittest.TestCase):
     def test_basicTest(self):
-        url = getRelativeUrl('test:BasicTest')
+        url = getRelativeUrl('BasicTest')
         self.assertEqual(url, 'BasicTest/')
     
     def test_noKwargs(self):
         with self.assertRaises(KeyError):
-            getRelativeUrl('test:WithArgsTest')
+            getRelativeUrl('WithArgsTest')
     
     def test_kwargsRight(self):
-        url = getRelativeUrl('test:WithArgsTest', testArg1='test1', testArg2='test2')
+        url = getRelativeUrl('WithArgsTest', testArg1='test1', testArg2='test2')
         self.assertEqual(url, '/WithArgsTest/test1/test/test2/')
     
     def test_notEnoughtKwargs(self):
         with self.assertRaises(KeyError):
-            getRelativeUrl('test:WithArgsTest', testArg1='test1')
+            getRelativeUrl('WithArgsTest', testArg1='test1')
     
-    def test_appNotFound(self):
-        with self.assertRaises(AppNotFoundError):
-            getRelativeUrl('Existnt:bolony')
-    
-    def test_appFoundViewNotFound(self):
+    def test_ViewNotFound(self):
         with self.assertRaises(ViewNotFoundError):
-            getRelativeUrl('test:bolony')
-            
-    def test_noViewInViewStr(self):
-        with self.assertRaises(ValueError):
-            getRelativeUrl('test')
-            
-    def test_extraPartInViewStr(self):
-        with self.assertRaises(ValueError):
-            getRelativeUrl('test:bolony:foo')
+            getRelativeUrl('bolony')
             
     def test_inTemplate(self):
         render = renderTemplate('inTemplateTest.html')

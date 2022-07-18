@@ -41,7 +41,7 @@ class SplitUrlTest(unittest.TestCase):
 
 class HandleTest(unittest.TestCase):
     def test_handleGet(self):
-        app = WaffleApp('testApp')
+        app = WaffleApp()
         
         @app.route('math/<operator:str>/<num1:int>/<num2:int>', 'basicMath', ['GET', 'POST'])
         def basicMath(request, operator, num1, num2):
@@ -65,7 +65,7 @@ class HandleTest(unittest.TestCase):
 
 class GetTest(unittest.TestCase):
     def test_statusCode(self):
-        app = WaffleApp('testApp')
+        app = WaffleApp()
         
         @app.route('/index')
         def index(request):
@@ -75,7 +75,7 @@ class GetTest(unittest.TestCase):
         self.assertEqual(response.statusCode, 200)
 
     def test_correctContent(self):
-        app = WaffleApp('testApp')
+        app = WaffleApp()
         
         @app.route('math/<operator:str>/<num1:int>/<num2:int>', 'basicMath', ['GET', 'POST'])
         def basicMath(request, operator, num1, num2):
@@ -97,7 +97,7 @@ class GetTest(unittest.TestCase):
 
 class HeadTest(unittest.TestCase):
     def test_allHeadersCorrect(self):
-        app = WaffleApp('testApp')
+        app = WaffleApp()
         
         @app.route('/index')
         def index(request):
@@ -115,7 +115,7 @@ class HeadTest(unittest.TestCase):
             })
 
     def test_noContent(self):
-        app = WaffleApp('testApp')
+        app = WaffleApp()
         
         @app.route('/index')
         def index(request):
@@ -132,7 +132,7 @@ class PostTest(unittest.TestCase):
 
 class OptionsTest(unittest.TestCase):
     def test_correctHeaders(self):
-        app = WaffleApp('testApp')
+        app = WaffleApp()
         
         @app.route('/index')
         def index(request):
@@ -152,7 +152,7 @@ class OptionsTest(unittest.TestCase):
 
 class MethodTest(unittest.TestCase):
     def test_methodNotAllowed(self):
-        app = WaffleApp('testApp')
+        app = WaffleApp()
         
         @app.route('/', 'index', ['GET'])
         def index(request):
@@ -162,7 +162,7 @@ class MethodTest(unittest.TestCase):
         self.assertEqual(response.statusCode, 405)
 
     def test_methodAllowed(self):
-        app = WaffleApp('testApp')
+        app = WaffleApp()
         
         @app.route('/', 'index', ['GET'])
         def index(request):
@@ -173,7 +173,7 @@ class MethodTest(unittest.TestCase):
         
 class ErrorHandlerTest(unittest.TestCase):
     def test_404Custom(self):       
-        app = WaffleApp('testApp')
+        app = WaffleApp()
         
         @app.errorHandler(404)
         def handler(request):
@@ -184,7 +184,7 @@ class ErrorHandlerTest(unittest.TestCase):
         self.assertEqual(response.content, b'404 Page Handler')
         
     def test_customErrorCode(self):
-        app = WaffleApp('testApp')
+        app = WaffleApp()
         
         @app.errorHandler(220)
         def handler(request):
@@ -200,7 +200,7 @@ class ErrorHandlerTest(unittest.TestCase):
         
     def test_noErrorCodeHandler(self):
 
-        app = WaffleApp('testApp')
+        app = WaffleApp()
         
         @app.route('/statusNoHandler')
         def statusNoHandler(request):

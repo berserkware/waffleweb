@@ -2,36 +2,53 @@
 middleware.py
 =============
 
+========================================================
+``class waffleweb.middleware.Middleware(middleware=[])``
+========================================================
+
+This is a special list for storing middleware. It has special abilities that load middleware when middleware is appended or replaced. The middleware string have to be structured as so: 'module.MiddlewareClass'.
+
+It has all the same methods as a list, except that it loads the middleware when you add them.
+
+**Parameters:**
+ - **middleware** (``list[str]``) - A list of all the middleware needed to be loaded. You need to format the middleware strings as so: 'module.MiddlewareClass'.
+
+**Usage:**
+
+.. code-block:: python
+
+	from waffleweb.middleware import Middleware
+
+	middleware = Middleware(['ware.TestMiddleware'])
+	
+	middleware.append('ware.OtherWare')
+	middleware.append(['ware.One', 'ware.Two'])
+	
+	middleware[1] = 'ware.NewWare'
+
+------------------------
+``loadMiddleware(ware)``
+------------------------
+
+Loads the middleware into a dictionary. The dictionary include the module and the class of the middleware: ``{'module': middleware module, 'middleware': middlwareClass,}``.
+
 =======================================================================
-``class waffleweb.middleware.MiddlewareHandler(middleware, apps=None)``
+``class waffleweb.middleware.MiddlewareHandler(middleware)``
 =======================================================================
 
 A handler of middleware. Middleware gets ran on the request before your view receives it and on the response before it is sent.
 
 **Parameters:**
- - **middleware** (``list[str]``) - A list of all your middleware. You need to format the middleware strings as so: 'module.MiddlewareClass'.
- - **apps** (``list``) - If you want to add your own apps instead of using waffleweb.defaults.APPS.
- 
-------------------------------
-``loadMiddleware(middleware)``
-------------------------------
-
-Loads all the middleware into a list of dictionaries. The dictionaries include the module and the class of the middleware: ``{'module': middleware module, 'middleware': middlwareClass,}``.
-
-**Parameters:**
- - **middleware** (``list[str]``) - A list of all the middleware needed to be loaded. You need to format the middleware strings as so: 'module.MiddlewareClass'.
- 
-**Returns:** ``list[dict]``
+ - **middleware** (``Middleware``) - A list of all your middleware.
 
 --------------------------------------
-``runRequestMiddleware(request, app)``
+``runRequestMiddleware(request)``
 --------------------------------------
 
 Runs all the middleware on the request and then returns the request. It calls the ``before(request)`` method on the middleware classes.
 
 **Parameters:**
  - **request** (``Request``) - The request to run the middleware on.
- - **app** (``WaffleApp``) - The app of the route matching the URL (for app specific middleware).
  
 **Returns:** ``Request``
 
@@ -43,6 +60,5 @@ Runs all the middleware on the response and then returns the response. It calls 
 
 **Parameters:**
  - **request** (``HTTPResponse``) - The response to run the middleware on.
- - **app** (``WaffleApp``) - The app of the route matching the URL (for app specific middleware).
  
 **Returns:** ``HTTPResponse``

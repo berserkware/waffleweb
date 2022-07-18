@@ -2,44 +2,20 @@
 How-To: Middleware
 ==================
 
-Middleware is code that modifies the request before going into your code, and the response after coming out of your route function. Waffleweb allows you to add middleware to your apps and project easily.
+Middleware is code that modifies the request before going into your code, and the response after coming out of your route function. Waffleweb allows you to add middleware to your app easily.
 
 Adding Middleware
 ..................
 
-Project Wide Middleware
------------------------
-
-To add middleware to your entire project you can add the ``middleware`` argument to your ``WaffleProject``. The ``middleware`` argument is a list of your middleware. All the middleware are strings with the module and middleware class. Example: 'testModule.Middleware' or 'middleware.testModule.Middleware'.
+To add middleware you can use the ``middleware`` attribute of the ``app`` instance. The ``middleware`` attribute is a special `Middleware class <../Internals/middleware.py.html>`_ with all your middleware. All the middleware are strings with the module and middleware class. Example: 'testModule.Middleware' or 'middleware.testModule.Middleware'.
 
 .. code-block:: python
 
-	from waffleweb import WaffleProject
+	from waffleweb import app
 
-	apps = [
-	    #Your apps
-	]
-
-	middleware = [
-	    'middleware.addCookieMiddleware.AddCookie'
-	]
-
-	proj = WaffleProject(apps=apps, middleware=middleware)
+	app.middleware.append('middleware.addCookieMiddleware.AddCookie')
 	
-App Specific Middleware
------------------------
-
-Adding app-specific middleware is much the same as adding middleware to your project. All you need to do is add the ``middleware`` argument to your ``WaffleApp``. The middleware is again a list formatted the same way as the project-wide middleware.
-
-.. code-block:: python
-
-	from waffleweb import WaffleApp
-
-	middleware = [
-	    'middleware.addCookieMiddleware.AddCookie'
-	]
-
-	app = WaffleApp('app', middleware=middleware)
+The order in which the middleware gets called is the first middleware you add is the first run.
 	
 Creating Middleware
 ....................

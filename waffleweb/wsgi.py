@@ -4,39 +4,33 @@ from waffleweb.request import RequestHandler, Request
 from waffleweb.response import HTTP404, HTTPResponse
 
 class WsgiHandler:
-    def __init__(self, environ, apps, middlewareHandler):
-        self.apps = apps
+    def __init__(self, environ, app, middlewareHandler):
+        self.app = app
         self.environ = environ
         self.middlewareHandler = middlewareHandler
         
     def getResponse(self):
         try:
-            #Makes the Request object
-            request = Request(self.environ, self.environ.get('REMOTE_ADDR'), True)
-        except ParsingError:
-            return badRequest(self.apps, False)
+            try:
+                #Makes the Request object
+                request = Request(self.environ, self.environ.get('REMOTE_ADDR'), True)
+            except ParsingError:
+                return badRequest(self.app, False)
 
-        self.requestHandler = RequestHandler(request)
+            self.requestHandler = RequestHandler(request)
 
-        view = None
+            request = self.middlewareHandler.runRequestMiddleware(request)
 
-        try:
-            #Runs the request middleware
-            view = self.requestHandler.getView()[0]
+            self.requestHandler.request = request
 
-            request = self.middlewareHandler.runRequestMiddleware(request, view)
-        except HTTP404:
-            pass
+            response = self.requestHandler.getResponse()
 
-        self.requestHandler.request = request
-
-        response = self.requestHandler.getResponse()
-
-        if view is not None:
             #Run middleware on response
-            response = self.middlewareHandler.runResponseMiddleware(response, view)
+            response = self.middlewareHandler.runResponseMiddleware(response)
 
-        self.response = response
+            self.response = response
+        except:
+            self.response = HTTPResponse(content='<title>500 Internal Server Error</title><h1 style="font-family: Arial, Helvetica, sans-serif; text-align: center; font-size: 80px; margin-bottom: 0px;">500</h1><h3 style="font-family: Arial, Helvetica, sans-serif; text-align: center; color: #5c5c5c; margin-top: 0px;">Internal Server Error.</h3>', status=500)
 
     def getResponseContent(self):
         return self.response.content

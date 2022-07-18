@@ -114,7 +114,7 @@ class FileResponseTest(unittest.TestCase):
 
 class HTTPResponseRedirectTest(unittest.TestCase):
     def test_redirect(self):
-        app = WaffleApp('testApp')
+        app = WaffleApp()
         
         @app.route('redirecternator')
         def redirectTest(request):

@@ -1,5 +1,6 @@
 from waffleweb.exceptions import ParsingError
 from waffleweb.files import File
+from waffleweb.datatypes import MultiValueOneKeyDict
 from urllib.parse import unquote
 
 def parsePost(body: bytes, contentType: str) -> dict:
@@ -102,9 +103,9 @@ def parseBody(request: bytes) -> str:
     except (IndexError, ValueError):
         raise ParsingError('A problem occured while parsing the body.')
 
-def parseHeaders(request: bytes) -> dict:
+def parseHeaders(request: bytes) -> MultiValueOneKeyDict:
     try:
-        headerDict = {}
+        headerDict = MultiValueOneKeyDict()
         #Gets all the headers
         for line in request.split(b'\r'):
             line = line.decode()

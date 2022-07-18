@@ -4,63 +4,68 @@ The Basics
 
 This is the basics of Waffleweb. You will get walked through all the basic features of Waffleweb and how to use them.
 
-Creating a project
-..................
-To start creating your website with Waffleweb you first need to create a project. To create a project you can create a python file and put a WaffleProject object in it as so.
+Creating Your App
+.................
 
-``project.py:``
- 
-.. code-block:: python
-    
-    from waffleweb import WaffleProject
-
-    apps = [
-		    
-    ]
-
-    yourProject = WaffleProject(apps)
-    
-Apps hold all of your pages, we will add some soon.
-
-Creating an app
-...............
-
-To add pages to your website you need apps. To create an app you can create a python file and put a WaffleApp object in it as so.
-
-``app.py:``
+To start creating your web application you need an app. Creating an app is simple, all you need to do is import the app instance from waffleweb 
 
 .. code-block:: python
     
-    from waffleweb import WaffleApp
-
-    yourApp = WaffleApp('appName')
+    from waffleweb import app
     
-WaffleApp only needs to take one variable for now: the name of your app. The name of your app is for some functions to identify your app.
+--------------------------------------------
+Several Views In One App Over Multiple Files
+--------------------------------------------
 
-To register your app, all you need to do is add 'app.yourApp' to your project's app list. your project.py should now look as so. Remember the last part of the app string should NOT be the ``appName`` of your app. It should be the variable of your ``WaffleApp``.
+You can have multiple views in one app over multiple files very easily. All you need to do is import the files into the file that runs the app.
 
-``project.py:``
-    
+``app1.py:``
+
 .. code-block:: python
 
-    from waffleweb import WaffleProject
+	from waffleweb import app
+	from waffleweb.response import HTTPResponse
+	
+	import app2
+	import app3
+	
+	@app.route('/')
+	def index(request):
+	    return HTTPResponse(request, 'index')
+	    
+	app.run()
 
-    apps = [
-        'app.yourApp'
-    ]
+``app2.py:``
 
-    yourProject = WaffleProject(apps)
+.. code-block:: python
 
-Running your project
-....................
-To run your project under the default address "127.0.0.1:8000" you can use the ``run()`` method of your ``WaffleProject`` object.
+	from waffleweb import app
+	from waffleweb.response import HTTPResponse
+	
+	@app.route('/about')
+	def about(request):
+	    return HTTPResponse(request, 'about')
 
-``project.py:``
+``app3.py:``
+
+.. code-block:: python
+
+	from waffleweb import app
+	from waffleweb.response import HTTPResponse
+	
+	@app.route('/projects')
+	def projects(request):
+	    return HTTPResponse(request, 'projects')
+
+Running Your App
+................
+
+To run your app under the default address "127.0.0.1:8000" you can use the ``run()`` method of the app instance.
 
 .. code-block:: python
     
     if __name__ == '__main__':
-        yourProject.run()
+        app.run()
 
 In your terminal you should now see:
 
@@ -72,11 +77,9 @@ In your terminal you should now see:
 
 If you want to change the host or port you can specify them in run().
 
-``project.py:``
-
 .. code-block:: python
 
-    yourProject.run(host='0.0.0.0', port=8080)
+    app.run(host='0.0.0.0', port=8080)
 
 Right now if you go to "127.0.0.1:8000" you will see a 404 page. This is because we haven't
 routed any pages yet. We will add some routes later.
@@ -87,11 +90,9 @@ Debug Mode
 Debug mode allows you to see extra data about 404, traceback and error data in the browser.
 You can turn on debug mode by adding debug=True to ``run()``.
 
-``project.py:``
-
 .. code-block:: python
 
-    yourProject.run(debug=True)
+    app.run(debug=True)
     
 Example with exception:
 
@@ -103,18 +104,16 @@ Routing
 Every website needs good URLs to make a page more memorable. Routing enables you to bind a function to a URL. 
 
 To route a URL use the ``route()`` decorator.
-
-``app.py:``
 	
 .. code-block:: python
 
 	from waffleweb.response import HTTPResponse
 
-	@yourApp.route('/')
+	@app.route('/')
 	def index(request):
 	    return HTTPResponse(request, 'Welcome to the index page!')
 		
-	@yourApp.route('/about/')
+	@app.route('/about/')
 	def about(request):
 	    return HTTPResponse(request, 'About page')
 		
@@ -124,16 +123,14 @@ All of your routed functions have to take a request argument. The request argume
 URL Variables
 -------------
 You can add variables to your URL by adding ``<variableName:type>`` to your URL. Your function can access the variables through the keyword args of your view function. The type part tells Waffleweb what type to convert the variable to.
-
-``app.py:``
 	
 .. code-block:: python
 
-	@yourApp.route('/article/<articleName:str>/')
+	@app.route('/article/<articleName:str>/')
 	def articleView(request, articleName):
 	    return HTTPResponse(request, f'Article: {articleName}'
 		
-	@yourApp.route('/post/<postId:int>/<postName:str>')
+	@app.route('/post/<postId:int>/<postName:str>')
 	def post(request, postId, postName):
 	    return HTTPResponse(request, f'Post Number {postId}')
 		
@@ -151,17 +148,15 @@ Please note that you cannot have a float variable as the last part of your URL. 
 Redirect behavior
 -----------------
 
-``app.py:``
-
 .. code-block:: python
 
 	from waffleweb.response import HTTPResponse
 
-	@yourApp.route('/index')
+	@app.route('/index')
 	def index(request):
 	    return HTTPResponse(request, 'index page')
 		
-	@yourApp.route('/about/')
+	@app.route('/about/')
 	def about(request):
 	    return HTTPResponse(request, 'about page')
 	
@@ -176,7 +171,7 @@ If you only want to allow certain HTTP methods to access your page you can add a
 	
 	from waffleweb.response import HTTPResponse
 	
-	@yourApp.route('/form/', methods=['GET', 'POST'])
+	@app.route('/form/', methods=['GET', 'POST'])
 	def form(request):
 	    if request.method == 'POST':
 	        return doFormStuff(request.POST)
@@ -186,14 +181,13 @@ By default Waffleweb only allows GET, HEAD and OPTIONS requests. If you have 'GE
 
 Static files
 ............
-To add static files to your Waffleweb project all you need to do is make a folder called static and put your files in there. You can change the folder Waffleweb looks in for your static files in a ``settings.py`` file in your project directory. Just add ``STATIC_DIR = 'path/to/static/'`` to ``settings.py``.
+To add static files to your Waffleweb application all you need to do is make a folder called static and put your files in there. You can change the folder Waffleweb looks in for your static files in a ``settings.py`` file in your project directory. Just add ``STATIC_DIR = 'path/to/static/'`` to ``settings.py``.
 
 To access these static files in your browser just go to ``localhost:8000/folder/file.ext``. Waffleweb hides the static directory path in the URL to remove complexity. For example, if your project directory looks like the example bellow then to access ``test.css`` you would need to go to ``localhost:8000/css/index.css`` NOT ``localhost:8000/static/css/index.css``.
 
 .. code-block::
 	
 		yourProj/
-		    project.py
 		    app.py
 		    static/
 		        css/
@@ -206,7 +200,7 @@ To access a static file from your app you can use ``open()`` or ``openStatic()``
 	from waffleweb.static import openStatic
 	from waffleweb.response import FileResponse
 	
-	@yourApp.route('/getImage/<imageName:str>')
+	@app.route('/getImage/<imageName:str>')
 	def index(request, imageName):
 	    with openStatic(f'/images/{imageName}.jpg') as f:
 	        return FileResponse(request, f)
@@ -226,7 +220,7 @@ Just a basic HTTP response.
 
 	from waffleweb.response import HTTPResponse
 	
-	@yourApp.route('/index/')
+	@app.route('/index/')
 	def index(request):
 	    return HTTPResponse(request, 'Index Page.')
 		
@@ -240,7 +234,7 @@ A Json response. Sets the Content-Type to application/json.
 
 	from waffleweb.response import JSONResponse
 	
-	@yourApp.route('/getData/<data:str>')
+	@app.route('/getData/<data:str>')
 	def getData(request, data):
 	    return JSONResponse(request, {'data': data})
 		
@@ -255,7 +249,7 @@ A file response. Takes a bytes file object. The FileResponse sets the Content-Ty
 	from waffleweb.static import openStatic
 	from waffleweb.response import FileResponse
 	
-	@yourApp.route('/image/')
+	@app.route('/image/')
 	def image(request):
 	    with openStatic(f'/images/image.jpg') as f:
 	        return FileResponse(request, f)
@@ -269,7 +263,7 @@ Renders a template and returns a HTTPResponse. Default templating engine is `Jin
 
 	from waffleweb.response import render
 	
-	@yourApp.route('/nameGetter/<name:str>/')
+	@app.route('/nameGetter/<name:str>/')
 	def nameGetter(request, name):
 	    return render(request, 'nameGetter.html', context={'name': name})
 
@@ -282,7 +276,7 @@ Redirects to a page.
 
 	from waffleweb.response import redirect
 
-	@yourApp.route('/nothing/')
+	@app.route('/nothing/')
 	def nothing(request, name):
 	    return redirect(request, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', permanent=True)
       
@@ -294,7 +288,7 @@ To add custom error pages for status code you can use the ``errorhandler()`` dec
 
 .. code-block:: python
 
-	@yourApp.errorHandler(404)
+	@app.errorHandler(404)
 	def page404(request):
 	    return HTTPResponse(request, '404 Page', status=404)     
 	    
@@ -312,7 +306,7 @@ To access the method of the request use the ``method`` attribute. To access form
 
 	from waffleweb.response import render
 
-	@yourApp.route('/form/', methods=['GET', 'POST'])
+	@app.route('/form/', methods=['GET', 'POST'])
 	def form(request):
 	    if request.method == 'POST':
 	        name = request.POST['user']
@@ -339,7 +333,7 @@ You can access file uploads with the ``FILES`` attribute. The uploaded files are
 	from waffleweb.response import render
 	from waffleweb.static import openStatic
 
-	@yourApp.route('/upload/', methods=['GET', 'POST'])
+	@app.route('/upload/', methods=['GET', 'POST'])
 	def form(request):
 	    if request.method == 'POST':
 	        file = request.FILES.get('file').data
@@ -361,7 +355,7 @@ Getting Cookies:
 
 	from waffleweb.response import HTTPResponse
 
-	@yourApp.route('/index/')
+	@app.route('/index/')
 	def index(request):
 	    cookie = request.COOKIES.get('cookieName').value
 	    return HTTPResponse(request, 'Index Page')
@@ -372,7 +366,7 @@ Adding Cookies:
 
 	from waffleweb.response import HTTPResponse
 
-	@yourApp.route('/index/')
+	@app.route('/index/')
 	def index(request):
 	    res = HTTPResponse(request, 'Index Page')
 	    res.setCookie('cookieName', 'value')
@@ -384,7 +378,7 @@ Removing Cookies from response:
 
 	from waffleweb.response import HTTPResponse
 
-	@yourApp.route('/index/')
+	@app.route('/index/')
 	def index(request):
 	    res = HTTPResponse(request, 'Index Page')
 	    res.setCookie('cookieName', 'value')
@@ -395,18 +389,12 @@ For more information you can go to `Cookies <../How-To-Guides/Cookies.html>`_.
 	    
 Adding Middleware
 .................
-To add middleware to your project, you can add a argument to your ``WaffleProject`` object in your ``project.py`` file.
-
-``project.py:``
+To add middleware to your app, you can add use the ``middleware`` attribute. The ``middleware`` attribute is a special `Middleware class <../Internals/middleware.py.html>`_.
 
 .. code-block:: python
 
-	from waffleweb import WafflewebProject
+	from waffleweb import app
 
-	middleware = [
-	    'addCookieMiddleware.addCookie'
-	]
+	app.middleware.append('addCookieMiddleware.addCookie')
 	
-	yourProject = WaffleProject(apps, middleware=middleware)
-	
-For more information you can go to `Middleware <../How-To-Guides/Middleware.html>`_.
+For more information you can go to the `Middleware How-To Guide <../How-To-Guides/Middleware.html>`_.

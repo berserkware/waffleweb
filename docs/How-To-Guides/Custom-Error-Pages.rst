@@ -12,7 +12,7 @@ This handler gets called when a 404 page is needed:
 
 	from waffleweb.response import render
 
-	@yourApp.errorHandler(404)
+	@app.errorHandler(404)
 	def pageNotFound(request):
 	    return render(request, '404.html', {'path': request.path}, status=404)
 
@@ -22,7 +22,7 @@ This handler gets called when an internal server error occurs:
 
 	from waffleweb.response import render
 
-	@yourApp.errorHandler(500)
+	@app.errorHandler(500)
 	def serverError(request):
 	    return render(request, '500.html', status=500)
 
@@ -32,7 +32,7 @@ This handler gets called when the client sends a method that is not allowed:
 
 	from waffleweb.response import render
 
-	@yourApp.errorHandler(405)
+	@app.errorHandler(405)
 	def methodNotAllowed(request):
 	    return render(request, '405.html', {'method': request.method}, status=405)
 	    
@@ -40,7 +40,7 @@ This handler gets called when the client send a malformed request. It must not t
 	    
 .. code-block:: python
 
-	@yourApp.errorHandler(400)
+	@app.errorHandler(400)
 	def methodNotAllowed():
 	    return render(filePath='405.html')
 	    

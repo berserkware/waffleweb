@@ -1,8 +1,19 @@
 import re
+import os
+import socket
+import ipaddress
+import datetime
+import traceback
+import waffleweb
 
-from waffleweb.middleware import MiddlewareHandler
-from waffleweb.request import Request,RequestHandler
-from waffleweb.response import HTTP404
+from waffleweb.middleware import MiddlewareHandler, Middleware
+from waffleweb.request import Request, RequestHandler
+from waffleweb.response import HTTP404, HTTPResponse
+from waffleweb.exceptions import ParsingError
+from waffleweb.errorResponses import badRequest
+from waffleweb.template import renderErrorPage
+from waffleweb.wsgi import WsgiHandler
+from waffleweb.datatypes import MultiValueOneKeyDict
 
 class View:
     '''A view.'''
@@ -14,7 +25,6 @@ class View:
         name=None,
         view=None,
         allowedMethods=None,
-        app=None
         ):
         self.unstripedPath = unstripedPath
         self.path = path
@@ -22,7 +32,6 @@ class View:
         self.name = name
         self.view = view
         self.allowedMethods = allowedMethods
-        self.app = app
         
     def hasPathHasArgs(self) -> bool:
         for part in self.splitPath:
@@ -35,23 +44,18 @@ class ErrorHandler:
         self,
         statusCode,
         view,
-        app
         ):
         self.statusCode = statusCode
         self.view = view
-        self.app = app
 
 class WaffleApp():
     '''
-    The WaffleApp() class is the centre of all the apps for your project.
-    It only takes one argument: name, which is the name of your
-    application. It is automatically defined when you create an app as so: 
+    The WaffleApp() class is the center of your website.
     app = WaffleApp('yourAppName')
     '''
 
-    def __init__(self, appName: str, middleware: list[str]=[]):
-        self.appName = appName
-        self.middleware = middleware
+    def __init__(self):
+        self.middleware = Middleware()
         self.views = []
         self.errorHandlers = []
 
@@ -114,7 +118,6 @@ class WaffleApp():
                     name=(view.__name__ if name == None else name),
                     view=view,
                     allowedMethods=methods,
-                    app=self
                     ))
 
                 def wrapper(*args, **kwargs):
@@ -138,7 +141,7 @@ class WaffleApp():
                     raise ValueError('HTTP status code must be a integer from 100 to 599.')
                     
             self.errorHandlers.append(
-                ErrorHandler(statusCode, view, self)
+                ErrorHandler(statusCode, view)
             )
             def wrapper(*args, **kwargs):
                 return view(*args, **kwargs)
@@ -148,29 +151,152 @@ class WaffleApp():
         
     def request(self, rawRequest: bytes):
         '''Sends a request to any of the views.'''
-        apps = [{
-            'module': __name__,
-            'app': self
-            }]
+        
         request = Request(rawRequest, '127.0.0.1')
-        handler = RequestHandler(request, debug=False, apps=apps)
+        handler = RequestHandler(request, debug=False, app=self)
         
-        middlewareHandler = MiddlewareHandler(self.middleware, apps)
+        middlewareHandler = MiddlewareHandler(self.middleware)
         
-        view = None
-        try:
-            #Run middleware on Request
-            view = handler.getView()[0]
-            request = middlewareHandler.runRequestMiddleware(request, view)
-            handler.request = request
-        except HTTP404:
-            pass
+        request = middlewareHandler.runRequestMiddleware(request)
         
         #gets the response
         response = handler.getResponse()
 
-        if view is not None:
-            #Run middleware on response
-            response = middlewareHandler.runResponseMiddleware(response, view)
+        response = middlewareHandler.runResponseMiddleware(response)
             
         return response
+        
+    def run(self, host='127.0.0.1', port=8000, debug=False):
+        '''
+        This runs the test server,
+        default host is 127.0.0.1,
+        default port is 8000.
+        Note: don't use this in production
+        '''
+
+        #Checks if host is valid
+        try:
+            ipaddress.ip_address(host)
+        except ValueError:
+            raise ValueError('host is invalid!')
+
+        #Checks if port is valid
+        try:
+            port = int(port)
+        except ValueError:
+            raise TypeError('port has to be a int!')
+            
+        if 1 > port or port > 65535:
+            raise ValueError('port has to be more 1 and less that 65536!')
+
+        #Starts the test server socket
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            sock.bind((host, port))
+            sock.listen(1)
+            
+            middlewareHandler = MiddlewareHandler(self.middleware)
+
+            print(f'Waffleweb version {waffleweb.__version__}')
+            print(f'Server listening on host {host}, port {port}')
+            print(f'Press Ctrl+C to stop server')
+            try:
+                while True:
+                    try:
+                        #waits for connection to server
+                        conn, addr = sock.accept()
+
+                        req = conn.recv(2048)
+                        
+                        #turns the request into a Request object.
+                        request = Request(req, addr)
+
+                        #Creates a RequestHandler object.
+                        handler = RequestHandler(request, debug)
+
+                        request = middlewareHandler.runRequestMiddleware(request)
+                        
+                        #gets the response
+                        response = handler.getResponse()
+
+                        #Run middleware on response
+                        response = middlewareHandler.runResponseMiddleware(response)
+                            
+                        #sends the response
+                        conn.sendall(bytes(response))
+
+                        #prints the request information
+                        timeNow = datetime.datetime.now()
+                        print(f'[{timeNow.strftime("%m/%d/%Y %H:%M:%S")}] {handler.request.HTTPVersion} {handler.request.method} {handler.request.path} {response.statusCode} {response.reasonPhrase}')
+
+                        #closes the connection
+                        conn.close()
+                    except ParsingError:
+                        return bytes(badRequest(self, debug))
+                    except Exception as e:
+                        #gets the exception
+                        exception = traceback.TracebackException.from_exception(e)
+                        
+                        #prints the excepts
+                        traceback.print_exc()
+
+                        #if debug mode is on return a page with the error data else give generic error
+                        if debug:
+                            splitTraceback = []
+                            #gets the traceback
+                            stack = exception.stack.format()
+                            for stackLine in stack:
+                                stackLines = []
+                                
+                                splitStackLine = stackLine.split(', ')
+                                file = splitStackLine[0]
+                                lineNumber = splitStackLine[1]
+                                code = splitStackLine[2].strip('\n')
+                                
+                                #Gets the filePath line
+                                filePath = file.strip().split(' ')[1].strip('"')
+                                func = code.split(' ')[1].strip('\n').strip()
+                                stackLines.append(f'{filePath} in {func}():')
+
+                                #Gets the code line
+                                lineNumber = lineNumber.split(' ')[1]
+                                code = stackLine.split('\n')[1]
+
+                                stackLines.append(f'{lineNumber}: {code}')
+
+                                splitTraceback.append(f'<code>{stackLines[0]}</code><br><div style="width: 100%; background-color: #d1d1d1;"><code style="margin-left: 15px; margin-top: 0px; margin-bottom: 0px;">{stackLines[1]}</code></div><br>')
+
+
+                            stackStr = '\n'.join(splitTraceback)
+
+                            context = {
+                                'mainErrorMessage': exception.exc_type.__name__,
+                                'subErrorMessage': str(e),
+                                'trackbackMessage': stackStr,
+                                }
+
+                            response = HTTPResponse(content=renderErrorPage(context['mainErrorMessage'], context['subErrorMessage'], context['trackbackMessage']), status=500)
+                            conn.sendall(bytes(response))
+                        else:
+                            conn.sendall(bytes(HTTPResponse(content='<title>500 Internal Server Error</title><h1 style="font-family: Arial, Helvetica, sans-serif; text-align: center; font-size: 80px; margin-bottom: 0px;">500</h1><h3 style="font-family: Arial, Helvetica, sans-serif; text-align: center; color: #5c5c5c; margin-top: 0px;">Internal Server Error.</h3>', status=500)))
+
+            except KeyboardInterrupt as e:
+                print('\nKeyboardInterrupt, Closing server')
+                return
+                
+    def wsgiApplication(self, environ, startResponse):
+        middlewareHandler = MiddlewareHandler(self.middleware)
+        handler = WsgiHandler(MultiValueOneKeyDict(environ), self, middlewareHandler)
+        
+        #Gets the response
+        handler.getResponse()
+        
+        #Gets the data
+        content = handler.getResponseContent()
+        headers = handler.getResponseHeaders()
+        status = handler.getResponseStatus()
+
+        startResponse(status, headers)
+        return iter([content])
+                
+app = WaffleApp()

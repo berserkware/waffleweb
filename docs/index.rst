@@ -27,17 +27,16 @@ Contents
     | 2.9. `Middleware <How-To-Guides/Middleware.html>`_
     | 2.10. `Deploying Your Project <How-To-Guides/Deploying-Your-Project.html>`_
 3. `Internals <Internals/Index.html>`_
-    | 3.1. `project.py <Internals/project.py.html>`_
-    | 3.2. `app.py <Internals/app.py.html>`_
-    | 3.3. `response.py <Internals/response.py.html>`_
-    | 3.4. `request.py <Internals/request.py.html>`_ 
-    | 3.5. `static.py <Internals/static.py.html>`_
-    | 3.6. `template.py <Internals/template.py.html>`_ 
-    | 3.7. `middleware.py <Internals/middleware.py.html>`_ 
-    | 3.8. `wsgi.py <Internals/wsgi.py.html>`_
-    | 3.9. `datatypes.py <Internals/datatypes.py.html>`_
-    | 3.10. `cookie.py <Internals/cookie.py.html>`_
-    | 3.11. `files.py <Internals/files.py.html>`_
-    | 3.12. `parser.py <Internals/parser.py.html>`_ 
-    | 3.13. `errorResponses.py <Internals/errorResponses.py.html>`_
-    | 3.14. `Testing Waffleweb <Internals/Testing-Waffleweb.html>`_
+    | 3.1. `app.py <Internals/app.py.html>`_
+    | 3.2. `response.py <Internals/response.py.html>`_
+    | 3.3. `request.py <Internals/request.py.html>`_ 
+    | 3.4. `static.py <Internals/static.py.html>`_
+    | 3.5. `template.py <Internals/template.py.html>`_ 
+    | 3.6. `middleware.py <Internals/middleware.py.html>`_ 
+    | 3.7. `wsgi.py <Internals/wsgi.py.html>`_
+    | 3.8. `datatypes.py <Internals/datatypes.py.html>`_
+    | 3.9. `cookie.py <Internals/cookie.py.html>`_
+    | 3.10. `files.py <Internals/files.py.html>`_
+    | 3.11. `parser.py <Internals/parser.py.html>`_ 
+    | 3.12. `errorResponses.py <Internals/errorResponses.py.html>`_
+    | 3.13. `Testing Waffleweb <Internals/Testing-Waffleweb.html>`_

@@ -7,7 +7,7 @@ All good websites need static files like images, fonts and CSS. In this How-To g
 Adding Static Files
 ...................
 
-You can add static files to your project by creating a directory in your project with your ``STATIC_DIR`` (default is "/static") and putting your static files in there. 
+You can add static files to your application by creating a directory in your project with your ``STATIC_DIR`` (default is "/static") and putting your static files in there. 
 
 Changing the Static Directory
 .............................
@@ -35,7 +35,7 @@ To access your static files from your route functions you can use the ``openStat
 	from waffleweb.static import openStatic
 	from waffleweb.response import FileResponse
 
-	@yourApp.route('/file', methods=['GET'])
+	@app.route('/file', methods=['GET'])
 	def file(request):
 	    with openStatic('file.jpg') as f:
 		      return FileResponse(request, f)
