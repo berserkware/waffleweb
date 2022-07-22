@@ -212,7 +212,7 @@ class WaffleApp():
                         request = Request(req, addr)
 
                         #Creates a RequestHandler object.
-                        handler = RequestHandler(request, debug)
+                        handler = RequestHandler(request, debug, self)
 
                         request = middlewareHandler.runRequestMiddleware(request)
                         
