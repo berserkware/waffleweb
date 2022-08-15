@@ -210,46 +210,46 @@ class ErrorHandlerTest(unittest.TestCase):
 
         self.assertEqual(response.content, b'data')
         
-    def test_getErrorHandlerByResponse(self):
+    def test_getErrorHandlerResponseByResponse(self):
         request = Request(
             b'GET /statusNoHandler HTTP/1.1\r\n\r\n', 
             '101.98.137.19'
             )
 
         handler = RequestHandler(request)
-        res = handler.getErrorHandler(response=HTTPResponse(request, 'test', status=220))
+        res = handler.getErrorHandlerResponse(response=HTTPResponse(request, 'test', status=220))
         
         self.assertEqual(res.content, b'220 Page')
         
-    def test_getErrorHandlerByStatus(self):
+    def test_getErrorHandlerResponseByStatus(self):
         request = Request(
             b'GET /statusNoHandler HTTP/1.1\r\n\r\n', 
             '101.98.137.19'
             )
 
         handler = RequestHandler(request)
-        res = handler.getErrorHandler(statusCode=220)
+        res = handler.getErrorHandlerResponse(statusCode=220)
         
         self.assertEqual(res.content, b'220 Page')
         
-    def test_getErrorHandlerStatusNoHandler(self):
+    def test_getErrorHandlerResponseStatusNoHandler(self):
         request = Request(
             b'GET /statusNoHandler HTTP/1.1\r\n\r\n', 
             '101.98.137.19'
             )
 
         handler = RequestHandler(request)
-        res = handler.getErrorHandler(statusCode=223)
+        res = handler.getErrorHandlerResponse(statusCode=223)
         
         self.assertEqual(res, None)
         
-    def test_getErrorHandlerByResponseNoHandler(self):
+    def test_getErrorHandlerResponseByResponseNoHandler(self):
         request = Request(
             b'GET /statusNoHandler HTTP/1.1\r\n\r\n', 
             '101.98.137.19'
             )
         res = HTTPResponse(request, 'test', status=223)
         handler = RequestHandler(request)
-        errorHandler = handler.getErrorHandler(response=res)
+        errorHandler = handler.getErrorHandlerResponse(response=res)
         
         self.assertEqual(errorHandler.content, res.content)

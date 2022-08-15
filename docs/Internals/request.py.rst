@@ -101,24 +101,12 @@ Splits the request's URL into the different parts. Returns a ``tuple`` with the 
 **Returns:** ``tuple``
 
 -------------
-``getView()``
+``findView()``
 -------------
 
-Gets the view function matching the URL and the URL variables in a dictionary, If a view matching the URL can't be found a ``HTTP404`` will be raised. Returns (``viewFunc``, {view arguments}).
+Finds the view function matching the URL and the URL variables in a dictionary, If a view matching the URL can't be found a ``HTTP404`` will be raised. Returns (view function, {view arguments}).
 
 **Returns:** ``tuple``
-
-----------------------------
-``_handleGet(view, kwargs)``
-----------------------------
-
-Handles GET request by running the view functions with the kwargs and requests given. Returns what the matched view returns.
-
-**Parameters:**
- - **view** (``func``) - The view function.
- - **kwargs** (``dict``) - The URL variables for the function.
-
-**Returns:** Depends
 
 -----------------------------
 ``_handleHead(view, kwargs)``
@@ -131,55 +119,7 @@ Handles HEAD request by running the view functions with the kwargs and requests 
  - **kwargs** (``dict``) - The URL variables for the function.
 
 **Returns:** Depends
- 
------------------------------
-``_handlePost(view, kwargs)``
------------------------------
 
-Handles POST request by running the view functions with the kwargs and requests given. Returns what the matched view returns.
-
-**Parameters:**
- - **view** (``func``) - The view function.
- - **kwargs** (``dict``) - The URL variables for the function.
-
-**Returns:** Depends
- 
-----------------------------
-``_handlePut(view, kwargs)``
-----------------------------
-
-Handles PUT request by running the view functions with the kwargs and requests given. Returns what the matched view returns.
-
-**Parameters:**
- - **view** (``func``) - The view function.
- - **kwargs** (``dict``) - The URL variables for the function.
-
-**Returns:** Depends
-
--------------------------------
-``_handleDelete(view, kwargs)``
--------------------------------
-
-Handles DELETE request by running the view functions with the kwargs and requests given. Returns what the matched view returns.
-
-**Returns:** Depends
-
-**Parameters:**
- - **view** (``func``) - The view function.
- - **kwargs** (``dict``) - The URL variables for the function.
- 
---------------------------------
-``_handleConnect(view, kwargs)``
---------------------------------
-
-Handles CONNECT request by running the view functions with the kwargs and requests given. Returns what the matched view returns.
-
-**Parameters:**
- - **view** (``func``) - The view function.
- - **kwargs** (``dict``) - The URL variables for the function.
-
-**Returns:** Depends
- 
 --------------------------------
 ``_handleOptions(view, kwargs)``
 --------------------------------
@@ -192,32 +132,21 @@ Handles OPTIONS request by basically ignores the view function and returning a r
 
 **Returns:** Depends
 
-------------------------------
-``_handleTrace(view, kwargs)``
-------------------------------
+---------------------------------------
+``_handleMethod(method, view, kwargs)``
+---------------------------------------
 
-Handles TRACE request by running the view functions with the kwargs and requests given. Returns what the matched view returns.
-
-**Parameters:**
- - **view** (``func``) - The view function.
- - **kwargs** (``dict``) - The URL variables for the function.
-
-**Returns:** Depends
- 
-------------------------------
-``_handlePatch(view, kwargs)``
-------------------------------
-
-Handles PATCH request by running the view functions with the kwargs and requests given. Returns what the matched view returns.
+Handles methods. If the ``method`` is HEAD, then it will return ``_handleHead()``. If the ``method`` is OPTIONS, then it will return ``_handleOptions()``. Any other method will just return what the view function returns.
 
 **Parameters:**
+ - **method** (``str``) - The method of the request.
  - **view** (``func``) - The view function.
  - **kwargs** (``dict``) - The URL variables for the function.
 
 **Returns:** Depends
  
 ---------------------------------------------------
-``getErrorHandler(response=None, statusCode=None)``
+``getErrorHandlerResponse(response=None, statusCode=None)``
 ---------------------------------------------------
 
 Looks for a error handler with the response's status code or the ``statusCode`` arg. If it finds an error handler it returns the response from the error handler otherwise it returns the ``response`` arg. You should provide either a response or a statusCode.
@@ -240,14 +169,6 @@ If a ``HTTP404`` is raised this function will get called. If debug is on it will
 ``_405MethodNotAllowed(allowedMethods)``
 ----------------------------------------
 If the view found does not allow the request's method then this will be called. If debug is on it will return a default 405 error page. If debug is off then it will try to get a error handler, but if one cannot be found it will return a plain 405 page.
-
-**Returns:** ``HTTPResponse``
-
------------------------------
-``_501NotImplementedError()``
------------------------------
-
-This will be called when the request's method is unknown this will be called. If debug is on it will return a default 501 error page. If debug is off then it will try to get a error handler, but if one cannot be found it will return a plain 501 page.
 
 **Returns:** ``HTTPResponse``
 

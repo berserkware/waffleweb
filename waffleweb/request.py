@@ -7,6 +7,7 @@ except ModuleNotFoundError:
     settings = None
 
 from urllib.parse import urlparse, unquote
+from waffleweb.errorResponses import notImplementedError, pageNotFound
 from waffleweb.cookie import Cookies
 from waffleweb.response import HTTP404, FileResponse, HTTPResponse, HTTPResponsePermenentRedirect, JSONResponse
 from waffleweb.static import getStaticFileResponse
@@ -147,7 +148,7 @@ class RequestHandler:
 
         return (root, splitRoot, ext)
 
-    def getView(self):
+    def findView(self):
         '''Finds a view matching the request url, Returns view and the views kwargs.'''
 
         self.root, self.splitRoot, self.ext = self._splitURL()
@@ -180,14 +181,6 @@ class RequestHandler:
     
         raise HTTP404
 
-
-    def _handleGet(self, view, kwargs):
-        if 'GET' not in view.allowedMethods:
-            #Returns 405 response if request method is not in the view's allowed methods
-            return self._405MethodNotAllowed(view.allowedMethods)
-
-        return view.view(self.request, **kwargs)
-
     def _handleHead(self, view, kwargs):
         #Checks if GET or HEAD is in allowed methods
         if 'GET' not in view.allowedMethods and 'HEAD' not in view.allowedMethods:
@@ -204,34 +197,6 @@ class RequestHandler:
             newView.fileObj = None
 
         return newView
-
-    def _handlePost(self, view, kwargs):
-        if 'POST' not in view.allowedMethods:
-            #Returns 405 response if request method is not in the view's allowed methods
-            return self._405MethodNotAllowed(view.allowedMethods)
-
-        return view.view(self.request, **kwargs)
-
-    def _handlePut(self, view, kwargs):
-        if 'PUT' not in view.allowedMethods:
-            #Returns 405 response if request method is not in the view's allowed methods
-            return self._405MethodNotAllowed(view.allowedMethods)
-
-        return view.view(self.request, **kwargs)
-
-    def _handleDelete(self, view, kwargs):
-        if 'DELETE' not in view.allowedMethods:
-            #Returns 405 response if request method is not in the view's allowed methods
-            return self._405MethodNotAllowed(view.allowedMethods)
-
-        return view.view(self.request, **kwargs)
-
-    def _handleConnect(self, view, kwargs):
-        if 'CONNECT' not in view.allowedMethods:
-            #Returns 405 response if request method is not in the view's allowed methods
-            return self._405MethodNotAllowed(view.allowedMethods)
-
-        return view.view(self.request, **kwargs)
 
     def _handleOptions(self, view, kwargs):
         #Checks if GET or OPTIONS is in allowed methods
@@ -257,21 +222,19 @@ class RequestHandler:
         res.headers['Allow'] = methods
         return res
 
-    def _handleTrace(self, view, kwargs):
-        if 'TRACE' not in view.allowedMethods:
-            #Returns 405 response if request method is not in the view's allowed methods
-            return self._405MethodNotAllowed(view.allowedMethods)
+    def _handleMethod(self, method, view, kwargs):
+        if method == 'HEAD':
+            return self._handleHead(view, kwargs)
+        elif method == 'OPTIONS':
+            return self._handleOptions(view, kwargs)
+        else:
+            if method not in view.allowedMethods:
+                #Returns 405 response if request method is not in the view's allowed methods
+                return self._405MethodNotAllowed(view.allowedMethods)
 
-        return view.view(self.request, **kwargs)
+            return view.view(self.request, **kwargs)
 
-    def _handlePatch(self, view, kwargs):
-        if 'PATCH' not in view.allowedMethods:
-            #Returns 405 response if request method is not in the view's allowed methods
-            return self._405MethodNotAllowed(view.allowedMethods)
-
-        return view.view(self.request, **kwargs)
-
-    def getErrorHandler(self, response=None, statusCode=None):
+    def getErrorHandlerResponse(self, response=None, statusCode=None):
         #Goes through all the errorHandlers
         for handler in self.errorHandlers:
             try:
@@ -285,38 +248,9 @@ class RequestHandler:
                 pass
         return response
 
-    def _handle404View(self):
-        response = self.getErrorHandler(statusCode=404)
-        
-        if self.debug:
-            if response is None:
-                #Gets all searched views.
-                searchedViews = []
-                for view in self.views:
-                    path = view.unstripedPath
-
-                    #turns the arrows into one html cannot render
-                    path = path.replace('<', '&lt;')
-                    path = path.replace('>', '&gt;')
-                    searchedViews.append(path)
-
-                page = renderErrorPage(
-                    mainMessage='404 Page Not Found', 
-                    subMessage=f'The requested page could not be found',
-                    traceback=f'Views searched:<br>{"<br>".join(searchedViews)}',
-                    )
-                return HTTPResponse(content=page, status=404)
-            else:
-                return response
-        else:
-            if response is None:
-                return HTTPResponse(content='<title>404 Not Found</title><h1 style="font-family: Arial, Helvetica, sans-serif; text-align: center; font-size: 80px; margin-bottom: 0px;">404</h1><h3 style="font-family: Arial, Helvetica, sans-serif; text-align: center; color: #5c5c5c; margin-top: 0px;">The requested page could not be found.</h3>', status=404)
-            else:
-                return response
-
     def _405MethodNotAllowed(self, allowedMethods) -> HTTPResponse:
         '''Returns a 405 response'''
-        response = self.getErrorHandler(statusCode=405)
+        response = self.getErrorHandlerResponse(statusCode=405)
         
         methods = ', '.join(allowedMethods)
         if self.debug:
@@ -338,24 +272,6 @@ class RequestHandler:
             else:
                 return response
 
-    def _501NotImplementedError(self):
-        response = self.getErrorHandler(statusCode=501)
-        if self.debug:
-            if response == None:
-                render = renderErrorPage(
-                    mainMessage='501 Not Implemented Error', 
-                    subMessage=f'The requested method is not implemented',
-                    traceback=f'Method:{self.request.method}',
-                )
-                return HTTPResponse(content=render, status=501) 
-            else:
-                return response
-        else:
-            if response == None:
-                return HTTPResponse(content='Not Implemented Error', status=501)
-            else:
-                return response
-
     def getResponse(self):
         '''Gets a response to a request, retuerns Response.'''
 
@@ -367,9 +283,10 @@ class RequestHandler:
 
             try:
                 #If the view path ends without a slash and the client goes to that page with a slash raise 404
-                view, kwargs = self.getView()
+                view, kwargs = self.findView()
                 if view.unstripedPath.endswith('/') == False and root.endswith('/'):
                     raise HTTP404
+
                 #if the view path ends with a slash and the client goes to that page without a slash redirect to page without slash
                 elif view.unstripedPath.endswith('/') and root.endswith('/') == False:
                     #Gets the url params and adds them to the redirected url
@@ -377,38 +294,20 @@ class RequestHandler:
                     params = (f'?{"?".join(paramsSplit[1:])}' if len(paramsSplit) >= 2 else '')
                     return HTTPResponsePermenentRedirect(f'{root}/{params}')
 
-                #Gets methods and runs it's handle function
-                if self.request.method == 'GET':
-                    response = self._handleGet(view, kwargs)
-                elif self.request.method == 'HEAD':
-                    response = self._handleHead(view, kwargs)
-                elif self.request.method == 'POST':
-                    response = self._handlePost(view, kwargs)
-                elif self.request.method == 'PUT':
-                    response = self._handlePut(view, kwargs)
-                elif self.request.method == 'DELETE':
-                    response = self._handleDelete(view, kwargs)
-                elif self.request.method == 'CONNECT':
-                    response = self._handleConnect(view, kwargs)
-                elif self.request.method == 'POST':
-                    response = self._handlePost(view, kwargs)
-                elif self.request.method == 'OPTIONS':
-                    response = self._handleOptions(view, kwargs)
-                elif self.request.method == 'TRACE':
-                    response = self._handleTrace(view, kwargs)
-                elif self.request.method == 'PATCH':
-                    response = self._handlePatch(view, kwargs)
-                else:
-                    response = self._501NotImplementedError()
-                    
-                response = self.getErrorHandler(response)
+                #This runs the view function, and gets the response.
+                response = self._handleMethod(self.request.method, view, kwargs)
+
+                #If error handler doesnt exist for the status code of the response, then this returns the response given.
+                response = self.getErrorHandlerResponse(response)
                 return response
                 
             except HTTP404:
-                return self._handle404View()
+                errorHandlerRequest = self.getErrorHandlerResponse(statusCode=404)
+                return pageNotFound(errorHandlerRequest, self.debug, self.views)
         else:
             try:
                 return getStaticFileResponse(self.request, root, ext)
             except HTTP404:
-                return self._handle404View()
+                errorHandlerRequest = self.getErrorHandlerResponse(statusCode=404)
+                return pageNotFound(errorHandlerRequest, self.debug, self.views)
                 
