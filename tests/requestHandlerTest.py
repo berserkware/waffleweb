@@ -15,7 +15,7 @@ class SplitUrlTest(unittest.TestCase):
             '101.98.137.19'
             )
 
-        handler = RequestHandler(request, [])
+        handler = RequestHandler(request)
 
         self.assertEqual(handler._splitURL(), ('/page1/10/index', ['page1', '10', 'index'], ''))
 
@@ -25,7 +25,7 @@ class SplitUrlTest(unittest.TestCase):
             '127.0.0.1'
             )
 
-        handler = RequestHandler(request, [])
+        handler = RequestHandler(request)
 
         self.assertEqual(handler._splitURL(), ('/test/testExt', ['test', 'testExt'], '.jpg'))
 
@@ -35,7 +35,7 @@ class SplitUrlTest(unittest.TestCase):
             '127.0.0.1'
             )
             
-        handler = RequestHandler(request, [])
+        handler = RequestHandler(request)
 
         self.assertEqual(handler._splitURL(), ('/', [''], ''))
 
@@ -216,7 +216,7 @@ class ErrorHandlerTest(unittest.TestCase):
             '101.98.137.19'
             )
 
-        handler = RequestHandler(request, [])
+        handler = RequestHandler(request)
         res = handler.getErrorHandler(response=HTTPResponse(request, 'test', status=220))
         
         self.assertEqual(res.content, b'220 Page')
@@ -227,7 +227,7 @@ class ErrorHandlerTest(unittest.TestCase):
             '101.98.137.19'
             )
 
-        handler = RequestHandler(request, [])
+        handler = RequestHandler(request)
         res = handler.getErrorHandler(statusCode=220)
         
         self.assertEqual(res.content, b'220 Page')
@@ -238,7 +238,7 @@ class ErrorHandlerTest(unittest.TestCase):
             '101.98.137.19'
             )
 
-        handler = RequestHandler(request, [])
+        handler = RequestHandler(request)
         res = handler.getErrorHandler(statusCode=223)
         
         self.assertEqual(res, None)
@@ -249,7 +249,7 @@ class ErrorHandlerTest(unittest.TestCase):
             '101.98.137.19'
             )
         res = HTTPResponse(request, 'test', status=223)
-        handler = RequestHandler(request, [])
+        handler = RequestHandler(request)
         errorHandler = handler.getErrorHandler(response=res)
         
         self.assertEqual(errorHandler.content, res.content)

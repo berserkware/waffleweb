@@ -80,7 +80,7 @@ A WSGI application. As outlined in `PEP 3333 <https://peps.python.org/pep-3333/>
 **Returns:** ``iter()``
 
 ======================================================================================================================
-``class waffleweb.app.View(unstripedPath=None, path=None, splitPath=None, name=None, view=None, allowedMethods=None)``
+``class waffleweb.app.View(unstripedPath, path, splitPath, name, view, allowedMethods)``
 ======================================================================================================================
 
 A class to store views.

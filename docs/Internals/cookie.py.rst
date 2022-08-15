@@ -3,7 +3,7 @@ cookie.py
 =========
 
 =================================================================================================================================
-``class waffleweb.cookie.Cookie(name, value, path=None, maxAge=None, domain=None, secure=False, HTTPOnly=False, sameSite='Lax`)``
+``class waffleweb.cookie.Cookie(name, value, path='', maxAge='', domain='', secure=False, HTTPOnly=False, sameSite='Lax`)``
 =================================================================================================================================
 
 A Cookie. ``str()`` returns a string for the Set-Cookie header.
@@ -19,7 +19,7 @@ A Cookie. ``str()`` returns a string for the Set-Cookie header.
  - **sameSite** (optional) (``str``) - If your cookie is first-party of same-site.
  
 =================================================================
-``class waffleweb.cookie.Cookies(cookies=None, *args, **kwargs)``
+``class waffleweb.cookie.Cookies(cookies='', *args, **kwargs)``
 =================================================================
 
 Inherites from ``dict``

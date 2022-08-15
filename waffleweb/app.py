@@ -1,5 +1,4 @@
 import re
-import os
 import socket
 import ipaddress
 import datetime
@@ -8,7 +7,7 @@ import waffleweb
 
 from waffleweb.middleware import MiddlewareHandler, Middleware
 from waffleweb.request import Request, RequestHandler
-from waffleweb.response import HTTP404, HTTPResponse
+from waffleweb.response import HTTPResponse
 from waffleweb.exceptions import ParsingError
 from waffleweb.errorResponses import badRequest
 from waffleweb.template import renderErrorPage
@@ -19,12 +18,12 @@ class View:
     '''A view.'''
     def __init__(
         self,
-        unstripedPath=None,
-        path=None,
-        splitPath=None,
-        name=None,
-        view=None,
-        allowedMethods=None,
+        unstripedPath,
+        path,
+        splitPath,
+        name,
+        view,
+        allowedMethods,
         ):
         self.unstripedPath = unstripedPath
         self.path = path
@@ -51,7 +50,7 @@ class ErrorHandler:
 class WaffleApp():
     '''
     The WaffleApp() class is the center of your website.
-    app = WaffleApp('yourAppName')
+    app = WaffleApp()
     '''
 
     def __init__(self):
@@ -130,19 +129,19 @@ class WaffleApp():
         
     def errorHandler(self, statusCode: int):
         def decorator(view):
-            #Checks if status code is valid.
-            if statusCode is not None:
-                try:
-                    self.statusCode = int(statusCode)
-                except(ValueError, TypeError):
-                    raise TypeError('HTTP status code has to be an integer.')
+            #Checks if status code is valid
+            try:
+                intStatusCode = int(statusCode)
+            except(ValueError, TypeError):
+                raise TypeError('HTTP status code has to be an integer.')
 
-                if 100 > statusCode or statusCode > 599:
-                    raise ValueError('HTTP status code must be a integer from 100 to 599.')
+            if 100 > intStatusCode or intStatusCode > 599:
+                raise ValueError('HTTP status code must be a integer from 100 to 599.')
                     
             self.errorHandlers.append(
-                ErrorHandler(statusCode, view)
+                ErrorHandler(intStatusCode, view)
             )
+
             def wrapper(*args, **kwargs):
                 return view(*args, **kwargs)
                 
@@ -152,6 +151,8 @@ class WaffleApp():
     def request(self, rawRequest: bytes):
         '''Sends a request to any of the views.'''
         
+        waffleweb.currentRunningApp = self
+
         request = Request(rawRequest, '127.0.0.1')
         handler = RequestHandler(request, debug=False, app=self)
         
@@ -159,7 +160,6 @@ class WaffleApp():
         
         request = middlewareHandler.runRequestMiddleware(request)
         
-        #gets the response
         response = handler.getResponse()
 
         response = middlewareHandler.runResponseMiddleware(response)
@@ -189,6 +189,8 @@ class WaffleApp():
         if 1 > port or port > 65535:
             raise ValueError('port has to be more 1 and less that 65536!')
 
+        waffleweb.currentRunningApp = self
+
         #Starts the test server socket
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
             sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -207,12 +209,21 @@ class WaffleApp():
                         conn, addr = sock.accept()
 
                         req = conn.recv(2048)
-                        
-                        #turns the request into a Request object.
-                        request = Request(req, addr)
+                        try:
+                            #Turns the request into a Request object.
+                            request = Request(req, addr)
+                        except ParsingError:
+                            response = badRequest(self, debug)
+                            
+                            #prints the request information
+                            timeNow = datetime.datetime.now()
+                            print(f'[{timeNow.strftime("%m/%d/%Y %H:%M:%S")}] Unknown Unknown Unknown {response.statusCode} {response.reasonPhrase}')
+                            conn.sendall(bytes(response))
+                            conn.close()
+                            continue
 
                         #Creates a RequestHandler object.
-                        handler = RequestHandler(request, debug, self)
+                        handler = RequestHandler(request, debug)
 
                         request = middlewareHandler.runRequestMiddleware(request)
                         
@@ -231,8 +242,6 @@ class WaffleApp():
 
                         #closes the connection
                         conn.close()
-                    except ParsingError:
-                        return bytes(badRequest(self, debug))
                     except Exception as e:
                         #gets the exception
                         exception = traceback.TracebackException.from_exception(e)
@@ -279,12 +288,15 @@ class WaffleApp():
                             conn.sendall(bytes(response))
                         else:
                             conn.sendall(bytes(HTTPResponse(content='<title>500 Internal Server Error</title><h1 style="font-family: Arial, Helvetica, sans-serif; text-align: center; font-size: 80px; margin-bottom: 0px;">500</h1><h3 style="font-family: Arial, Helvetica, sans-serif; text-align: center; color: #5c5c5c; margin-top: 0px;">Internal Server Error.</h3>', status=500)))
+                    conn.close()    
 
             except KeyboardInterrupt as e:
                 print('\nKeyboardInterrupt, Closing server')
                 return
                 
     def wsgiApplication(self, environ, startResponse):
+        waffleweb.currentRunningApp = self
+
         middlewareHandler = MiddlewareHandler(self.middleware)
         handler = WsgiHandler(MultiValueOneKeyDict(environ), self, middlewareHandler)
         

@@ -1,6 +1,5 @@
 import waffleweb
 import json
-import os
 import importlib
 import mimetypes
 try:
@@ -12,7 +11,7 @@ from datetime import datetime
 from pytz import timezone
 from http.client import responses
 
-from waffleweb.cookie import Cookies, Cookie
+from waffleweb.cookie import Cookie
 from waffleweb.template import renderTemplate
 from waffleweb.datatypes import MultiValueOneKeyDict
 
@@ -29,6 +28,7 @@ class HTTPResponseBase():
     ):
         self.headers = MultiValueOneKeyDict({})
         self._charset = charset
+        self.request = None
 
         #Added content type to headers
         if contentType is None:
@@ -79,17 +79,17 @@ class HTTPResponseBase():
             self, 
             name, 
             value, 
-            path=None, 
-            maxAge=None, 
-            domain=None, 
+            path='', 
+            maxAge='', 
+            domain='', 
             secure=False, 
             HTTPOnly=False, 
             sameSite='Lax', 
         ):
         '''Sets a cookie to a value, takes two arguments: name and value'''
-        if path is not None:
+        if path != '':
             self.headers['Set-Cookie'] = Cookie(name=name, value=value, path=path, maxAge=maxAge, domain=domain, secure=secure, HTTPOnly=HTTPOnly, sameSite=sameSite)
-        elif path is None and self.request is not None:
+        elif path == '' and self.request is not None:
             self.headers['Set-Cookie'] = Cookie(name=name, value=value, path=self.request.path, maxAge=maxAge, domain=domain, secure=secure, HTTPOnly=HTTPOnly, sameSite=sameSite)
         else:
             self.headers['Set-Cookie'] = Cookie(name=name, value=value, path='/', maxAge=maxAge, domain=domain, secure=secure, HTTPOnly=HTTPOnly, sameSite=sameSite)  
@@ -100,7 +100,7 @@ class HTTPResponseBase():
             if type(self.headers['Set-Cookie']) == list:
                 for count, cookie in enumerate(self.headers['Set-Cookie']):
                     if cookie.name == name:
-                        del self.header['Set-Cookie'][count]
+                        del self.headers['Set-Cookie'][count]
             else:
                 if self.headers['Set-Cookie'].name == name:
                     del self.headers['Set-Cookie']
@@ -145,7 +145,7 @@ class HTTPResponseBase():
 class HTTPResponse(HTTPResponseBase):
     '''Handles the HTTP responses and content.'''
 
-    def __init__(self, request=None, content=b'', *args, **kwargs):
+    def __init__(self, request=None, content='', *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.request = request
 
@@ -219,7 +219,7 @@ class HTTPResponsePermenentRedirect(HTTPResponseRedirectBase):
     '''A Http response permanent redirect, takes one argument: redirectTo'''
     statusCode = 301
 
-def render(request=None, filePath: str=None, context: dict={}, charset=None, status=None, reason=None):
+def render(request=None, filePath: str='', context: dict={}, charset=None, status=None, reason=None):
     '''
     Returns a HTTPResponse with the rendered template, this uses jinja2 as it's defualt.
     it takes 7 arguments:

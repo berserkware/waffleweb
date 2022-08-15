@@ -1,7 +1,6 @@
 import importlib
-import waffleweb
 
-from waffleweb.request import Request, RequestHandler
+from waffleweb.request import Request
 from waffleweb.exceptions import MiddlewareNotFoundError, MiddlewareImportError
 
 class Middleware:

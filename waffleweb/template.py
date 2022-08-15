@@ -5,12 +5,13 @@ try:
     settings = importlib.import_module('settings')
 except ModuleNotFoundError:
     settings = None
-    
-from waffleweb.exceptions import AppNotFoundError, ViewNotFoundError
-from jinja2 import Environment, FileSystemLoader, ModuleLoader, select_autoescape
+   
+from waffleweb.settings import getFromSettings
+from waffleweb.exceptions import ViewNotFoundError
+from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 def getRelativeUrl(viewName: str, **kwargs):
-    app = waffleweb.app
+    app = waffleweb.currentRunningApp
     
     for view in app.views:
         if view.name == viewName:
@@ -40,10 +41,8 @@ def getRelativeUrl(viewName: str, **kwargs):
 def _getEnvironmentFile() -> Environment:
     '''Gets a jinja Enviroment with the loader being FileSystemLoader.'''
 
-    #Gets the template directory
-    templateDir = waffleweb.defaults.DEFUALT_TEMPLATE_DIR
-    if hasattr(settings, 'TEMPLATE_DIR'):
-        templateDir = getattr(settings, 'TEMPLATE_DIR')
+    #Gets the template directory from the users settings files.
+    templateDir = getFromSettings('TEMPLATE_DIR', waffleweb.defaults.DEFUALT_TEMPLATE_DIR)
 
     env = Environment(
         loader=FileSystemLoader(searchpath=templateDir),
@@ -81,7 +80,7 @@ def renderTemplate(filePath: str, context: dict={}) -> str:
 
         return templateRender
     
-def renderErrorPage(mainMessage: str, subMessage: str=None, traceback: str=None) -> str:
+def renderErrorPage(mainMessage: str, subMessage: str='', traceback: str='') -> str:
     '''
     Renders an error page for debug, it takes 3 arguments:
      - mainMessage
@@ -104,11 +103,11 @@ def renderErrorPage(mainMessage: str, subMessage: str=None, traceback: str=None)
         </html>
     '''.format(
         mainMessage=mainMessage,
-        subMessage=(f'<h2 style="color: #7a7a7a; display: block; margin:15px; padding:0px;">{subMessage}</h2>' if subMessage is not None else ''),
+        subMessage=(f'<h2 style="color: #7a7a7a; display: block; margin:15px; padding:0px;">{subMessage}</h2>' if subMessage is not '' else ''),
         traceback=(f'''
                 <fieldset style="display: block; margin:15px; padding:0px;">
                     <legend style="margin-left:15px; margin-top:0px margin-bottom:0px padding:0px;"><h2 style="margin:0; padding:0px;">Traceback</h2></legend>
                     <h3 style="margin-left:15px; margin-top:5px; margin-bottom:10px; padding:0px;">{traceback}</h3>
                 </fieldset>
-                ''' if traceback is not None else ''),
+                ''' if traceback is not '' else ''),
         )

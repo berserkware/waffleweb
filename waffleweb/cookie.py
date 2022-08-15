@@ -15,9 +15,9 @@ class Cookie():
             self, 
             name: str, 
             value: str, 
-            path: str=None, 
-            maxAge: str=None, 
-            domain: str=None, 
+            path: str='', 
+            maxAge: str='', 
+            domain: str='', 
             secure: bool=False, 
             HTTPOnly: bool=False, 
             sameSite: str='Lax', 
@@ -36,7 +36,7 @@ class Cookie():
 
     def __str__(self):
         #returns str for Set-Cookie header
-        return f'{self.name}={self.value}{f"; path={self.path}" if self.path is not None else ""}{f"; Domain={self.domain}" if self.domain is not None else ""}{f"; Max-Age={self.maxAge}" if self.maxAge is not None else ""}{f"; Secure" if self.secure == True else ""}{f"; HttpOnly" if self.HTTPOnly == True else ""}{f"; SameSite={self.sameSite}" if self.sameSite is not None else ""}'
+        return f'{self.name}={self.value}{f"; path={self.path}" if self.path != "" else ""}{f"; Domain={self.domain}" if self.domain != "" else ""}{f"; Max-Age={self.maxAge}" if self.maxAge != "" else ""}{f"; Secure" if self.secure == True else ""}{f"; HttpOnly" if self.HTTPOnly == True else ""}{f"; SameSite={self.sameSite}" if self.sameSite is not None else ""}'
 
 class Cookies(dict):
     '''
@@ -44,11 +44,11 @@ class Cookies(dict):
      - cookies - a string of cookies, example: nameThing=valueThing; anotherNameThing=anotherValueThing
     '''
 
-    def __init__(self, cookies: str=None, *args, **kwargs):
+    def __init__(self, cookies: str='', *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         #Gets all the cookies from cookies
-        if cookies is not None:
+        if cookies != '':
             for cookie in cookies.split(';'):
                 name, value = cookie.split('=')
                 self[str(name).strip()] = Cookie(name, value, '/')

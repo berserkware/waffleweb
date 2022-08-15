@@ -12,7 +12,7 @@ Parses post data and returns two dictionaries in a tuple: post data and files. I
  - **body** (``bytes``) - The body of the request.
  - **contentType** (``str``) - The content type of the request.
  
-**Returns:** ``tuple[dict]``
+**Returns:** ``tuple[dict, dict]``
 
 ================================================
 ``function waffleweb.parser.parseBody(request)``

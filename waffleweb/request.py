@@ -10,8 +10,7 @@ from urllib.parse import urlparse, unquote
 from waffleweb.cookie import Cookies
 from waffleweb.response import HTTP404, FileResponse, HTTPResponse, HTTPResponsePermenentRedirect, JSONResponse
 from waffleweb.static import getStaticFileResponse
-from waffleweb.template import renderErrorPage, renderTemplate
-from waffleweb.files import File
+from waffleweb.template import renderErrorPage
 from waffleweb.parser import parseBody, parseHeaders, parsePost
 from waffleweb.datatypes import MultiValueOneKeyDict
 
@@ -104,8 +103,9 @@ class RequestHandler:
         self.app = app
         
         if app is None:
-            self.views = waffleweb.app.views
-            self.errorHandlers = waffleweb.app.errorHandlers
+            self.app = waffleweb.currentRunningApp
+            self.views = waffleweb.currentRunningApp.views
+            self.errorHandlers = waffleweb.currentRunningApp.errorHandlers
         else:
             self.views = app.views
             self.errorHandlers = app.errorHandlers

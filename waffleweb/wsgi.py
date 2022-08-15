@@ -1,7 +1,7 @@
 from waffleweb.errorResponses import badRequest
 from waffleweb.exceptions import ParsingError
 from waffleweb.request import RequestHandler, Request
-from waffleweb.response import HTTP404, HTTPResponse
+from waffleweb.response import HTTPResponse
 
 class WsgiHandler:
     def __init__(self, environ, app, middlewareHandler):

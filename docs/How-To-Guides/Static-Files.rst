@@ -60,9 +60,9 @@ To change how Waffleweb looks for static files you can make your own function to
 
 	DEFUALT_STATIC_FINDER = staticFinderFunction
 
-Your static finder function should take all the same arguments as ``open()`` and return what ``open()`` returns. It should return a file in bytes.
+Your static finder function should take a file or path, and return a path to the static file.
 
-The ``DEFUALT_STATIC_FINDER`` is called by ``openStatic()`` with all its arguments. ``openStatic()`` returns what the ``DEFUALT_STATIC_FINDER`` returns.
+The ``DEFUALT_STATIC_FINDER`` is called by ``openStatic()`` with it's ``file`` argument. ``openStatic()`` returns open() with the file being what the ``DEFUALT_STATIC_FINDER`` returns.
 
 When a file is accessed from the browser Waffleweb calls function as so:
 
@@ -70,4 +70,4 @@ When a file is accessed from the browser Waffleweb calls function as so:
 
 	#Accessed URL: "localhost:8000/CSS/file.css"
 
-	DEFUALT_STATIC_FINDER('CSS/file.css', 'rb', -1, None, None, None, True, None)
+	DEFUALT_STATIC_FINDER('CSS/file.css')

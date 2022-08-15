@@ -6,7 +6,7 @@ template.py
 ``function waffleweb.template.getRelativeUrl(viewName, **kwargs)``
 ==================================================================
 
-Gets the URL of the view from the viewName. The kwargs are the URL variables.
+Gets the URL of the view from the viewName. The kwargs are the URL variables. It uses the views from ``waffleweb.currentRunningApp``.
 
 **Parameters:**
  - **viewName** (``str``) - The name of the view.
@@ -33,7 +33,7 @@ Renders a template, returns the rendered template.
 **Returns:** ``str``
 
 =============================================================================================
-``function waffleweb.template.renderErrorPage(mainMessage, subMessage=None, traceback=None)``
+``function waffleweb.template.renderErrorPage(mainMessage, subMessage='', traceback='')``
 =============================================================================================
 
 Renders an error page for debug mode.

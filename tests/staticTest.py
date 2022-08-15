@@ -36,6 +36,7 @@ class StaticHandlerTest(unittest.TestCase):
 
 class FindStaticTest(unittest.TestCase):
     def test_findStaticContent(self):
-        with findStatic('test.html', 'r') as f:
+        path = findStatic('test.html')
+        with open(path, 'r') as f:
             file = f.read()
             self.assertEqual(file, '<h1>Testing Testing 123</h1>')

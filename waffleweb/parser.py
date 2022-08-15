@@ -79,7 +79,7 @@ def parsePost(body: bytes, contentType: str) -> dict:
 
     return (postData, files)
 
-def parseBody(request: bytes) -> str:
+def parseBody(request: bytes) -> bytes:
     try:
         splitContent = []
         isContent = False

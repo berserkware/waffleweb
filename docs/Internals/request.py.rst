@@ -78,7 +78,7 @@ A handler for requests to find the views and responses.
 **Parameters:**
  - **request** (``Request``) - The Request to use to find the response.
  - **debug** (``bool``) - If debug mode is on.
- - **app** (``WaffleApp``) - A WaffleApp to get views from, instead of waffleweb.app.app.
+ - **app** (``WaffleApp``) - A WaffleApp to get views from, instead of using the currently running app (``waffleweb.currentRunningApp``).
  
 ------------------------
 ``_getArg(index, part)``

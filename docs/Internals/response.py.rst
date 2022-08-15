@@ -95,7 +95,7 @@ The converts the value to bytes, encoding is the response's charset.
  - **value** (``str``) - The value to convert.
  
 =====================================================================================
-``class waffleweb.response.HTTPResponse(request=None, content=b'', *args, **kwargs)``
+``class waffleweb.response.HTTPResponse(request=None, content='', *args, **kwargs)``
 =====================================================================================
 
 Inherits from ``HTTPResponseBase``
@@ -177,7 +177,7 @@ Inherits from ``HTTPResponseRedirectBase``
 A permanent redirect, status code is 301.
 
 =======================================================================================================================
-``function waffleweb.response.render(request=None, filePath=None, context={}, charset=None, status=None, reason=None)``
+``function waffleweb.response.render(request=None, filePath='', context={}, charset=None, status=None, reason=None)``
 =======================================================================================================================
 
 Renders a template and returns a HTTPResponse. It uses `Jinja2 <https://palletsprojects.com/p/jinja/>`__ by default.
