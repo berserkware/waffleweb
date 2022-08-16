@@ -39,3 +39,16 @@ If a ``HTTP404`` is raised this function will get called in the request handler.
  - **views** (``list``) - The list of all the views to display for debug mode.
 
 **Returns:** ``HTTPResponse``
+
+=======================================================================================
+``function waffleweb.errorResponses.methodNotAllowed(response, debug, allowedMethods)``
+=======================================================================================
+
+If the client sends a request with a method not allowed in your view, then this function will get called. If response is not None, then it will be returned, but if the response is None then a basic error page will be returned.
+
+**Paramters:**
+ - **response** (``HTTPResponse``) - The response that the getErrorHandlerResponse method returns.
+ - **debug** (``bool``) - If debug mode is on.
+ - **allowedMethods** (``list``) - The list of all the methods that are allowed.
+
+**Returns:** ``HTTPResponse``

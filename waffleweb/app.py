@@ -5,7 +5,7 @@ import datetime
 import traceback
 import waffleweb
 
-from waffleweb.middleware import MiddlewareHandler, Middleware
+from waffleweb.middleware import runResponseMiddleware, runRequestMiddleware, Middleware
 from waffleweb.request import Request, RequestHandler
 from waffleweb.response import HTTPResponse
 from waffleweb.exceptions import ParsingError
@@ -156,13 +156,11 @@ class WaffleApp():
         request = Request(rawRequest, '127.0.0.1')
         handler = RequestHandler(request, debug=False, app=self)
         
-        middlewareHandler = MiddlewareHandler(self.middleware)
-        
-        request = middlewareHandler.runRequestMiddleware(request)
+        request = runRequestMiddleware(request, self.middleware)
         
         response = handler.getResponse()
 
-        response = middlewareHandler.runResponseMiddleware(response)
+        response = runResponseMiddleware(response, self.middleware)
             
         return response
         
@@ -197,8 +195,6 @@ class WaffleApp():
             sock.bind((host, port))
             sock.listen(1)
             
-            middlewareHandler = MiddlewareHandler(self.middleware)
-
             print(f'Waffleweb version {waffleweb.__version__}')
             print(f'Server listening on host {host}, port {port}')
             print(f'Press Ctrl+C to stop server')
@@ -225,13 +221,13 @@ class WaffleApp():
                         #Creates a RequestHandler object.
                         handler = RequestHandler(request, debug)
 
-                        request = middlewareHandler.runRequestMiddleware(request)
+                        request = runRequestMiddleware(request, self.middleware)
                         
                         #gets the response
                         response = handler.getResponse()
 
                         #Run middleware on response
-                        response = middlewareHandler.runResponseMiddleware(response)
+                        response = runResponseMiddleware(response, self.middleware)
                             
                         #sends the response
                         conn.sendall(bytes(response))
@@ -297,8 +293,7 @@ class WaffleApp():
     def wsgiApplication(self, environ, startResponse):
         waffleweb.currentRunningApp = self
 
-        middlewareHandler = MiddlewareHandler(self.middleware)
-        handler = WsgiHandler(MultiValueOneKeyDict(environ), self, middlewareHandler)
+        handler = WsgiHandler(MultiValueOneKeyDict(environ), self, self.middleware)
         
         #Gets the response
         handler.getResponse()

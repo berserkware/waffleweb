@@ -35,3 +35,25 @@ Takes a raw request and returns a dictionary of the headers in string form. It i
  - **request** (``bytes``) - A raw request.
  
 **Returns:** ``dict``
+*
+============================================
+``function waffleweb.parser.splitURL(path)``
+============================================
+
+Splits the request's URL into the different parts. Returns a ``tuple`` with the root, split root and extention: (root, splitRoot, ext).
+
+**Parameters:**
+ - **path** (``str``) - The path to split.
+
+**Returns:** ``tuple``
+
+======================================================
+``function waffleweb.parser.parseURLParameters(path)``
+======================================================
+
+Gets the URL parameters and puts them into a dictionary.
+
+**Parameters:**
+ - **path** (``str``) - The path to get the parameters from.
+
+**Returns:** ``dict``

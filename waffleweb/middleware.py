@@ -96,39 +96,34 @@ class Middleware:
     def __getitem__(self, index):
         return self.middleware[index]
 
-class MiddlewareHandler():
-    def __init__(self, middleware: Middleware):
-        #Gets the middleware
-        self.middleware = middleware
+def runRequestMiddleware(request: Request, middleware: Middleware) -> Request:
+    '''Runs all the middleware on the request'''
 
-    def runRequestMiddleware(self, request: Request) -> Request:
-        '''Runs all the middleware on the request'''
+    for ware in middleware:
+        ware = ware['middleware']
 
-        for ware in self.middleware:
-            ware = ware['middleware']
+        #Trys to run the middleware's before function
+        try:
+            newRequest = ware.before(request)
 
-            #Trys to run the middleware's before function
-            try:
-                newRequest = ware.before(request)
+            #Makes sure middleware returns Request object.
+            if type(newRequest) == Request:
+                request = newRequest
+        except AttributeError:
+            pass
 
-                #Makes sure middleware returns Request object.
-                if type(newRequest) == Request:
-                    request = newRequest
-            except AttributeError:
-                pass
+    return request
 
-        return request
+def runResponseMiddleware(response, middleware: Middleware):
+    '''Runs all the middleware on the response'''
+    
+    for ware in middleware:
+        ware = ware['middleware']
 
-    def runResponseMiddleware(self, response):
-        '''Runs all the middleware on the response'''
-        
-        for ware in self.middleware:
-            ware = ware['middleware']
-
-            #Trys to run the middleware's after function
-            try:
-                response = ware.after(response)
-            except AttributeError:
-                pass
-        
-        return response
+        #Trys to run the middleware's after function
+        try:
+            response = ware.after(response)
+        except AttributeError:
+            pass
+    
+    return response

@@ -7,12 +7,11 @@ except ModuleNotFoundError:
     settings = None
 
 from urllib.parse import urlparse, unquote
-from waffleweb.errorResponses import notImplementedError, pageNotFound
+from waffleweb.errorResponses import methodNotAllowed, pageNotFound
 from waffleweb.cookie import Cookies
 from waffleweb.response import HTTP404, FileResponse, HTTPResponse, HTTPResponsePermenentRedirect, JSONResponse
 from waffleweb.static import getStaticFileResponse
-from waffleweb.template import renderErrorPage
-from waffleweb.parser import parseBody, parseHeaders, parsePost
+from waffleweb.parser import parseBody, parseHeaders, parsePost, splitURL, parseURLParameters
 from waffleweb.datatypes import MultiValueOneKeyDict
 
 class Request:
@@ -30,7 +29,7 @@ class Request:
         else:
             self.META = MultiValueOneKeyDict(self.rawRequest)
 
-        self._getURLParams()
+        self.URL_PARAMS = self.URL_PARAMS | parseURLParameters(self.path)
         self.body = self._getBody()
 
         #adds forms data to the postData variable
@@ -53,21 +52,6 @@ class Request:
         post, files = parsePost(self.body, contentType)
         self.POST = self.POST | post
         self.FILES = self.FILES | files
-
-    def _getURLParams(self):
-        splitPath = self.path.split('?')
-
-        argString = '?'.join(splitPath[1:])
-
-        splitArgs = argString.split('&')
-
-        for arg in splitArgs:
-            try:
-                name, value = arg.split('=')
-                self.URL_PARAMS[str(name)] = str(value)
-            except ValueError:
-                pass
-
 
     def _getBody(self):
         if self.wsgi == False:
@@ -139,19 +123,10 @@ class RequestHandler:
 
         return (kwargName, kwargValue)
 
-    def _splitURL(self) -> tuple:
-        reqPath = urlparse(self.request.path).path
-
-        #gets the root and file extenstion
-        root, ext = os.path.splitext(reqPath)
-        splitRoot = root.strip('/').split('/')
-
-        return (root, splitRoot, ext)
-
     def findView(self):
         '''Finds a view matching the request url, Returns view and the views kwargs.'''
 
-        self.root, self.splitRoot, self.ext = self._splitURL()
+        self.root, self.splitRoot, self.ext = splitURL(self.request.path)
         self.root = self.root.strip('/')
 
         #Searches through all the views to match the url
@@ -185,7 +160,8 @@ class RequestHandler:
         #Checks if GET or HEAD is in allowed methods
         if 'GET' not in view.allowedMethods and 'HEAD' not in view.allowedMethods:
             #Returns 405 response if request method is not in the view's allowed methods
-            return self._405MethodNotAllowed(view.allowedMethods)
+            res = self.getErrorHandlerResponse(statusCode=405)
+            return methodNotAllowed(res, self.debug, view.allowedMethods)
 
         newView = view.view(self.request, **kwargs)
 
@@ -202,7 +178,8 @@ class RequestHandler:
         #Checks if GET or OPTIONS is in allowed methods
         if 'GET' not in view.allowedMethods and 'OPTIONS' not in view.allowedMethods:
             #Returns 405 response if request method is not in the view's allowed methods
-            return self._405MethodNotAllowed(view.allowedMethods)
+            res = self.getErrorHandlerResponse(statusCode=405)
+            return methodNotAllowed(res, self.debug, view.allowedMethods)
 
         if view is None:
             methods = ', '.join(['OPTIONS', 'GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'TRACE', 'CONNECT'])
@@ -222,17 +199,13 @@ class RequestHandler:
         res.headers['Allow'] = methods
         return res
 
-    def _handleMethod(self, method, view, kwargs):
-        if method == 'HEAD':
-            return self._handleHead(view, kwargs)
-        elif method == 'OPTIONS':
-            return self._handleOptions(view, kwargs)
-        else:
-            if method not in view.allowedMethods:
-                #Returns 405 response if request method is not in the view's allowed methods
-                return self._405MethodNotAllowed(view.allowedMethods)
+    def _handleOther(self, view, kwargs, method):
+        if method not in view.allowedMethods:
+            #Returns 405 response if request method is not in the view's allowed methods
+            res = self.getErrorHandlerResponse(statusCode=405)
+            return methodNotAllowed(res, self.debug, view.allowedMethods)
 
-            return view.view(self.request, **kwargs)
+        return view.view(self.request, **kwargs)
 
     def getErrorHandlerResponse(self, response=None, statusCode=None):
         #Goes through all the errorHandlers
@@ -248,34 +221,10 @@ class RequestHandler:
                 pass
         return response
 
-    def _405MethodNotAllowed(self, allowedMethods) -> HTTPResponse:
-        '''Returns a 405 response'''
-        response = self.getErrorHandlerResponse(statusCode=405)
-        
-        methods = ', '.join(allowedMethods)
-        if self.debug:
-            if response == None:
-                render = renderErrorPage(
-                    mainMessage='405 Method Not Allowed',
-                    subMessage=f'Allowed Methods: {methods}',
-                )
-                res = HTTPResponse(content=render, status=405) 
-                res.headers['Allow'] = methods
-                return res
-            else:
-                return response
-        else:
-            if response == None:
-                res = HTTPResponse(content='405 Method not Allowed', status=405) 
-                res.headers['Allow'] = methods
-                return res
-            else:
-                return response
-
     def getResponse(self):
         '''Gets a response to a request, retuerns Response.'''
 
-        root, splitRoot, ext = self._splitURL()
+        root, splitRoot, ext = splitURL(self.request.path)
         if ext == '':
             #if the route is equal to '*' return a OPTIONS response
             if root == '*':
@@ -293,9 +242,14 @@ class RequestHandler:
                     paramsSplit = self.request.path.split('?')
                     params = (f'?{"?".join(paramsSplit[1:])}' if len(paramsSplit) >= 2 else '')
                     return HTTPResponsePermenentRedirect(f'{root}/{params}')
-
-                #This runs the view function, and gets the response.
-                response = self._handleMethod(self.request.method, view, kwargs)
+               
+                #Matches the method to its function.
+                if self.request.method == 'HEAD':
+                    response = self._handleHead(view, kwargs)
+                elif self.request.method == 'OPTIONS':
+                    response = self._handleOptions(view, kwargs)
+                else:
+                    response = self._handleOther(view, kwargs, self.request.method)
 
                 #If error handler doesnt exist for the status code of the response, then this returns the response given.
                 response = self.getErrorHandlerResponse(response)

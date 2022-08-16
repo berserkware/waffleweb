@@ -1,35 +1,68 @@
 import unittest
+from waffleweb import middleware
 
 from waffleweb.app import WaffleApp
+from waffleweb.request import Request
 from waffleweb.response import HTTPResponse
 from waffleweb.exceptions import MiddlewareImportError, MiddlewareNotFoundError
-from waffleweb.middleware import Middleware
+from waffleweb.middleware import Middleware, runRequestMiddleware, runResponseMiddleware
 
-class AppMiddlewareTest(unittest.TestCase):
+class RunMiddlewareTest(unittest.TestCase):
     def test_beforeResponse(self):
-        app = WaffleApp()
+        middleware = Middleware()
         
-        app.middleware.append('middleware.appMiddletest.AppMiddletest')
-        
-        @app.route('/testBefore', methods=['GET', 'POST'])
-        def testBefore(request):
-            return HTTPResponse(request, request.POST)
-            
-        res = app.request(b'POST /testBefore HTTP/1.1\r\nContent-Length: 25\r\nContent-Type: application/x-www-form-urlencoded\r\n\r\ntest1=test2')
-        self.assertEqual(res.content, b'{}')
+        middleware.append('middleware.appMiddletest.AppMiddletest')
+
+        request = Request(b'GET / HTTP/1.1\r\nTest-Header: value\r\n\r\n', '172.0.0.1')
+
+        request = runRequestMiddleware(request, middleware)
+
+        self.assertEqual(request.META['TEST_HEADER'], 'value2')
 
     def test_afterResponse(self):
-        app = WaffleApp()
-        
-        app.middleware.append('middleware.appMiddletest.AppMiddletest')
-        
-        @app.route('/')
-        def testAfter(request):
-            return HTTPResponse(request, 'not middlewared')
-            
-        res = app.request(b'GET / HTTP/1.1\r\n\r\n')
+        middleware = Middleware()
+
+        middleware.append('middleware.appMiddletest.AppMiddletest')
+
+        res = HTTPResponse(content='test')
+
+        res = runResponseMiddleware(res, middleware)
+
         self.assertEqual(res.content, b'middlewareified')
+ 
+    def test_beforeRequestNoMethod(self):
+        middleware = Middleware(['middleware.noFunctionsMiddleware.NoFunctions'])
         
+        request = Request(b'GET / HTTP/1.1\r\nTest-Header: value\r\n\r\n', '172.0.0.1')
+
+        request = runRequestMiddleware(request, middleware)
+
+        self.assertEqual(request.META['TEST_HEADER'], 'value')
+
+    def test_afterResponseNoMethod(self):
+        middleware = Middleware(['middleware.noFunctionsMiddleware.NoFunctions'])
+        response = HTTPResponse(content='test')
+        response = runResponseMiddleware(response, middleware)
+
+        self.assertEqual(response.content, b'test')
+
+    def test_beforeRequestNoMiddleware(self):
+        middleware = Middleware()
+        
+        request = Request(b'GET / HTTP/1.1\r\nTest-Header: value\r\n\r\n', '172.0.0.1')
+
+        request = runRequestMiddleware(request, middleware)
+
+        self.assertEqual(request.META['TEST_HEADER'], 'value')
+
+    def test_afterResponseNoMiddleware(self):
+        middleware = Middleware()
+        response = HTTPResponse(content='test')
+        response = runResponseMiddleware(response, middleware)
+
+        self.assertEqual(response.content, b'test')
+
+
 class AddMiddlewareTest(unittest.TestCase):
     def test_appendMiddleware(self):
         middleware = Middleware()

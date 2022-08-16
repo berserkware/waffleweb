@@ -1,7 +1,7 @@
 import unittest
 
 from waffleweb.files import File
-from waffleweb.parser import parseBody, parseHeaders, parsePost
+from waffleweb.parser import parseBody, parseHeaders, parsePost, splitURL, parseURLParameters
 from waffleweb.request import Request
 from waffleweb.datatypes import MultiValueOneKeyDict
 
@@ -47,3 +47,26 @@ class ParseHeadersTest(unittest.TestCase):
         req = b'GET /math/ HTTP/1.1\r\nUser-Agent: PostmanRuntime/7.29.0\r\nAccept: */*\r\nAccept-Encoding: gzip, deflate, br\r\nConnection: keep-alive\r\nHost: localhost:8080\r\n\r\ndummydata: test'
         headers = parseHeaders(req)
         self.assertEqual(headers, MultiValueOneKeyDict({'USER_AGENT': 'PostmanRuntime/7.29.0', 'ACCEPT': '*/*', 'ACCEPT_ENCODING': 'gzip, deflate, br', 'CONNECTION': 'keep-alive', 'HOST': 'localhost:8080'}))
+
+class SplitUrlTest(unittest.TestCase):
+    def test_splitURLNormal(self):
+        self.assertEqual(splitURL('/page1/10/index'), ('/page1/10/index', ['page1', '10', 'index'], ''))
+
+    def test_splitUrlWithExt(self):
+        self.assertEqual(splitURL('/test/testExt.jpg'), ('/test/testExt', ['test', 'testExt'], '.jpg'))
+
+    def test_splitUrlNone(self):
+        self.assertEqual(splitURL('/'), ('/', [''], ''))
+
+class ParseParamsTest(unittest.TestCase):
+    def test_paramsNormal(self):
+        self.assertEqual(parseURLParameters('/paramTest/?test=134&test2=31'), {'test':'134', 'test2':'31'})
+
+    def test_paramsNone(self):
+        self.assertEqual(parseURLParameters('/paramTest/?'), {})
+
+    def test_paramsOneParam(self):
+        self.assertEqual(parseURLParameters('/paramTest?test=134'), {'test':'134'})
+
+    def test_paramsWithMultipleQuestionMarks(self):
+        self.assertEqual(parseURLParameters('/paramTest?te?st=134&test2=3?1'), {'te?st':'134', 'test2':'3?1'})

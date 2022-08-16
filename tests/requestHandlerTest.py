@@ -8,37 +8,6 @@ from waffleweb.request import Request, RequestHandler
 from waffleweb.response import HTTPResponse, JSONResponse
 from waffleweb import WaffleApp
 
-class SplitUrlTest(unittest.TestCase):
-    def test_splitURLNormal(self):
-        request = Request(
-            b'GET /page1/10/index HTTP/1.1\r\n\r\n', 
-            '101.98.137.19'
-            )
-
-        handler = RequestHandler(request)
-
-        self.assertEqual(handler._splitURL(), ('/page1/10/index', ['page1', '10', 'index'], ''))
-
-    def test_splitUrlWithExt(self):
-        request = Request(
-            b'GET /test/testExt.jpg HTTP/1.1\r\n\r\n', 
-            '127.0.0.1'
-            )
-
-        handler = RequestHandler(request)
-
-        self.assertEqual(handler._splitURL(), ('/test/testExt', ['test', 'testExt'], '.jpg'))
-
-    def test_splitUrlNone(self):
-        request = Request(
-            b'GET / HTTP/1.1\r\n\r\n',
-            '127.0.0.1'
-            )
-            
-        handler = RequestHandler(request)
-
-        self.assertEqual(handler._splitURL(), ('/', [''], ''))
-
 class HandleTest(unittest.TestCase):
     def test_handleGet(self):
         app = WaffleApp()

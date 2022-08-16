@@ -58,19 +58,3 @@ class RequestTest(unittest.TestCase):
         req = Request(b'POST /filesPostTest/ HTTP/1.1\r\nContent-Length: 173\r\nContent-Type: multipart/form-data; boundary=6b31468dd2655947891a2a312ab9346b\r\n\r\n--6b31468dd2655947891a2a312ab9346b\r\nContent-Disposition: form-data; name="test"; filename="test.html"\r\n\r\n<h1>Testing Testing 123</h1>\r\n--6b31468dd2655947891a2a312ab9346b--\r\n', '127.0.0.1')
         self.assertEqual(b'<h1>Testing Testing 123</h1>', req.FILES['test'].data)
         
-class ParamsTest(unittest.TestCase):
-    def test_paramsNormal(self):
-        req = Request(b'GET /paramTest/?test=134&test2=31 HTTP/1.1\r\n\r\n', IP='127.0.0.1')
-        self.assertEqual(req.URL_PARAMS, {'test':'134', 'test2':'31'})
-
-    def test_paramsNone(self):
-        req = Request(b'GET /paramTest/? HTTP/1.1\r\n\r\n', IP='127.0.0.1')
-        self.assertEqual(req.URL_PARAMS, {})
-
-    def test_paramsOneParam(self):
-        req = Request(b'GET /paramTest?test=134 HTTP/1.1\r\n\r\n', IP='127.0.0.1')
-        self.assertEqual(req.URL_PARAMS, {'test':'134'})
-
-    def test_paramsWithMultipleQuestionMarks(self):
-        req = Request(b'GET /paramTest?te?st=134&test2=3?1 HTTP/1.1\r\n\r\n', IP='127.0.0.1')
-        self.assertEqual(req.URL_PARAMS, {'te?st':'134', 'test2':'3?1'})

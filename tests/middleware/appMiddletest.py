@@ -1,9 +1,8 @@
 class AppMiddletest():
     def after(response):
-        if response.request.path == '/':
-            response.content = 'middlewareified'
+        response.content = 'middlewareified'
         return response
 
     def before(request):
-        request.POST = {}
+        request.META['TEST_HEADER', 0] = 'value2'
         return request

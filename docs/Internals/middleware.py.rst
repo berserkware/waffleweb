@@ -32,33 +32,26 @@ It has all the same methods as a list, except that it loads the middleware when 
 
 Loads the middleware into a dictionary. The dictionary include the module and the class of the middleware: ``{'module': middleware module, 'middleware': middlwareClass,}``.
 
-=======================================================================
-``class waffleweb.middleware.MiddlewareHandler(middleware)``
-=======================================================================
-
-A handler of middleware. Middleware gets ran on the request before your view receives it and on the response before it is sent.
-
-**Parameters:**
- - **middleware** (``Middleware``) - A list of all your middleware.
-
---------------------------------------
-``runRequestMiddleware(request)``
---------------------------------------
+===========================================================================
+``function waffleweb.middleware.runRequestMiddleware(request, middleware)``
+===========================================================================
 
 Runs all the middleware on the request and then returns the request. It calls the ``before(request)`` method on the middleware classes.
 
 **Parameters:**
  - **request** (``Request``) - The request to run the middleware on.
+ - **middleware** (``Middleware``) - The middleware to run on the request.
  
 **Returns:** ``Request``
 
-----------------------------------------
-``runResponseMiddleware(response, app)``
-----------------------------------------
+=============================================================================
+``function waffleweb.middleware.runResponseMiddleware(response, middleware)``
+=============================================================================
 
 Runs all the middleware on the response and then returns the response. It calls the ``after(response)`` method on the middleware classes.
 
 **Parameters:**
- - **request** (``HTTPResponse``) - The response to run the middleware on.
+ - **response** (``HTTPResponse``) - The response to run the middleware on.
+ - **middleware** (``Middleware``) - The middleware to run on the request.
  
 **Returns:** ``HTTPResponse``

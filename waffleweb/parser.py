@@ -1,7 +1,8 @@
 from waffleweb.exceptions import ParsingError
 from waffleweb.files import File
 from waffleweb.datatypes import MultiValueOneKeyDict
-from urllib.parse import unquote
+from urllib.parse import unquote, urlparse
+import os
 
 def parsePost(body: bytes, contentType: str) -> dict:
     postData = {}
@@ -119,3 +120,34 @@ def parseHeaders(request: bytes) -> MultiValueOneKeyDict:
         return headerDict
     except (IndexError, ValueError):
         raise ParsingError('A problem occured while parsing the headers.')
+
+def splitURL(path: str):
+    """Splits a URL into three parts: root, split root and extension."""
+
+    reqPath = urlparse(path).path
+
+    #gets the root and file extenstion
+    root, ext = os.path.splitext(reqPath)
+    splitRoot = root.strip('/').split('/')
+
+    return (root, splitRoot, ext)
+
+
+def parseURLParameters(path: str):
+    urlParams = {}
+
+    splitPath = path.split('?')
+
+    argString = '?'.join(splitPath[1:])
+
+    splitArgs = argString.split('&')
+
+    for arg in splitArgs:
+        try:
+            name, value = arg.split('=')
+            urlParams[str(name)] = str(value)
+        except ValueError:
+            pass
+
+    return urlParams
+

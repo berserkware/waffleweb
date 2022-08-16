@@ -29,14 +29,6 @@ Parses and gets all the post and file data and adds them to the POST and FILES a
 
 **Returns:** ``None``
 
--------------------
-``_getURLParams()``
--------------------
-
-Gets all the URL parameters and adds them to the URL_PARAMS attribute.
-
-**Returns:** ``None``
-
 --------------
 ``_getBody()``
 --------------
@@ -92,14 +84,6 @@ Converts the URL variable to it's type. Returns a ``tuple`` with the name of the
 
 **Returns:** ``tuple``
 
----------------
-``_splitURL()``
----------------
-
-Splits the request's URL into the different parts. Returns a ``tuple`` with the root, split root and extention: (root, splitRoot, ext).
-
-**Returns:** ``tuple``
-
 -------------
 ``findView()``
 -------------
@@ -133,10 +117,10 @@ Handles OPTIONS request by basically ignores the view function and returning a r
 **Returns:** Depends
 
 ---------------------------------------
-``_handleMethod(method, view, kwargs)``
+``_handleOther(view, kwargs, method)``
 ---------------------------------------
 
-Handles methods. If the ``method`` is HEAD, then it will return ``_handleHead()``. If the ``method`` is OPTIONS, then it will return ``_handleOptions()``. Any other method will just return what the view function returns.
+It will return what the view function returns.
 
 **Parameters:**
  - **method** (``str``) - The method of the request.

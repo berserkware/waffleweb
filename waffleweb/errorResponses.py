@@ -65,3 +65,25 @@ def pageNotFound(response, debug, views):
             return HTTPResponse(content='<title>404 Not Found</title><h1 style="font-family: Arial, Helvetica, sans-serif; text-align: center; font-size: 80px; margin-bottom: 0px;">404</h1><h3 style="font-family: Arial, Helvetica, sans-serif; text-align: center; color: #5c5c5c; margin-top: 0px;">The requested page could not be found.</h3>', status=404)
         else:
             return response
+
+def methodNotAllowed(response, debug, allowedMethods):
+    methods = ', '.join(allowedMethods)
+    if debug:
+        if response == None:
+            render = renderErrorPage(
+                mainMessage='405 Method Not Allowed',
+                subMessage=f'Allowed Methods: {methods}',
+            )
+            res = HTTPResponse(content=render, status=405) 
+            res.headers['Allow'] = methods
+            return res
+        else:
+            return response
+    else:
+        if response == None:
+            res = HTTPResponse(content='405 Method not Allowed', status=405) 
+            res.headers['Allow'] = methods
+            return res
+        else:
+            return response
+

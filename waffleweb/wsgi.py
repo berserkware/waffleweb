@@ -1,13 +1,14 @@
 from waffleweb.errorResponses import badRequest
 from waffleweb.exceptions import ParsingError
+from waffleweb.middleware import Middleware, runRequestMiddleware, runResponseMiddleware
 from waffleweb.request import RequestHandler, Request
 from waffleweb.response import HTTPResponse
 
 class WsgiHandler:
-    def __init__(self, environ, app, middlewareHandler):
+    def __init__(self, environ, app, middleware: Middleware):
         self.app = app
         self.environ = environ
-        self.middlewareHandler = middlewareHandler
+        self.middleware = middleware
         
     def getResponse(self):
         try:
@@ -19,14 +20,13 @@ class WsgiHandler:
 
             self.requestHandler = RequestHandler(request)
 
-            request = self.middlewareHandler.runRequestMiddleware(request)
+            request = runRequestMiddleware(request, self.middleware)
 
             self.requestHandler.request = request
 
             response = self.requestHandler.getResponse()
 
-            #Run middleware on response
-            response = self.middlewareHandler.runResponseMiddleware(response)
+            response = runResponseMiddleware(response, self.middleware)
 
             self.response = response
         except:
