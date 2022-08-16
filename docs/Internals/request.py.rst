@@ -72,11 +72,12 @@ A handler for requests to find the views and responses.
  - **debug** (``bool``) - If debug mode is on.
  - **app** (``WaffleApp``) - A WaffleApp to get views from, instead of using the currently running app (``waffleweb.currentRunningApp``).
  
-------------------------
-``_getArg(index, part)``
-------------------------
+---------------------------------
+``_matchPartInView(index, part)``
+---------------------------------
 
-Converts the URL variable to it's type. Returns a ``tuple`` with the name of the variable and the value: ('name', 'value').
+This is used to match a part in a requested URL, to a URL variable in a view. It also converts the variable to the type. 
+Returns a ``tuple`` with the name of the variable and the value: ('name', 'value').
 
 **Parameters:**
  - **index** (``int``) - The section in the URL to convert.
@@ -129,9 +130,9 @@ It will return what the view function returns.
 
 **Returns:** Depends
  
----------------------------------------------------
+-----------------------------------------------------------
 ``getErrorHandlerResponse(response=None, statusCode=None)``
----------------------------------------------------
+-----------------------------------------------------------
 
 Looks for a error handler with the response's status code or the ``statusCode`` arg. If it finds an error handler it returns the response from the error handler otherwise it returns the ``response`` arg. You should provide either a response or a statusCode.
 
@@ -140,21 +141,6 @@ Looks for a error handler with the response's status code or the ``statusCode`` 
 **Parameters:**
  - **response** (optional) (``HTTPResponse``) - The response to get the status code from to find the handler.
  - **statusCode** (optional) (``int``) - The status code to find the handler.
- 
---------------------
-``_handle404View()``
---------------------
-
-If a ``HTTP404`` is raised this function will get called. If debug is on it will return a default 404 error page. If debug is off then it will try to get a error handler, but if one cannot be found it will return a plain 404 page.
-
-**Returns:** ``HTTPResponse``
-
-----------------------------------------
-``_405MethodNotAllowed(allowedMethods)``
-----------------------------------------
-If the view found does not allow the request's method then this will be called. If debug is on it will return a default 405 error page. If debug is off then it will try to get a error handler, but if one cannot be found it will return a plain 405 page.
-
-**Returns:** ``HTTPResponse``
 
 -----------------
 ``getResponse()``

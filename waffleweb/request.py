@@ -97,11 +97,8 @@ class RequestHandler:
             
         self.debug = debug
 
-    def _getArg(self, index, part) -> tuple:
-        '''
-        Gets the kwargs and converts them to their type.
-        returns a tuple with the name and value
-        '''
+    def _matchPartInView(self, index, part) -> tuple:
+        '''This is used to match a part in a requested URL, to a URL variable in a view. It also converts the variable to the type.'''
         kwargName = ''
         kwargValue = None
 
@@ -124,7 +121,7 @@ class RequestHandler:
         return (kwargName, kwargValue)
 
     def findView(self):
-        '''Finds a view matching the request url, Returns view and the views kwargs.'''
+        '''Finds a view matching the request url, Returns the view function and the views kwargs.'''
 
         self.root, self.splitRoot, self.ext = splitURL(self.request.path)
         self.root = self.root.strip('/')
@@ -148,7 +145,7 @@ class RequestHandler:
                     if self.ext == '':
                         #adds args to view kwargs if part is list
                         if type(part) == list:
-                            kwarg = self._getArg(index, part)
+                            kwarg = self._matchPartInView(index, part)
                             viewKwargs[kwarg[0]] = kwarg[1]
 
                 if urlMatches:
