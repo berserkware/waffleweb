@@ -121,7 +121,7 @@ class RequestHandler:
         return (kwargName, kwargValue)
 
     def findView(self):
-        '''Finds a view matching the request url, Returns the view function and the views kwargs.'''
+        '''Finds a view matching the requested url, Returns the view function and the views kwargs in a tuple.'''
 
         self.root, self.splitRoot, self.ext = splitURL(self.request.path)
         self.root = self.root.strip('/')
@@ -130,6 +130,7 @@ class RequestHandler:
         for view in self.views:
             urlMatches = True
             viewKwargs = {}
+            #This checks in the path of the view is equal to the reqeusted URL.
             if view.path == self.root:
                 return (view, {})
 
@@ -143,7 +144,7 @@ class RequestHandler:
                     
                     #makes sure not static file
                     if self.ext == '':
-                        #adds args to view kwargs if part is list
+                        #adds variables to view kwargs if part is list
                         if type(part) == list:
                             kwarg = self._matchPartInView(index, part)
                             viewKwargs[kwarg[0]] = kwarg[1]
@@ -228,8 +229,10 @@ class RequestHandler:
                 return self._handleOptions(None, {})
 
             try:
-                #If the view path ends without a slash and the client goes to that page with a slash raise 404
+                #Gets the view function with its requiured kwargs (url variables)
                 view, kwargs = self.findView()
+
+                #If the view path ends without a slash and the client goes to that page with a slash raise 404
                 if view.unstripedPath.endswith('/') == False and root.endswith('/'):
                     raise HTTP404
 
@@ -257,6 +260,7 @@ class RequestHandler:
                 return pageNotFound(errorHandlerRequest, self.debug, self.views)
         else:
             try:
+                #If there is a file extention on the url, it will look for a static file, instead of a page.
                 return getStaticFileResponse(self.request, root, ext)
             except HTTP404:
                 errorHandlerRequest = self.getErrorHandlerResponse(statusCode=404)

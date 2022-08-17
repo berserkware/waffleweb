@@ -36,7 +36,6 @@ def notImplementedError(response, debug, method):
         else:
             return response
 
-
 def pageNotFound(response, debug, views):
     '''Returns a 404 Page Not Found Error response.'''
 

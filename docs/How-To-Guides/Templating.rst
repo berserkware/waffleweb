@@ -124,3 +124,14 @@ Adding your own template renderer is easy. All you have to is create a file call
 Your template renderer must take a file path and the context (variables) for the template. It must return a string of the rendered template.
 
 If you have a TEMPLATE_RENDER supplied it will be called by ``renderTemplate()``. So out of the box it will automatically work with ``render()``.
+
+Changing the Jinja Enviroment
+.............................
+
+You can change the enviroment that Jinja uses by putting a variable in your ``settings.py`` called "JINJA_ENVIROMENT". You can set the variable to a ``Enviroment`` object.
+
+.. code-block:: python
+
+    from jinja2 import Enviroment
+
+    JINJA_ENVIROMENT = Enviroment(...)

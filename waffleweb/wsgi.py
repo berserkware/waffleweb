@@ -1,4 +1,6 @@
-def getResponseHeaders(response):
+def getResponseHeaders(response) -> list[tuple]:
+    """This gets the headers of a response. It puts headers into tuples, and then into a list."""
+
     responseHeaders = []
 
     headers = response.headers
@@ -13,5 +15,6 @@ def getResponseHeaders(response):
 
     return responseHeaders
 
-def getResponseStatus(response):
+def getResponseStatus(response) -> str:
+    """This gets the code and status of a response, and puts it into a string"""
     return f'{response.statusCode} {response.reasonPhrase}'

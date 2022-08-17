@@ -38,7 +38,7 @@ def getRelativeUrl(viewName: str, **kwargs):
     #if cant find view, raise error
     raise ViewNotFoundError(f'View {viewName} could not be found.')
 
-def _getEnvironmentFile() -> Environment:
+def getEnvironmentFile() -> Environment:
     '''Gets a jinja Enviroment with the loader being FileSystemLoader.'''
 
     #Gets the template directory from the users settings files.
@@ -72,7 +72,7 @@ def renderTemplate(filePath: str, context: dict={}) -> str:
         return renderer(filePath, context)
     else:
         #gets the enviroment
-        env = _getEnvironmentFile()
+        env = getFromSettings('JINJA_ENVIROMENT', getEnvironmentFile())
 
         #gets the template render
         template = env.get_template(filePath)
@@ -103,11 +103,11 @@ def renderErrorPage(mainMessage: str, subMessage: str='', traceback: str='') -> 
         </html>
     '''.format(
         mainMessage=mainMessage,
-        subMessage=(f'<h2 style="color: #7a7a7a; display: block; margin:15px; padding:0px;">{subMessage}</h2>' if subMessage is not '' else ''),
+        subMessage=(f'<h2 style="color: #7a7a7a; display: block; margin:15px; padding:0px;">{subMessage}</h2>' if subMessage != '' else ''),
         traceback=(f'''
                 <fieldset style="display: block; margin:15px; padding:0px;">
                     <legend style="margin-left:15px; margin-top:0px margin-bottom:0px padding:0px;"><h2 style="margin:0; padding:0px;">Traceback</h2></legend>
                     <h3 style="margin-left:15px; margin-top:5px; margin-bottom:10px; padding:0px;">{traceback}</h3>
                 </fieldset>
-                ''' if traceback is not '' else ''),
+                ''' if traceback != '' else ''),
         )

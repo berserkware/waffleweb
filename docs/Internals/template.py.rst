@@ -13,7 +13,7 @@ Gets the URL of the view from the viewName. The kwargs are the URL variables. It
  - ****kwargs** - The URL variables.
  
 =====================================================
-``function waffleweb.template._getEnvironmentFile()``
+``function waffleweb.template.getEnvironmentFile()``
 =====================================================
 
 Get the environment for Jinja2. It gets a environment with ``FileSystemLoader`` with the searchpath being ``TEMPLATE_DIR`` from the settings.py file, defaults to 'templates/'.

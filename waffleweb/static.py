@@ -5,7 +5,7 @@ from waffleweb.response import HTTP404, FileResponse
 from waffleweb.defaults import DEFUALT_STATIC_DIR
 from waffleweb.settings import getFromSettings
 
-def findStatic(path:str):
+def findStatic(path: str):
     '''Finds a static file\'s path. '''
 
     staticDir = getFromSettings('STATIC_DIR', DEFUALT_STATIC_DIR).strip('/')
@@ -33,7 +33,7 @@ def getStaticFileResponse(request, root, ext):
     
     try:
         with openStatic(path, 'rb') as f:
-            mt = mimetypes.guess_type(root + ext)
+            mt = mimetypes.guess_type(path)
             if mt[0] is not None:
                 return FileResponse(request, f, mimeType=mt[0])
             else:
