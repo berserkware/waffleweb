@@ -6,7 +6,7 @@ import traceback
 import waffleweb
 
 from waffleweb.middleware import runResponseMiddleware, runRequestMiddleware, Middleware
-from waffleweb.request import Request, RequestHandler
+from waffleweb.request import Request, getResponse
 from waffleweb.response import HTTPResponse
 from waffleweb.exceptions import ParsingError
 from waffleweb.errorResponses import badRequest
@@ -154,11 +154,10 @@ class WaffleApp():
         waffleweb.currentRunningApp = self
 
         request = Request(rawRequest, '127.0.0.1')
-        handler = RequestHandler(request, debug=False, app=self)
         
         request = runRequestMiddleware(request, self.middleware)
         
-        response = handler.getResponse()
+        response = getResponse(request, debug=False)
 
         response = runResponseMiddleware(response, self.middleware)
             
@@ -218,13 +217,10 @@ class WaffleApp():
                             conn.close()
                             continue
 
-                        #Creates a RequestHandler object.
-                        handler = RequestHandler(request, debug)
-
                         request = runRequestMiddleware(request, self.middleware)
                         
                         #gets the response
-                        response = handler.getResponse()
+                        response = getResponse(request, debug)
 
                         #Run middleware on response
                         response = runResponseMiddleware(response, self.middleware)
@@ -234,7 +230,7 @@ class WaffleApp():
 
                         #prints the request information
                         timeNow = datetime.datetime.now()
-                        print(f'[{timeNow.strftime("%m/%d/%Y %H:%M:%S")}] {handler.request.HTTPVersion} {handler.request.method} {handler.request.path} {response.statusCode} {response.reasonPhrase}')
+                        print(f'[{timeNow.strftime("%m/%d/%Y %H:%M:%S")}] {request.HTTPVersion} {request.method} {request.path} {response.statusCode} {response.reasonPhrase}')
 
                         #closes the connection
                         conn.close()
@@ -297,14 +293,10 @@ class WaffleApp():
         try:
             #Makes the Request object
             request = Request(environ, environ.get('REMOTE_ADDR'), True)
-            
-            requestHandler = RequestHandler(request)
 
             request = runRequestMiddleware(request, self.middleware)
 
-            requestHandler.request = request
-
-            response = requestHandler.getResponse()
+            response = getResponse(request)
 
             response = runResponseMiddleware(response, self.middleware)
         except ParsingError:

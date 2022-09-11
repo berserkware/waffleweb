@@ -52,3 +52,17 @@ If the client sends a request with a method not allowed in your view, then this 
  - **allowedMethods** (``list``) - The list of all the methods that are allowed.
 
 **Returns:** ``HTTPResponse``
+
+=============================================================================================
+``getErrorHandlerResponse(errorHandlers=None, request=None, response=None, statusCode=None)``
+=============================================================================================
+
+Looks for a error handler with the response's status code or the ``statusCode`` arg. If it finds an error handler it returns the response from the error handler otherwise it returns the ``response`` arg. You should provide either a response or a statusCode.
+
+**Returns:** ``HTTPResponse``
+
+**Parameters:**
+ - **errorHandlers** (optional) (``list[ErrorHandler]``) - The list of ErrorHandler's to find the responses from.
+ - **request** (optional) (``Request``) - The request to pass to the error handling functions.
+ - **response** (optional) (``HTTPResponse``) - The response to get the status code from to find the handler.
+ - **statusCode** (optional) (``int``) - The status code to find the handler.

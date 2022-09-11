@@ -4,7 +4,7 @@ import requests
 from datetime import datetime
 from pytz import timezone
 
-from waffleweb.request import Request, RequestHandler
+from waffleweb.request import Request
 from waffleweb.response import HTTPResponse, JSONResponse
 from waffleweb import WaffleApp
 
@@ -139,86 +139,3 @@ class MethodTest(unittest.TestCase):
             
         response = app.request(b'GET / HTTP/1.1\r\n\r\n')
         self.assertEqual(response.statusCode, 200)
-        
-class ErrorHandlerTest(unittest.TestCase):
-    def test_404Custom(self):       
-        app = WaffleApp()
-        
-        @app.errorHandler(404)
-        def handler(request):
-            return HTTPResponse(request, '404 Page Handler')
-            
-        response = app.request(b'GET /testing404Page HTTP/1.1\r\n\r\n')
-
-        self.assertEqual(response.content, b'404 Page Handler')
-        
-    def test_customErrorCode(self):
-        app = WaffleApp()
-        
-        @app.errorHandler(220)
-        def handler(request):
-            return HTTPResponse(request, '220 Page')
-            
-        @app.route('/randomStatus')
-        def randomStatus(request):
-            return HTTPResponse(request, 'Random Status', status=220)
-            
-        response = app.request(b'GET /randomStatus HTTP/1.1\r\n\r\n')
-
-        self.assertEqual(response.content, b'220 Page')
-        
-    def test_noErrorCodeHandler(self):
-
-        app = WaffleApp()
-        
-        @app.route('/statusNoHandler')
-        def statusNoHandler(request):
-            return HTTPResponse(request, 'data')
-            
-        response = app.request(b'GET /statusNoHandler HTTP/1.1\r\n\r\n')
-
-        self.assertEqual(response.content, b'data')
-        
-    def test_getErrorHandlerResponseByResponse(self):
-        request = Request(
-            b'GET /statusNoHandler HTTP/1.1\r\n\r\n', 
-            '101.98.137.19'
-            )
-
-        handler = RequestHandler(request)
-        res = handler.getErrorHandlerResponse(response=HTTPResponse(request, 'test', status=220))
-        
-        self.assertEqual(res.content, b'220 Page')
-        
-    def test_getErrorHandlerResponseByStatus(self):
-        request = Request(
-            b'GET /statusNoHandler HTTP/1.1\r\n\r\n', 
-            '101.98.137.19'
-            )
-
-        handler = RequestHandler(request)
-        res = handler.getErrorHandlerResponse(statusCode=220)
-        
-        self.assertEqual(res.content, b'220 Page')
-        
-    def test_getErrorHandlerResponseStatusNoHandler(self):
-        request = Request(
-            b'GET /statusNoHandler HTTP/1.1\r\n\r\n', 
-            '101.98.137.19'
-            )
-
-        handler = RequestHandler(request)
-        res = handler.getErrorHandlerResponse(statusCode=223)
-        
-        self.assertEqual(res, None)
-        
-    def test_getErrorHandlerResponseByResponseNoHandler(self):
-        request = Request(
-            b'GET /statusNoHandler HTTP/1.1\r\n\r\n', 
-            '101.98.137.19'
-            )
-        res = HTTPResponse(request, 'test', status=223)
-        handler = RequestHandler(request)
-        errorHandler = handler.getErrorHandlerResponse(response=res)
-        
-        self.assertEqual(errorHandler.content, res.content)

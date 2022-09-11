@@ -61,91 +61,39 @@ Returns the HTTP version of the request.
 
 **Returns:** ``str``
 
-===========================================================================
-``class waffleweb.request.RequestHandler(request, debug=False, app=None)``
-===========================================================================
-
-A handler for requests to find the views and responses.
-
-**Parameters:**
- - **request** (``Request``) - The Request to use to find the response.
- - **debug** (``bool``) - If debug mode is on.
- - **app** (``WaffleApp``) - A WaffleApp to get views from, instead of using the currently running app (``waffleweb.currentRunningApp``).
- 
----------------------------------
-``_matchPartInView(index, part)``
----------------------------------
+===================================================================================
+``function waffleweb.request.matchVariableInURL(indexOfVar, urlVarData, splitUri)``
+===================================================================================
 
 This is used to match a part in a requested URL, to a URL variable in a view. It also converts the variable to the type. 
 Returns a ``tuple`` with the name of the variable and the value: ('name', 'value').
 
 **Parameters:**
- - **index** (``int``) - The section in the URL to convert.
- - **part** (``list``) - The part in the view's URL to know what the type to convert is and the name of the argument.
+ - **indexOfVar** (``int``) - The index of the part in the URL to convert.
+ - **urlVarData** (``tuple``) - The name and type of the variable - ('name', 'type').
+ - **splitUri** (``list``) - The split URI to match the variable to.
 
 **Returns:** ``tuple``
 
--------------
-``findView()``
--------------
+================================================
+``function waffleweb.request.findView(request)``
+================================================
 
-Finds the view function matching the URL and the URL variables in a dictionary, If a view matching the URL can't be found a ``HTTP404`` will be raised. Returns (view function, {view arguments}).
+Finds the view function matching the URL and the URL variables in a dictionary, If a view matching the URL can't be found a ``HTTP404`` will be raised. Returns (view function, {'arg': argvalue, ... }).
+
+**Parameters:**
+ - **request** (``Request``) - The request to get find the view from.
 
 **Returns:** ``tuple``
 
------------------------------
-``_handleHead(view, kwargs)``
------------------------------
+================================================================
+``function waffleweb.request.getResponse(request, debug=False)``
+================================================================
 
-Handles HEAD request by running the view functions with the kwargs and requests given then stripping the content. Returns what the matched view returns without the content.
-
-**Parameters:**
- - **view** (``func``) - The view function.
- - **kwargs** (``dict``) - The URL variables for the function.
-
-**Returns:** Depends
-
---------------------------------
-``_handleOptions(view, kwargs)``
---------------------------------
-
-Handles OPTIONS request by basically ignores the view function and returning a response with all the allowed methods.
+This function returns a response.
 
 **Parameters:**
- - **view** (``func``) - The view function.
- - **kwargs** (``dict``) - The URL variables for the function.
-
-**Returns:** Depends
-
----------------------------------------
-``_handleOther(view, kwargs, method)``
----------------------------------------
-
-It will return what the view function returns.
-
-**Parameters:**
- - **method** (``str``) - The method of the request.
- - **view** (``func``) - The view function.
- - **kwargs** (``dict``) - The URL variables for the function.
-
-**Returns:** Depends
- 
------------------------------------------------------------
-``getErrorHandlerResponse(response=None, statusCode=None)``
------------------------------------------------------------
-
-Looks for a error handler with the response's status code or the ``statusCode`` arg. If it finds an error handler it returns the response from the error handler otherwise it returns the ``response`` arg. You should provide either a response or a statusCode.
-
-**Returns:** ``HTTPResponse``
-
-**Parameters:**
- - **response** (optional) (``HTTPResponse``) - The response to get the status code from to find the handler.
- - **statusCode** (optional) (``int``) - The status code to find the handler.
-
------------------
-``getResponse()``
------------------
-
-Gets a response.
+ - **request** (``Request``) - The request to get the data from.
+ - **debug** (``bool``) (optional) - If debug mode is on.
 
 **Returns:** ``HTTPResponse``

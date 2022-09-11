@@ -1,5 +1,6 @@
 import waffleweb
 import importlib
+import os
 
 try:
     settings = importlib.import_module('settings')
@@ -85,7 +86,7 @@ def renderErrorPage(mainMessage: str, subMessage: str='', traceback: str='') -> 
     Renders an error page for debug, it takes 3 arguments:
      - mainMessage
      - subMessage - optional
-     - traceback - optional
+     - tracebackList - optional
     '''
 
     return '''

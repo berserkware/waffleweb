@@ -1,4 +1,4 @@
-from waffleweb.request import Request, RequestHandler
+from waffleweb.request import Request
 
 import unittest
 

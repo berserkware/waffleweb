@@ -1,3 +1,4 @@
+import waffleweb
 from waffleweb.response import HTTPResponse
 from waffleweb.template import renderErrorPage
 
@@ -86,3 +87,21 @@ def methodNotAllowed(response, debug, allowedMethods):
         else:
             return response
 
+def getErrorHandlerResponse(errorHandlers=None, request=None, response=None, statusCode=None):
+    """Finds a error response, calls it, then returns the response."""
+
+    if errorHandlers == None:
+        errorHandlers = waffleweb.currentRunningApp.errorHandlers
+
+    #Goes through all the errorHandlers
+    for handler in errorHandlers:
+        try:
+            #Checks to see if the handlers code is the same as the status Code
+            if handler.statusCode == statusCode:
+                return handler.view(request)
+            #Checks to see the the response's status code is equal to the handlers code
+            elif response.statusCode == handler.statusCode:
+                return handler.view(request)
+        except AttributeError:
+            pass
+    return response
