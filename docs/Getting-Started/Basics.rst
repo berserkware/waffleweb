@@ -181,7 +181,7 @@ By default Waffleweb only allows GET, HEAD and OPTIONS requests. If you have 'GE
 
 Static files
 ............
-To add static files to your Waffleweb application all you need to do is make a folder called static and put your files in there. You can change the folder Waffleweb looks in for your static files in a ``settings.py`` file in your project directory. Just add ``STATIC_DIR = 'path/to/static/'`` to ``settings.py``.
+To add static files to your Waffleweb application all you need to do is make a folder called static and put your files in there.
 
 To access these static files in your browser just go to ``localhost:8000/folder/file.ext``. Waffleweb hides the static directory path in the URL to remove complexity. For example, if your project directory looks like the example bellow then to access ``test.css`` you would need to go to ``localhost:8000/css/index.css`` NOT ``localhost:8000/static/css/index.css``.
 

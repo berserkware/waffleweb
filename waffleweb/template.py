@@ -6,8 +6,7 @@ try:
     settings = importlib.import_module('settings')
 except ModuleNotFoundError:
     settings = None
-   
-from waffleweb.settings import getFromSettings
+
 from waffleweb.exceptions import ViewNotFoundError
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
@@ -43,19 +42,19 @@ def getEnvironmentFile() -> Environment:
     '''Gets a jinja Enviroment with the loader being FileSystemLoader.'''
 
     #Gets the template directory from the users settings files.
-    templateDir = getFromSettings('TEMPLATE_DIR', waffleweb.defaults.DEFUALT_TEMPLATE_DIR)
+    templateDir = waffleweb.currentRunningApp.settings.get('TEMPLATE_DIR', waffleweb.defaults.DEFUALT_TEMPLATE_DIR)
 
     env = Environment(
         loader=FileSystemLoader(searchpath=templateDir),
         autoescape=select_autoescape,
     )
 
-    if hasattr(settings, 'TEMPLATE_FUNCTIONS'):
-        templateFunctions = getattr(settings, 'TEMPLATE_FUNCTIONS')
-    
-        #Adds user supplied template functions
-        for key, value in templateFunctions:
-            env.globals[key] = value
+    #Gets user supplied template functions
+    templateFunctions = waffleweb.currentRunningApp.settings.get('TEMPLATE_FUNCTIONS', {})
+
+    #Adds user supplied template functions
+    for key, value in templateFunctions:
+        env.globals[key] = value
 
     env.globals['getRelativeUrl'] = getRelativeUrl
     return env
@@ -67,13 +66,12 @@ def renderTemplate(filePath: str, context: dict={}) -> str:
      - context - the variables for the template
     '''
 
-    if hasattr(settings, 'TEMPLATE_RENDERER'):
-        renderer = getattr(settings, 'TEMPLATE_RENDERER')
+    templateRenderer = waffleweb.currentRunningApp.settings.get('TEMPLATE_RENDERER')
 
-        return renderer(filePath, context)
+    if templateRenderer is not None:
+        return templateRenderer(filePath, context)
     else:
-        #gets the enviroment
-        env = getFromSettings('JINJA_ENVIROMENT', getEnvironmentFile())
+        env = waffleweb.currentRunningApp.settings.get('JINJA_ENVIROMENT', getEnvironmentFile())
 
         #gets the template render
         template = env.get_template(filePath)

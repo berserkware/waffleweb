@@ -1,6 +1,6 @@
 from .app import WaffleApp, app
 from .defaults import *
 
-currentRunningApp = None
+currentRunningApp = app
 
 __version__ = '0.1.0-alpha'

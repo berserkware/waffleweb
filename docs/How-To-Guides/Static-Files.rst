@@ -12,13 +12,13 @@ You can add static files to your application by creating a directory in your pro
 Changing the Static Directory
 .............................
 
-To change the directory in which static files are looked for in you can create a file in your project directory called "settings.py". Then in that file add a variable called "STATIC_DIR" with the path for Waffleweb to look for static files in.
+To change the directory in which static files are looked for in you can add an item to the settings of your app. The key should be called "STATIC_DIR" with the path for Waffleweb to look for static files in.
 
 ``settings.py:``
 
 .. code-block:: python
 
-	STATIC_DIR = 'files/static'
+	yourApp.settings['STATIC_DIR'] = '/path/static'
 
 Accessing Static Files
 ......................
@@ -54,11 +54,11 @@ To access "./STATIC_DIR/CSS/index.css" in the browser you can go to "localhost:8
 Changing How Waffleweb Looks For Static Files
 .............................................
 
-To change how Waffleweb looks for static files you can make your own function to find static. To do this you can create a file called "settings.py". Then in that file you need to add a variable called "DEFUALT_STATIC_FINDER" with the function to find static. By default Waffleweb uses the ``findStatic`` function.
+To change how Waffleweb looks for static files you can make your own function to find static. To change the static finder all you have to do is add an item to the settings of your app. The key should be called "DEFUALT_STATIC_FINDER" with the function for Waffleweb to use. By default Waffleweb uses the ``findStatic`` function.
 
 .. code-block:: python
 
-	DEFUALT_STATIC_FINDER = staticFinderFunction
+    yourApp.settings["DEFUALT_STATIC_FINDER"] = staticFinderFunction
 
 Your static finder function should take a file or path, and return a path to the static file.
 

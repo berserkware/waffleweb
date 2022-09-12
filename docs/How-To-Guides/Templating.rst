@@ -104,22 +104,22 @@ Waffleweb has one built in template function: `getRelativeUrl() <../Reference/te
 
 	<h1>{{ getRelativeUrl('news:article', id=1234, name='Something happend!') }}</h1>
 
-You can add your own custom template functions by creating a file called "settings.py" and adding a dictionary named "TEMPLATE_FUNCTIONS" with the names of the functions and the functions themselves.
+You can add your own custom template functions by adding a value named "TEMPLATE_RENDERER" to your apps settings.
 
 .. code-block:: python
 
-	TEMPLATE_FUNCTIONS = {'func1': func1, 'func2': func2}
+    yourApp.settings['TEMPLATE_FUNCTIONS'] = {'func1': func1, 'func2': func2}
 	
 This only work when using the default rendering functions.
 
 Adding Your Own Template Renderer
 .................................
 
-Adding your own template renderer is easy. All you have to is create a file called "settings.py" and add a variable called "TEMPLATE_RENDERER".
+Adding your own template renderer is easy. All you need to do is add a value named "TEMPLATE_RENDERER" to your apps settings.
 
 .. code-block:: python
 
-	TEMPLATE_RENDERER = renderer
+	yourApp.settings['TEMPLATE_RENDERER'] = yourRenderingFunction
 	
 Your template renderer must take a file path and the context (variables) for the template. It must return a string of the rendered template.
 
@@ -128,7 +128,7 @@ If you have a TEMPLATE_RENDER supplied it will be called by ``renderTemplate()``
 Changing the Jinja Enviroment
 .............................
 
-You can change the enviroment that Jinja uses by putting a variable in your ``settings.py`` called "JINJA_ENVIROMENT". You can set the variable to a ``Enviroment`` object.
+You can change the enviroment that Jinja uses by add a item to your app settings dictionary called "JINJA_ENVIROMENT". You can set the variable to a ``Enviroment`` object.
 
 .. code-block:: python
 

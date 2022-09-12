@@ -54,9 +54,10 @@ class WaffleApp():
     '''
 
     def __init__(self):
-        self.middleware = []
         self.views = []
         self.errorHandlers = []
+        self.middleware = []
+        self.settings = {}
 
     def route(self, path='/', name=None, methods=['GET']):
         '''

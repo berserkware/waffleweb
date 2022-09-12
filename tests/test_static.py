@@ -1,4 +1,6 @@
 import unittest
+from waffleweb import app
+import waffleweb
 from waffleweb.request import Request
 from waffleweb.static import getStaticFileResponse, findStatic
 from waffleweb.response import HTTP404, FileResponse
@@ -17,7 +19,7 @@ request = Request(b"""GET /page1/10/index HTTP/1.1
                         Sec-Fetch-Site: none
                         Sec-Fetch-User: ?1""", '101.98.137.19')
 
-class StaticHandlerTest(unittest.TestCase):
+class getStaticFileResponseTest(unittest.TestCase):
     def test_findFile(self):
         res = getStaticFileResponse(request, 'testCSS', '.css')
         self.assertEqual(type(res), FileResponse)
