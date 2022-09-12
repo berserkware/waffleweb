@@ -389,12 +389,13 @@ For more information you can go to `Cookies <../How-To-Guides/Cookies.html>`_.
 	    
 Adding Middleware
 .................
-To add middleware to your app, you can add use the ``middleware`` attribute. The ``middleware`` attribute is a special `Middleware class <../Internals/middleware.py.html>`_.
+To add middleware to your app, you can add use the ``middleware`` attribute.
 
 .. code-block:: python
 
 	from waffleweb import app
+    from yourMiddleware import middlewareClass
 
-	app.middleware.append('addCookieMiddleware.addCookie')
+	app.middleware.append(middlewareClass)
 	
 For more information you can go to the `Middleware How-To Guide <../How-To-Guides/Middleware.html>`_.

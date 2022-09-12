@@ -5,7 +5,7 @@ import datetime
 import traceback
 import waffleweb
 
-from waffleweb.middleware import runResponseMiddleware, runRequestMiddleware, Middleware
+from waffleweb.middleware import runResponseMiddleware, runRequestMiddleware
 from waffleweb.request import Request, getResponse
 from waffleweb.response import HTTPResponse
 from waffleweb.exceptions import ParsingError
@@ -54,7 +54,7 @@ class WaffleApp():
     '''
 
     def __init__(self):
-        self.middleware = Middleware()
+        self.middleware = []
         self.views = []
         self.errorHandlers = []
 

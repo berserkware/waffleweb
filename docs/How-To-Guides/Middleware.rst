@@ -7,13 +7,14 @@ Middleware is code that modifies the request before going into your code, and th
 Adding Middleware
 ..................
 
-To add middleware you can use the ``middleware`` attribute of the ``app`` instance. The ``middleware`` attribute is a special `Middleware class <../Internals/middleware.py.html>`_ with all your middleware. All the middleware are strings with the module and middleware class. Example: 'testModule.Middleware' or 'middleware.testModule.Middleware'.
+To add middleware you can use the ``middleware`` attribute of the ``app`` instance. All the middleware are classes.
 
 .. code-block:: python
 
 	from waffleweb import app
+    from yourMiddleware import middleware
 
-	app.middleware.append('middleware.addCookieMiddleware.AddCookie')
+	app.middleware.append(middleware)
 	
 The order in which the middleware gets called is the first middleware you add is the first run.
 	

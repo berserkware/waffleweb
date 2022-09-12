@@ -112,20 +112,7 @@ class requestTest(unittest.TestCase):
             
         res = app.request(b'GET /article/test HTTP/1.1\r\n\r\n')
         self.assertEqual(res.content, b'test')
-        
-    def test_withMiddleware(self):
-        app = WaffleApp()
-        
-        app.middleware.append('middleware.testMiddleware.TestMiddleware')
-        
-        @app.route('/page')
-        def page(request):
-            return HTTPResponse(request, f'{request.META["middlewareHeader2"]}')
-            
-        res = app.request(b'GET /page HTTP/1.1\r\n\r\n')
-        self.assertEqual(res.content, b'value')
-        self.assertEqual(res.headers['middlewareHeader'], 'value')
-        
+
     def test_404(self):
         app = WaffleApp()
         

@@ -4,7 +4,6 @@ from datetime import datetime
 from pytz import timezone
 from waffleweb.app import WaffleApp
 
-from waffleweb.middleware import Middleware
 from waffleweb.response import HTTPResponse
 from waffleweb.wsgi import getResponseHeaders, getResponseStatus
 
