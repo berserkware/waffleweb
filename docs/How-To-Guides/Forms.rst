@@ -12,7 +12,6 @@ The form we are going to make is to get data and save it to a json file. To crea
 ``app.py:``
 
 .. code-block:: python
-
 	from waffleweb.response import render
 
 	@app.route('/form')

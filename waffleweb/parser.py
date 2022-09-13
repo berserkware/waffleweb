@@ -121,6 +121,7 @@ def parseHeaders(request: bytes) -> MultiValueOneKeyDict:
             
             if len(line.split(': ')) == 2:    
                 splitLine = line.strip().split(' ')
+                
                 #This gets the name of the header without changing it
                 rawHeaderName = str(splitLine[0].strip(':'))
                 

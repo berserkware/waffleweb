@@ -11,8 +11,7 @@ from waffleweb.response import HTTPResponse
 from waffleweb.exceptions import ParsingError
 from waffleweb.errorResponses import badRequest
 from waffleweb.template import renderErrorPage
-from waffleweb.wsgi import getResponseHeaders, getResponseStatus
-from waffleweb.datatypes import MultiValueOneKeyDict
+from waffleweb.wsgi import wsgiCallable
 
 class View:
     '''A view.'''
@@ -287,30 +286,9 @@ class WaffleApp():
                 print('\nKeyboardInterrupt, Closing server')
                 return
                 
-    def wsgiApplication(self, environ, startResponse):
+    def wsgiApplication(self):
         waffleweb.currentRunningApp = self
-        
-        #This gets the response.
-        try:
-            #Makes the Request object
-            request = Request(environ, environ.get('REMOTE_ADDR'), True)
 
-            request = runRequestMiddleware(request, self.middleware)
-
-            response = getResponse(request)
-
-            response = runResponseMiddleware(response, self.middleware)
-        except ParsingError:
-            response = badRequest(self, False)
-        except:
-            response = HTTPResponse(content='<title>500 Internal Server Error</title><h1 style="font-family: Arial, Helvetica, sans-serif; text-align: center; font-size: 80px; margin-bottom: 0px;">500</h1><h3 style="font-family: Arial, Helvetica, sans-serif; text-align: center; color: #5c5c5c; margin-top: 0px;">Internal Server Error.</h3>', status=500)
-
-        #Gets the data
-        content = response.content
-        headers = getResponseHeaders(response)
-        status = getResponseStatus(response)
-
-        startResponse(status, headers)
-        return iter([content])
+        return wsgiCallable
                 
 app = WaffleApp()

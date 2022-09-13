@@ -16,11 +16,11 @@ To install Gunicorn you can use pip.
 Getting The WSGI Callable
 -------------------------
 
-The WSGI callable is a method of your WaffleProject called "wsgiApplication". Make sure you only put the name of the method. Do not call the method.
+The WSGI callable is a method of your WaffleProject called "wsgiApplication". Remember to run the method.
 
 .. code-block:: python
 
-	wsgiApp = app.wsgiApplication
+	wsgiApp = app.wsgiApplication()
 	
 Connecting The Callable To Gunicorn
 -----------------------------------
