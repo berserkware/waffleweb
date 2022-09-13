@@ -49,9 +49,11 @@ def parsePost(body: bytes, contentType: str) -> dict:
                         
                     if len(headersAndData) == 1:
                         headersAndData = formValue.split(b'\n\n')
-                        headersStr, data = headersAndData[0].strip(b'\r\n').strip(b'\n'), b'\n\n'.join(headersAndData[1:]).strip(b'\r\n').strip(b'\n')
+                        headersStr = headersAndData[0].strip(b'\r\n').strip(b'\n')
+                        data = b'\n\n'.join(headersAndData[1:]).strip(b'\r\n').strip(b'\n')
                     else:
-                        headersStr, data = headersAndData[0].strip(b'\r\n').strip(b'\n'), b'\r\n\r\n'.join(headersAndData[1:]).strip(b'\r\n').strip(b'\n')
+                        headersStr = headersAndData[0].strip(b'\r\n').strip(b'\n')
+                        data = b'\r\n\r\n'.join(headersAndData[1:]).strip(b'\r\n').strip(b'\n')
 
                     headers = {}
                     for field in headersStr.split(b'\n'):
@@ -61,15 +63,20 @@ def parsePost(body: bytes, contentType: str) -> dict:
                     isFile = False
                     name = ''
                     #gets stuff from the content disposation
-                    cd = headers['CONTENT_DISPOSITION'].split('; ')
-                    for i in cd:
-                        if i.split('=')[0] == 'name':
-                            name = i.split('=')[1].strip('\r').strip('"')
-                        elif i.split('=')[0] == 'filename':
+                    contentDisposition = headers['CONTENT_DISPOSITION'].split('; ')
+                    for part in contentDisposition:
+                        if part.split('=')[0] == 'name':
+                            name = part.split('=')[1].strip('\r').strip('"')
+                        elif part.split('=')[0] == 'filename':
                             size = len(data)
 
-                            contentType = headers.get('CONTENT_TYPE')
-                            files[str(name)] = File(unquote(i.split('=')[1].strip('\r').strip('"')), data.strip(b'\r'), (contentType if contentType != -1 else 'text/plain'), size)
+                            #Gets the data of the file
+                            contentType = headers.get('CONTENT_TYPE', 'text/plain')
+                            #Gets the name of the file, and converts it into proper charecters
+                            fileName = unquote(part.split('=')[1].strip('\r').strip('"'))
+                            data = data.strip(b'\r')
+                            
+                            files[str(name)] = File(fileName, data, contentType, size)
                             isFile = True
 
                     if isFile == False:
@@ -107,12 +114,24 @@ def parseBody(request: bytes) -> bytes:
 def parseHeaders(request: bytes) -> MultiValueOneKeyDict:
     try:
         headerDict = MultiValueOneKeyDict()
+        
         #Gets all the headers
         for line in request.split(b'\r'):
             line = line.decode()
+            
             if len(line.split(': ')) == 2:    
                 splitLine = line.strip().split(' ')
-                headerDict[str(splitLine[0][:(len(splitLine[0]) - 1)]).upper().replace('-', '_')] = ' '.join(splitLine[1:])
+                #This gets the name of the header without changing it
+                rawHeaderName = str(splitLine[0].strip(':'))
+                
+                #This makes all letters upper case, and replaces the hypens with a low line. Header-Name gets turned into HEADER_NAME.
+                #This is to make it the same as the wsgi headers
+                headerName = rawHeaderName.upper().replace('-', '_')
+                
+                #Joins the header line, except for the header name.
+                headerValue = ' '.join(splitLine[1:])
+                
+                headerDict[headerName] = headerValue
         
             if line == '\n':
                 break
