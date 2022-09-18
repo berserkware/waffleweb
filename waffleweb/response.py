@@ -1,16 +1,10 @@
 import waffleweb
 import json
-import importlib
 import mimetypes
-try:
-    settings = importlib.import_module('settings')
-except ModuleNotFoundError:
-    settings = None
 
 from datetime import datetime
 from pytz import timezone
 from http.client import responses
-
 from waffleweb.cookie import Cookie
 from waffleweb.template import renderTemplate
 from waffleweb.datatypes import MultiValueOneKeyDict
@@ -66,10 +60,11 @@ class HTTPResponseBase():
         '''Gets charset if charset is None, gets defualt charset.'''
         if self._charset is not None:
             return self._charset
-
-        if hasattr(settings, 'CHARSET'):
-            return getattr(settings, 'CHARSET')
-        return waffleweb.defaults.DEFAULT_CHARSET
+        
+        return waffleweb.currentWorkingApp.settings.get(
+            'CHARSET', 
+            waffleweb.defaults.DEFAULT_CHARSET
+            )
 
     @charset.setter
     def charset(self, value):

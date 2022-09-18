@@ -7,11 +7,8 @@ import waffleweb
 
 from waffleweb.middleware import runResponseMiddleware, runRequestMiddleware
 from waffleweb.request import Request, getResponse
-from waffleweb.response import HTTPResponse
-from waffleweb.exceptions import ParsingError
-from waffleweb.errorResponses import badRequest
-from waffleweb.template import renderErrorPage
 from waffleweb.wsgi import wsgiCallable
+from waffleweb.server import WaffleServer
 
 class View:
     '''A view.'''
@@ -48,8 +45,7 @@ class ErrorHandler:
 
 class WaffleApp():
     '''
-    The WaffleApp() class is the center of your website.
-    app = WaffleApp()
+    The WaffleApp class is the core of your site. It is used for routing functions and running the servers.
     '''
 
     def __init__(self):
@@ -151,7 +147,7 @@ class WaffleApp():
     def request(self, rawRequest: bytes):
         '''Sends a request to any of the views.'''
         
-        waffleweb.currentRunningApp = self
+        waffleweb.currentWorkingApp = self
 
         request = Request(rawRequest, '127.0.0.1')
         
@@ -171,123 +167,13 @@ class WaffleApp():
         Note: don't use this in production
         '''
 
-        #Checks if host is valid
-        try:
-            ipaddress.ip_address(host)
-        except ValueError:
-            raise ValueError('host is invalid!')
+        waffleweb.currentWorkingApp = self
 
-        #Checks if port is valid
-        try:
-            port = int(port)
-        except ValueError:
-            raise TypeError('port has to be a int!')
-            
-        if 1 > port or port > 65535:
-            raise ValueError('port has to be more 1 and less that 65536!')
-
-        waffleweb.currentRunningApp = self
-
-        #Starts the test server socket
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-            sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            sock.bind((host, port))
-            sock.listen(1)
-            
-            print(f'Waffleweb version {waffleweb.__version__}')
-            print(f'Server listening on host {host}, port {port}')
-            print(f'Press Ctrl+C to stop server')
-            try:
-                while True:
-                    try:
-                        #waits for connection to server
-                        conn, addr = sock.accept()
-
-                        req = conn.recv(2048)
-                        try:
-                            #Turns the request into a Request object.
-                            request = Request(req, addr)
-                        except ParsingError:
-                            response = badRequest(self, debug)
-                            
-                            #prints the request information
-                            timeNow = datetime.datetime.now()
-                            print(f'[{timeNow.strftime("%m/%d/%Y %H:%M:%S")}] Unknown Unknown Unknown {response.statusCode} {response.reasonPhrase}')
-                            conn.sendall(bytes(response))
-                            conn.close()
-                            continue
-
-                        request = runRequestMiddleware(request, self.middleware)
-                        
-                        #gets the response
-                        response = getResponse(request, debug)
-
-                        #Run middleware on response
-                        response = runResponseMiddleware(response, self.middleware)
-                            
-                        #sends the response
-                        conn.sendall(bytes(response))
-
-                        #prints the request information
-                        timeNow = datetime.datetime.now()
-                        print(f'[{timeNow.strftime("%m/%d/%Y %H:%M:%S")}] {request.HTTPVersion} {request.method} {request.path} {response.statusCode} {response.reasonPhrase}')
-
-                        #closes the connection
-                        conn.close()
-                    except Exception as e:
-                        #gets the exception
-                        exception = traceback.TracebackException.from_exception(e)
-                        
-                        #prints the excepts
-                        traceback.print_exc()
-
-                        #if debug mode is on return a page with the error data else give generic error
-                        if debug:
-                            splitTraceback = []
-                            #gets the traceback
-                            stack = exception.stack.format()
-                            for stackLine in stack:
-                                stackLines = []
-                                
-                                splitStackLine = stackLine.split(', ')
-                                file = splitStackLine[0]
-                                lineNumber = splitStackLine[1]
-                                code = splitStackLine[2].strip('\n')
-                                
-                                #Gets the filePath line
-                                filePath = file.strip().split(' ')[1].strip('"')
-                                func = code.split(' ')[1].strip('\n').strip()
-                                stackLines.append(f'{filePath} in {func}():')
-
-                                #Gets the code line
-                                lineNumber = lineNumber.split(' ')[1]
-                                code = stackLine.split('\n')[1]
-
-                                stackLines.append(f'{lineNumber}: {code}')
-
-                                splitTraceback.append(f'<code>{stackLines[0]}</code><br><div style="width: 100%; background-color: #d1d1d1;"><code style="margin-left: 15px; margin-top: 0px; margin-bottom: 0px;">{stackLines[1]}</code></div><br>')
-
-
-                            stackStr = '\n'.join(splitTraceback)
-
-                            context = {
-                                'mainErrorMessage': exception.exc_type.__name__,
-                                'subErrorMessage': str(e),
-                                'trackbackMessage': stackStr,
-                                }
-
-                            response = HTTPResponse(content=renderErrorPage(context['mainErrorMessage'], context['subErrorMessage'], context['trackbackMessage']), status=500)
-                            conn.sendall(bytes(response))
-                        else:
-                            conn.sendall(bytes(HTTPResponse(content='<title>500 Internal Server Error</title><h1 style="font-family: Arial, Helvetica, sans-serif; text-align: center; font-size: 80px; margin-bottom: 0px;">500</h1><h3 style="font-family: Arial, Helvetica, sans-serif; text-align: center; color: #5c5c5c; margin-top: 0px;">Internal Server Error.</h3>', status=500)))
-                    conn.close()    
-
-            except KeyboardInterrupt as e:
-                print('\nKeyboardInterrupt, Closing server')
-                return
+        server = WaffleServer(getResponse)
+        server.run(host, port, debug)
                 
     def wsgiApplication(self):
-        waffleweb.currentRunningApp = self
+        waffleweb.currentWorkingApp = self
 
         return wsgiCallable
                 

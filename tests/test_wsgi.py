@@ -7,7 +7,7 @@ from waffleweb.app import WaffleApp
 from waffleweb.response import HTTPResponse
 from waffleweb.wsgi import getResponseHeaders, getResponseStatus
 
-class WsgiHandlerTest(unittest.TestCase):
+class WsgiTest(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 

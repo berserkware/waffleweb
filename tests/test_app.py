@@ -2,8 +2,75 @@ import unittest
 
 from waffleweb import WaffleApp
 from waffleweb.response import HTTPResponse
+from waffleweb.app import View
+class ViewTest(unittest.TestCase):
+    def test_hasPathHasArgsNoArgs(self):
+        view = View(
+            '/this/is/<test:int>',
+            'this/is/<test:int>',
+            ['this', 'is', ['test', 'int']],
+            'testTo',
+            None,
+            ['GET'],
+            )
+            
+        self.assertTrue(view.hasPathHasArgs())
+        
+    def test_hasPathHasArgsYesArgs(self):
+        view = View(
+            '/this/is/atest',
+            'this/is/atest',
+            ['this', 'is', 'test'],
+            'testTo',
+            None,
+            ['GET'],
+            )
+            
+        self.assertFalse(view.hasPathHasArgs())
 
-class BasicRouteTest(unittest.TestCase):
+class WaffleAppRouteVariablesTest(unittest.TestCase):
+    def test_urlVariablesFail(self):
+        app = WaffleApp()
+
+        with self.assertRaises(AttributeError):
+            @app.route('/index/arg1:str>/<int:arg2>', 'index')
+            def index(request, arg1, arg2):
+                return (arg1, arg2) 
+
+    def test_urlVariablesRaiseAttributeError(self):
+        app = WaffleApp()
+        with self.assertRaises(AttributeError):
+            @app.route('/index/<arg1:int>/<arg2:notAValidType>', 'index')
+            def index(request, arg1, arg2):
+                return (arg1, arg2) 
+
+    def test_urlVariablesRaiseAttributeError2(self):
+        app = WaffleApp()
+        
+        with self.assertRaises(AttributeError):
+            @app.route('/index/<arg1>/<arg2>', 'index')
+            def index(request, arg1, arg2):
+                return (arg1, arg2) 
+    
+    def test_urlVariablesNoValues(self):
+        app = WaffleApp()
+        
+        with self.assertRaises(AttributeError):
+            @app.route('/index/<>/<>', 'index')
+            def index(request, arg1, arg2):
+                return (arg1, arg2) 
+                
+    def test_urlVariablesCorrect(self):
+        app = WaffleApp()
+        
+        try:
+            @app.route('/index/<arg1:int>/<arg2:int>', 'index')
+            def index(request, arg1, arg2):
+                return (arg1, arg2) 
+        except AttributeError:
+            self.fail('A AttributeError was raised, even though everything is correct.')
+     
+class WaffleAppRoutePath(unittest.TestCase):
     def test_pathInvalidRelitiveURL(self):
         app = WaffleApp()
 
@@ -11,8 +78,6 @@ class BasicRouteTest(unittest.TestCase):
             @app.route('www.google.com', 'index')
             def index(request=None):
                 pass    
-
-            index()
     
     def test_pathValidRelitiveURL(self):
         app = WaffleApp()
@@ -21,51 +86,50 @@ class BasicRouteTest(unittest.TestCase):
             @app.route('/home/index', 'index')
             def index(request=None):
                 pass    
-
-            index()
+            
         except ValueError:
             self.fail('index() raised ValueError unexpectably')
-
-    def test_argumentsFail(self):
-        app = WaffleApp()
-
-        with self.assertRaises(AttributeError):
-            @app.route('/index/arg1:str>/<int:arg2>', 'index')
-            def index(request, arg1, arg2):
-                return (arg1, arg2) 
-
-            index(request=None)
-
-    def test_argumentsRaiseAttributeError(self):
-        app = WaffleApp()
-        with self.assertRaises(AttributeError):
-            @app.route('/index/<arg1:int>/<arg2:notAValidType>', 'index')
-            def index(request, arg1, arg2):
-                return (arg1, arg2) 
-
-            index(request=None)
-
-    def test_argumentsRaiseAttributeError2(self):
-        app = WaffleApp()
-        
-        with self.assertRaises(AttributeError):
-            @app.route('/index/<arg1>/<arg2>', 'index')
-            def index(request, arg1, arg2):
-                return (arg1, arg2) 
-
-            index(request=None)
-    
-    def test_arguments(self):
-        app = WaffleApp()
-        
-        @app.route('/article/<name:str>')
-        def article(request, name):
-            return HTTPResponse(request, f"{name}")
             
-        res = app.request(b'GET /article/test HTTP/1.1\r\n\r\n')
-        self.assertEqual(res.content, b'test')
+class WaffleAppRouteViewCreation(unittest.TestCase):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         
-class ErrorHandlerTest(unittest.TestCase):
+        app = WaffleApp()
+        
+        @app.route('/test/<arg:int>', 'testPage', ['GET', 'POST'])
+        def func(request, arg):
+            return HTTPResponse(request)
+            
+        self.func = func
+            
+        #Gets the latest view added
+        self.view = app.views[-1]
+        
+    def test_unstripedPathCorrect(self):
+        self.assertEqual(self.view.unstripedPath, '/test/<arg:int>')
+        
+    def test_pathCorrect(self):
+        self.assertEqual(self.view.path, 'test/<arg:int>')
+        
+    def test_splitPathCorrect(self):
+        self.assertEqual(self.view.splitPath, ['test', ['arg', 'int']])
+        
+    def test_nameCorrectExplicitNaming(self):
+        self.assertEqual(self.view.name, 'testPage')
+        
+    def test_nameCorrectFromFunction(self):
+        app = WaffleApp()
+        
+        @app.route('/test/<arg:int>', methods=['GET', 'POST'])
+        def func(request, arg):
+            return HTTPResponse(request)
+        
+        self.assertEqual(app.views[-1].name, 'func')
+        
+    def test_allowedMethodsCorrect(self):
+        self.assertEqual(self.view.allowedMethods, ['GET', 'POST'])
+        
+class WaffleAppErrorHandlerTest(unittest.TestCase):
     def test_statusTooBig(self):
         with self.assertRaises(ValueError):
             app = WaffleApp()
@@ -91,44 +155,11 @@ class ErrorHandlerTest(unittest.TestCase):
                 return HTTPResponse(request, '404')
         except ValueError:
             self.fail('A ValueError was raised.')
-        
-class requestTest(unittest.TestCase):
-    def test_basic(self):
-        app = WaffleApp()
-        
-        @app.route('/index')
-        def index(request):
-            return HTTPResponse(request, 'index')
             
-        res = app.request(b'GET /index HTTP/1.1\r\n\r\n')
-        self.assertEqual(res.content, b'index')
-        
-    def test_withArgs(self):
-        app = WaffleApp()
-        
-        @app.route('/article/<name:str>')
-        def article(request, name):
-            return HTTPResponse(request, name)
+    def test_statusNotANumber(self):
+        with self.assertRaises(TypeError):
+            app = WaffleApp()
             
-        res = app.request(b'GET /article/test HTTP/1.1\r\n\r\n')
-        self.assertEqual(res.content, b'test')
-
-    def test_404(self):
-        app = WaffleApp()
-        
-        @app.route('/page')
-        def page(request):
-            return HTTPResponse(request, 'page')
-            
-        res = app.request(b'GET /existnt HTTP/1.1\r\n\r\n')
-        self.assertEqual(res.statusCode, 404)
-        
-    def test_errorHandler(self):
-        app = WaffleApp()
-        
-        @app.errorHandler(404)
-        def handler(request):
-            return HTTPResponse(request, '404')
-            
-        res = app.request(b'GET /existnt HTTP/1.1\r\n\r\n')
-        self.assertEqual(res.content, b'404')
+            @app.errorHandler("notANum")
+            def handler(request):
+                return HTTPResponse(request, '404')

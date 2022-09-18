@@ -1,15 +1,9 @@
-import os
-import importlib
 import waffleweb
-try:
-    settings = importlib.import_module('settings')
-except ModuleNotFoundError:
-    settings = None
 
-from urllib.parse import urlparse, unquote
-from waffleweb.errorResponses import methodNotAllowed, pageNotFound, getErrorHandlerResponse
+from urllib.parse import unquote
+from waffleweb.errorResponses import PageNotFound, getErrorHandlerResponse
 from waffleweb.cookie import Cookies
-from waffleweb.response import HTTP404, FileResponse, HTTPResponse, HTTPResponsePermenentRedirect, JSONResponse
+from waffleweb.response import HTTP404, HTTPResponsePermenentRedirect
 from waffleweb.static import getStaticFileResponse
 from waffleweb.parser import parseBody, parseHeaders, parsePost, splitURL, parseURLParameters
 from waffleweb.datatypes import MultiValueOneKeyDict
@@ -125,7 +119,7 @@ def findView(request):
     uri = uri.strip('/')
 
     #Searches through all the views to match the url
-    for view in waffleweb.currentRunningApp.views:
+    for view in waffleweb.currentWorkingApp.views:
         urlMatches = True
         viewKwargs = {}
         #This checks in the path of the view is equal to the reqeusted uri.
@@ -153,9 +147,9 @@ def findView(request):
     raise HTTP404
 
 def getResponse(request, debug: bool=False):
-    '''Gets a response to a request, retuerns Response.'''
+    '''Gets a response for a request, then returns the response.'''
 
-    app = waffleweb.currentRunningApp
+    app = waffleweb.currentWorkingApp
 
     root, splitRoot, ext = splitURL(request.path)
     try:
@@ -193,6 +187,10 @@ def getResponse(request, debug: bool=False):
             #If there is a file extention on the url, it will look for a static file, instead of a page.
             return getStaticFileResponse(request, root, ext)
     except HTTP404:
-        errorHandlerRequest = getErrorHandlerResponse(errorHandlers=app.errorHandlers, request=request, statusCode=404)
-        return pageNotFound(errorHandlerRequest, debug, app.views)
+        errorHandlerResponse = getErrorHandlerResponse(errorHandlers=app.errorHandlers, request=request, statusCode=404)
+        
+        if errorHandlerResponse is None:
+            return PageNotFound(app.views, debug=debug)
+        else:
+            return errorHandlerResponse
             

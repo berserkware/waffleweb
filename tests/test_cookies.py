@@ -1,26 +1,38 @@
 import unittest
 
-from waffleweb import WaffleApp
-from waffleweb.request import Request
-from waffleweb.response import HTTPResponse
-from waffleweb.cookie import Cookies
+from waffleweb.cookie import Cookie, Cookies
 
-class basicCookieTest(unittest.TestCase):
-    def test_cookie(self):
-        app = WaffleApp()
+class CookieTest(unittest.TestCase):
+    def test_cookieStrDefault(self):
+        cookie = Cookie('name', 'value')
+        self.assertEqual(str(cookie), 'name=value; SameSite=Lax')
         
-        @app.route('/cookieTest')
-        def cookieTest(request):
-            res = HTTPResponse(request, content='testing 123')
-            res.setCookie('testCookie', 'testVal')
-            return res
-            
-        response = app.request(b'GET /cookieTest HTTP/1.1\r\n\r\n')
+    def test_cookieStrWithPath(self):
+        cookie = Cookie('name', 'value', '/test')
+        self.assertEqual(str(cookie), 'name=value; path=/test; SameSite=Lax')
+        
+    def test_cookieStrWithMaxAge(self):
+        cookie = Cookie('name', 'value', maxAge='max')
+        self.assertEqual(str(cookie), 'name=value; Max-Age=max; SameSite=Lax')
+        
+    def test_cookieStrWithDomain(self):
+        cookie = Cookie('name', 'value', domain='domain')
+        self.assertEqual(str(cookie), 'name=value; Domain=domain; SameSite=Lax')
     
-        self.assertEqual(str(response.headers['Set-Cookie']), 'testCookie=testVal; path=/cookieTest; SameSite=Lax')
-
+    def test_cookieStrWithSecure(self):
+        cookie = Cookie('name', 'value', secure=True)
+        self.assertEqual(str(cookie), 'name=value; Secure; SameSite=Lax')
+        
+    def test_cookieStrWithHTTPOnly(self):
+        cookie = Cookie('name', 'value', HTTPOnly=True)
+        self.assertEqual(str(cookie), 'name=value; HttpOnly; SameSite=Lax')
+        
 class CookiesTest(unittest.TestCase):
-    def test_getCookie(self):
+    def test_getCookieSingle(self):
+        cookies = Cookies('testCookie=testValue')
+        self.assertEqual(cookies['testCookie'].value, 'testValue')
+    
+    def test_getCookieMultiple(self):
         cookies = Cookies('testCookie=testValue; testCookie2=testCookie2')
         self.assertEqual(cookies['testCookie'].value, 'testValue')
         self.assertEqual(cookies['testCookie2'].value, 'testCookie2')

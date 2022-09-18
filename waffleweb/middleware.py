@@ -1,7 +1,4 @@
-import importlib
-
 from waffleweb.request import Request
-from waffleweb.exceptions import MiddlewareNotFoundError, MiddlewareImportError
 
 def runRequestMiddleware(request: Request, middleware: list) -> Request:
     '''Runs all the middleware on the request'''

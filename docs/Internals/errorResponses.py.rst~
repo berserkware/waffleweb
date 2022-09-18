@@ -38,37 +38,34 @@ Inherits from ``HTTPException``
 A 400 Bad Request response.
 
 ==========================================================================
-``class waffleweb.errorResponses.PageNotFound(views)``
+``class waffleweb.errorResponses.PageNotFound(views, debug=False)``
 ==========================================================================
-
-Inherits from ``HTTPException``
 
 A 404 Page Not Found Error response.
 
 **Paramters:**
  - **views** (``list``) - The list of all the views to display for debug mode.
+ - **debug** (``bool``) (optional) - If debug mode is on.
 
 =======================================================================================
-``class waffleweb.errorResponses.MethodNotAllowed(allowedMethods)``
+``class waffleweb.errorResponses.MethodNotAllowed(allowedMethods, debug=False)``
 =======================================================================================
-
-Inherits from ``HTTPException``
 
 A Method Not Allow Response.
 
 **Paramters:**
  - **allowedMethods** (``list``) - The list of all the methods that are allowed.
+ - **debug** (``bool``) (optional) - If debug mode is on.
 
 =======================================================================================
-``class waffleweb.errorResponses.InternalServerError(exception)``
+``class waffleweb.errorResponses.InternalServerError(exception, debug=False)``
 =======================================================================================
-
-Inherits from ``HTTPException``
 
 A Internal Server Error response.
 
 **Paramters:**
  - **exception** (``Exception``) - The exception for the debug page.
+ - **debug** (``bool``) (optional) - If debug mode is on.
 
 ===============================================================================================================================
 ``function waffleweb.errorResponses.getErrorHandlerResponse(errorHandlers=None, request=None, response=None, statusCode=None)``

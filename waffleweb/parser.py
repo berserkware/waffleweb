@@ -1,8 +1,9 @@
+import os
+
 from waffleweb.exceptions import ParsingError
 from waffleweb.files import File
 from waffleweb.datatypes import MultiValueOneKeyDict
 from urllib.parse import unquote, urlparse
-import os
 
 def parsePost(body: bytes, contentType: str) -> dict:
     postData = {}

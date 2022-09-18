@@ -36,4 +36,12 @@ This handler gets called when the client sends a method that is not allowed:
 	def methodNotAllowed(request):
 	    return render(request, '405.html', {'method': request.method}, status=405)
 	    
+This handler gets called when the client send a malformed request. It must not take any arguments.
+	    
+.. code-block:: python
+
+	@app.errorHandler(400)
+	def methodNotAllowed():
+	    return render(filePath='405.html')
+	    
 Remember to set the status of the response to the status of the handler, because if you don't the status will the 200 OK.

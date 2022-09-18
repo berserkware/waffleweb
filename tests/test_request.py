@@ -1,26 +1,11 @@
-from waffleweb.request import Request
+from waffleweb.app import WaffleApp
+from waffleweb.request import Request, findView, matchVariableInURL
 
 import unittest
+import waffleweb
 
-from waffleweb.response import HTTP404
+from waffleweb.response import HTTP404, HTTPResponse
 from waffleweb.datatypes import MultiValueOneKeyDict
-
-testRequest = Request(b"""GET / HTTP/1.1
-                        Host: localhost:8080
-                        User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux aarch64; rv:96.0) Gecko/20100101 Firefox/96.0
-                        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
-                        Accept-Language: en-US,en;q=0.5
-                        Accept-Encoding: gzip, deflate
-                        Connection: keep-alive
-                        Cookie: csrftoken=Db8QXnkjOLbPd3AGTxlnEEGTSn0IMh44MB8Pf2dVAPSBARoU6DteVUu9nT9ELqcO; sessionid=h8xln73emxlqgpjbsnx9007ceyfla7at
-                        Upgrade-Insecure-Requests: 1
-                        Sec-Fetch-Dest: document
-                        Sec-Fetch-Mode: navigate
-                        Sec-Fetch-Site: none
-                        Sec-Fetch-User: ?1
-                        
-                        testContent1=12&testContent2=123
-                        """, '101.98.137.19')
 
 class RequestTest(unittest.TestCase):
     def __init__(self, *args, **kwargs):
@@ -58,3 +43,153 @@ class RequestTest(unittest.TestCase):
         req = Request(b'POST /filesPostTest/ HTTP/1.1\r\nContent-Length: 173\r\nContent-Type: multipart/form-data; boundary=6b31468dd2655947891a2a312ab9346b\r\n\r\n--6b31468dd2655947891a2a312ab9346b\r\nContent-Disposition: form-data; name="test"; filename="test.html"\r\n\r\n<h1>Testing Testing 123</h1>\r\n--6b31468dd2655947891a2a312ab9346b--\r\n', '127.0.0.1')
         self.assertEqual(b'<h1>Testing Testing 123</h1>', req.FILES['test'].data)
         
+class MatchVariableInURLTest(unittest.TestCase):
+    def test_convertToIntCorrect(self):
+        indexOfVar = 1
+        urlVarData = ['test', 'int']
+        splitUri = ['test', '5']
+        
+        matched = matchVariableInURL(indexOfVar, urlVarData, splitUri)
+        
+        self.assertEqual(matched[1], 5)
+        
+    def test_convertToIntNotAInt(self):
+        indexOfVar = 1
+        urlVarData = ['test', 'int']
+        splitUri = ['test', 'not']
+        
+        matched = matchVariableInURL(indexOfVar, urlVarData, splitUri)
+        
+        self.assertEqual(matched[1], 'not')
+        
+    def test_convertToFloatCorrect(self):
+        indexOfVar = 1
+        urlVarData = ['test', 'float']
+        splitUri = ['test', '5.5']
+        
+        matched = matchVariableInURL(indexOfVar, urlVarData, splitUri)
+        
+        self.assertEqual(matched[1], 5.5)
+        
+    def test_convertToFloatNotAFloat(self):
+        indexOfVar = 1
+        urlVarData = ['test', 'float']
+        splitUri = ['test', 'not']
+        
+        matched = matchVariableInURL(indexOfVar, urlVarData, splitUri)
+        
+        self.assertEqual(matched[1], 'not')
+        
+    def test_convertToStrCorrect(self):
+        indexOfVar = 1
+        urlVarData = ['test', 'str']
+        splitUri = ['test', 'hello']
+        
+        matched = matchVariableInURL(indexOfVar, urlVarData, splitUri)
+        
+        self.assertEqual(matched[1], 'hello')
+        
+class FindViewTest(unittest.TestCase):
+    def test_exactURLMatch(self):
+        app = WaffleApp()
+        
+        @app.route('/test')
+        def test(request):
+            return HTTPResponse(request, 'test')
+            
+        waffleweb.currentWorkingApp = app
+            
+        req = Request(b'GET /test HTTP/1.1', '127.0.0.1')
+        view = findView(req)
+        
+        self.assertEqual(view[0].view(None).content, test(None).content)
+        
+    def test_URLWrong(self):
+        app = WaffleApp()
+        
+        @app.route('/test')
+        def test(request):
+            return HTTPResponse(request, 'test')
+            
+        waffleweb.currentWorkingApp = app
+            
+        req = Request(b'GET /wrong HTTP/1.1', '127.0.0.1')
+        with self.assertRaises(HTTP404):
+            view = findView(req)
+            
+    def test_MultipleSectorURLMatch(self):
+        app = WaffleApp()
+        
+        @app.route('/test/more')
+        def test(request):
+            return HTTPResponse(request, 'test')
+            
+        waffleweb.currentWorkingApp = app
+            
+        req = Request(b'GET /test/more HTTP/1.1', '127.0.0.1')
+        view = findView(req)
+        
+        self.assertEqual(view[0].view(None).content, test(None).content)
+        
+    def test_MultipleSectorURLWrong(self):
+        app = WaffleApp()
+        
+        @app.route('/test/more')
+        def test(request):
+            return HTTPResponse(request, 'test')
+            
+        waffleweb.currentWorkingApp = app
+            
+        req = Request(b'GET /test HTTP/1.1', '127.0.0.1')
+        with self.assertRaises(HTTP404):
+            view = findView(req)
+            
+    def test_MultipleSectorAndOneSectorURLCorrect(self):
+        app = WaffleApp()
+        
+        @app.route('/test/more')
+        def test(request):
+            return HTTPResponse(request, 'test')
+            
+        @app.route('/test')
+        def test2(request):
+            return HTTPResponse(request, 'test2')
+            
+        waffleweb.currentWorkingApp = app
+            
+        req = Request(b'GET /test/more HTTP/1.1', '127.0.0.1')
+        view = findView(req)
+        
+        self.assertEqual(view[0].view(None).content, test(None).content)
+        
+        req = Request(b'GET /test HTTP/1.1', '127.0.0.1')
+        view = findView(req)
+        
+        self.assertEqual(view[0].view(None).content, test2(None).content)
+        
+    def test_URLVariablesURLCorrect(self):
+        app = WaffleApp()
+        
+        @app.route('/test/<test:int>')
+        def test(request):
+            return HTTPResponse(request, 'test')
+            
+        waffleweb.currentWorkingApp = app
+            
+        req = Request(b'GET /test/5 HTTP/1.1', '127.0.0.1')
+        view = findView(req)
+        
+        self.assertEqual(view[0].view(None).content, test(None).content)
+        
+    def test_URLVariablesURLIncorrect(self):
+        app = WaffleApp()
+        
+        @app.route('/test/<test:int>')
+        def test(request):
+            return HTTPResponse(request, 'test')
+            
+        waffleweb.currentWorkingApp = app
+            
+        req = Request(b'GET /test HTTP/1.1', '127.0.0.1')
+        with self.assertRaises(HTTP404):
+            view = findView(req)

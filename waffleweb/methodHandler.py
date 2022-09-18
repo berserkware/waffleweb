@@ -1,23 +1,21 @@
-from waffleweb.response import HTTPResponse, JSONResponse, FileResponse
-from waffleweb.errorResponses import methodNotAllowed, getErrorHandlerResponse
-
 import waffleweb
+
+from waffleweb.response import HTTPResponse
+from waffleweb.errorResponses import MethodNotAllowed, getErrorHandlerResponse
 
 def handleHead(view, kwargs, request, debug: bool=False):
     #Checks if GET or HEAD is in allowed methods
     if 'GET' not in view.allowedMethods and 'HEAD' not in view.allowedMethods:
         #Returns 405 response if request method is not in the view's allowed methods
-        res = getErrorHandlerResponse(errorHandlers=waffleweb.currentRunningApp.errorHandlers, request=request, statusCode=405)
-        return methodNotAllowed(res, debug, view.allowedMethods)
+        res = getErrorHandlerResponse(errorHandlers=waffleweb.currentWorkingApp.errorHandlers, request=request, statusCode=405)
+        if res is None:
+            return MethodNotAllowed(view.allowedMethods, debug=debug)
+        else:
+            return res
 
     newView = view.view(request, **kwargs)
 
-    if type(newView) == HTTPResponse:
-        newView.content = ''
-    elif newView == JSONResponse:
-        newView.json = {}
-    elif newView == FileResponse:
-        newView.fileObj = None
+    newView.content = ''
 
     return newView
 
@@ -25,14 +23,11 @@ def handleOptions(view, request, debug: bool=False):
     #Checks if GET or OPTIONS is in allowed methods
     if 'GET' not in view.allowedMethods and 'OPTIONS' not in view.allowedMethods:
         #Returns 405 response if request method is not in the view's allowed methods
-        res = getErrorHandlerResponse(errorHandlers=waffleweb.currentRunningApp.errorHandlers, request=request, statusCode=405)
-        return methodNotAllowed(res, debug, view.allowedMethods)
-
-    if view is None:
-        methods = ', '.join(['OPTIONS', 'GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'TRACE', 'CONNECT'])
-        res = HTTPResponse(status=204) 
-        res.headers['Allow'] = methods
-        return res
+        res = getErrorHandlerResponse(errorHandlers=waffleweb.currentWorkingApp.errorHandlers, request=request, statusCode=405)
+        if res is None:
+            return MethodNotAllowed(view.allowedMethods, debug=debug)
+        else:
+            return res
     
     allowedMethods = view.allowedMethods.copy()
     if 'GET' in allowedMethods:
@@ -49,7 +44,10 @@ def handleOptions(view, request, debug: bool=False):
 def handleOther(view, kwargs, request, debug: bool=False):
     if request.method not in view.allowedMethods:
         #Returns 405 response if request method is not in the view's allowed methods
-        res = getErrorHandlerResponse(errorHandlers=waffleweb.currentRunningApp.errorHandlers, request=request, statusCode=405)
-        return methodNotAllowed(res, debug, view.allowedMethods)
+        res = getErrorHandlerResponse(errorHandlers=waffleweb.currentWorkingApp.errorHandlers, request=request, statusCode=405)
+        if res is None:
+            return MethodNotAllowed(view.allowedMethods, debug=debug)
+        else:
+            return res
 
     return view.view(request, **kwargs)
