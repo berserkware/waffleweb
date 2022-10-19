@@ -5,9 +5,8 @@ Waffleweb
 .. image:: https://img.shields.io/github/license/berserkware/waffleweb
    :alt: github
 
-.. image:: https://readthedocs.org/projects/waffleweb/badge/?version=latest
-    :target: https://waffleweb.readthedocs.io/en/latest/?badge=latest
-    :alt: Documentation Status
+.. image:: https://img.shields.io/readthedocs/waffleweb
+   :alt: Read the Docs
 
 .. image:: https://img.shields.io/pypi/v/waffleweb
    :alt: PyPI
