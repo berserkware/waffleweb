@@ -1,6 +1,17 @@
 =========
 Waffleweb
 =========
+
+.. image:: https://img.shields.io/github/license/berserkware/waffleweb
+   :alt: github
+
+.. image:: https://readthedocs.org/projects/waffleweb/badge/?version=latest
+    :target: https://waffleweb.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
+
+.. image:: https://img.shields.io/pypi/v/waffleweb
+   :alt: PyPI
+
 Waffleweb is a WSGI Python web framework for making web applications easily. Waffleweb is highly customizable and doesn't force any project layout.
 
 ------------
